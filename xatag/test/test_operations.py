@@ -106,6 +106,28 @@ class TestTag():
         t = Tag('genre', 'classical')
         assert t.to_string() == 'genre:classical'
 
+def test_add_tags(file_with_tags):
+    x = xattr.xattr(file_with_tags)
+    add_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'), Tag('genre', 'awesome'),
+                              Tag('artist', '')])
+    assert x['user.org.xatag.tags'] == 'another;tag1;tag2;tag3;tag4;tag5;zanother'
+    assert x['user.org.xatag.tags.artist'] == 'The XX'
+    assert x['user.org.xatag.tags.genre'] == 'awesome;indie;pop'
+    add_tags(file_with_tags, [Tag('unused', '')])
+    assert 'user.org.xatag.tags.unused' not in x.keys()
+    assert 'unused' not in read_file_tags(file_with_tags)
+
+def test_set_tags(file_with_tags):
+    x = xattr.xattr(file_with_tags)
+    set_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'), Tag('genre', 'awesome')])
+    assert x['user.org.xatag.tags'] == 'another;zanother'
+    assert x['user.org.xatag.tags.artist'] == 'The XX'
+    assert x['user.org.xatag.tags.genre'] == 'awesome'
+    set_tags(file_with_tags, [Tag('artist', '')])
+    assert x['user.org.xatag.tags'] == 'another;zanother'
+    assert x['user.org.xatag.tags.genre'] == 'awesome'
+    assert 'user.org.xatag.tags.artist' not in x.keys()
+
 def test_delete_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
 

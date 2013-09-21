@@ -78,7 +78,7 @@ def xattr_value_to_list(tag_string):
 
 def list_to_xattr_value(tag_list):
     """Return a xattr value that represents the tags in tag_list."""
-    return XATTR_FIELD_SEPARATOR.join(format_tag_value(x) for x in tag_list)
+    return XATTR_FIELD_SEPARATOR.join(sorted(format_tag_value(x) for x in tag_list))
 
 def listify(arg):
     """Make arg iterable, if it's not already.
@@ -108,7 +108,7 @@ def add_tag_values_to_xattr_value(xattr_value, tags_to_add):
     tags_to_add = listify(tags_to_add)
     current_tags = xattr_value_to_list(xattr_value)
     tags = current_tags + [tag for tag in tags_to_add if tag not in set(current_tags)]
-    return list_to_xattr_value(sorted(tags))
+    return list_to_xattr_value(tags)
 
 class Tag:
     """Simple placeholder for key/value pairs."""
@@ -151,7 +151,6 @@ class Tag:
 
 def add_tags(afile, tags):
     """Add the given tags from the xatag managed xattr fields of afile."""
-    attributes = xattr.xattr(afile)
     tags = listify(tags)
     # perform all changes on one key at once
     changes = defaultdict(list)
@@ -160,6 +159,7 @@ def add_tags(afile, tags):
             print "tag is missing value: " + tag.to_string()
         else:
             changes[tag.key].append(tag.value)
+    attributes = xattr.xattr(afile)
     for k,v in changes.items():
         xattr_key = xatag_to_xattr_key(k)
         if xattr_key in attributes.keys():
@@ -169,12 +169,27 @@ def add_tags(afile, tags):
         new_field = add_tag_values_to_xattr_value(current_field, v)
         attributes[xattr_key] = new_field
    
+def set_tags(afile, tags):
+    """Set any key mentioned in tags to the values in tags for that key."""
+    tags = listify(tags)
+    newkeyvals = defaultdict(list)
+    for tag in tags:
+        newkeyvals[tag.key].append(tag.value)
+    attributes = xattr.xattr(afile)
+    for k,v in newkeyvals.items():
+        xattr_key = xatag_to_xattr_key(k)
+        xattr_value = list_to_xattr_value(v)
+        if xattr_value == '':
+            del attributes[xattr_key]
+        else:
+            attributes[xattr_key] = xattr_value
+
 def delete_tags(afile, tags):
     """Delete the given tags from the xatag managed xattr fields of afile."""
-    attributes = xattr.xattr(afile)
     tags = listify(tags)
     # perform all changes on one key at once
     changes = defaultdict(list)
+    attributes = xattr.xattr(afile)
     for tag in tags:
         xattr_key = xatag_to_xattr_key(tag)
         if xattr_key in attributes: 
@@ -183,7 +198,10 @@ def delete_tags(afile, tags):
             else:
                 changes[xattr_key].append(tag.value)
         else:
-            print("key not found: " + tag.key)
+            if tag.key == '':
+                print("no simple tags not found")
+            else:
+                print("key not found: " + tag.key)
     for k, v in changes.items():
         current_field = attributes[k]
         new_field = remove_tag_values_from_xattr_value(current_field, v)
