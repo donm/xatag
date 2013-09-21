@@ -184,6 +184,11 @@ def set_tags(afile, tags):
         else:
             attributes[xattr_key] = xattr_value
 
+def set_all_tags(afile, tags):
+     """Set and keep only the keys mentioned in tags, removing all other keys."""
+     delete_all_tags(afile)
+     set_tags(afile, tags)
+
 def delete_tags(afile, tags):
     """Delete the given tags from the xatag managed xattr fields of afile."""
     tags = listify(tags)

@@ -1,28 +1,12 @@
 #!/usr/bin/env python
-  # xatag  -a  [   -qv]    <tag>...           
-  # xatag  -m  [   -qv]         
-  # xatag [-s] [-rRLqv]    <tag>     <file>... 
-  # xatag [-s] [-rRLqv] -t <tag>...  <file>... 
-  # xatag [-s] [-rRLqv] -f <file>... <tag>...  
-  # xatag [-i] [-rRLqv]    <file>
-  # xatag  -l  [-rRLqv]    <file>...
-  # xatag  -d  [-rRLqv]    <tag>     <file>... 
-  # xatag  -d  [-rRLqv] -t <tag>...  <file>... 
-  # xatag  -d  [-rRLqv] -f <file>... <tag>...  
-  # xatag  -D  [-rRLqv]    <file>...
-  # xatag  -p  [   -qv]    <file>    <tag>...
-  # xatag  -x  [   -qv]    <tag>... | <query_string>
-  # xatag  -h | --help
-  # xatag  -V | --version
-
 """xatag - file tagging using extended attributes (xattr).
 
 Usage:
   xatag [options] [-a]    <tag>        <file>... 
   xatag [options] [-a] -t <tag>...     <file>... 
   xatag [options] [-a] -f <file>...    <tag>...  
-  xatag [options] [-l]    <file>...
-  xatag [options]  -i     <file>
+  xatag [options]  -l    <file>...
+  xatag [options] [-i]     <file>
   xatag [options]  -s     <tag>        <file>... 
   xatag [options]  -s  -t <tag>...     <file>... 
   xatag [options]  -s  -f <file>...    <tag>...  
@@ -145,7 +129,7 @@ def parse_command_line():
             break
     if not command:
         # TODO: test if all the commands are there
-        command = ('--add' if arguments['<tag>'] else '--list')
+        command = ('--add' if arguments['<tag>'] else '--interactive')
     # This works because of convention.  '--some-name' is sent to 'cmd_some_name', which
     # is called with the arguments array.
     command = globals()["cmd_" + command[2:].replace('-', '_')]
@@ -165,7 +149,8 @@ def with_each_file(options):
 def cmd_add(options): 
     for f in with_each_file(options):
         add_tags(f, options['tags'])
-
+        print_tags(read_file_tags(f))
+        
 def cmd_list(options):
     for f in with_each_file(options):
         print_tags(read_file_tags(f))
@@ -173,11 +158,18 @@ def cmd_list(options):
 def cmd_set(options):
     for f in with_each_file(options):
         set_tags(f, options['tags'])
+        print_tags(read_file_tags(f))
+
+def cmd_set_all(options):
+    for f in with_each_file(options):
+        set_all_tags(f, options['tags'])
+        print_tags(read_file_tags(f))
 
 def cmd_delete(options):
     for f in with_each_file(options):
         delete_tags(f, options['tags'])
-
+        print_tags(read_file_tags(f))
+        
 def cmd_delete_all(options):
     for f in options['files']:
         delete_all_tags(f)
@@ -190,13 +182,11 @@ def cmd_execute(options):
         if len(options['<tag>']) == 1:
             options['<query_string>'] = options['<tag>']
             options['<tag>'] = []
+
 def cmd_enter(options):
     print "enter"
     print options
 
-    
-# def set(options):
-# def set_all(options):
 # def cmd_manage(options):
 # def cmd_interactive(options):
       

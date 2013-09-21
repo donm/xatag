@@ -128,6 +128,13 @@ def test_set_tags(file_with_tags):
     assert x['user.org.xatag.tags.genre'] == 'awesome'
     assert 'user.org.xatag.tags.artist' not in x.keys()
 
+def test_set_all_tags(file_with_tags):
+    x = xattr.xattr(file_with_tags)
+    set_all_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'), Tag('genre', 'awesome')])
+    assert x['user.org.xatag.tags'] == 'another;zanother'
+    assert x['user.org.xatag.tags.genre'] == 'awesome'
+    assert 'user.org.xatag.tags.artist' not in x.keys()
+
 def test_delete_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
 
