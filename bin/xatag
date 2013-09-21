@@ -18,16 +18,14 @@
 """xatag - file tagging using extended attributes (xattr).
 
 Usage:
-  xatag [options]  -e     <tag>...           
-  xatag [options]  -m          
   xatag [options] [-a]    <tag>        <file>... 
   xatag [options] [-a] -t <tag>...     <file>... 
   xatag [options] [-a] -f <file>...    <tag>...  
   xatag [options] [-l]    <file>...
   xatag [options]  -i     <file>
-  xatag [options]  -w     <tag>        <file>... 
-  xatag [options]  -w  -t <tag>...     <file>... 
-  xatag [options]  -w  -f <file>...    <tag>...  
+  xatag [options]  -s     <tag>        <file>... 
+  xatag [options]  -s  -t <tag>...     <file>... 
+  xatag [options]  -s  -f <file>...    <tag>...  
   xatag [options]  -d    <tag>        <file>... 
   xatag [options]  -d [-n] -t <tag>... <file>... 
   xatag [options]  -d  -f <file>...    <tag>...  
@@ -36,17 +34,12 @@ Usage:
   xatag [options]  -c  <src> <dest>...
   xatag [options]  -c [-n] -t <tag>... <src> <dest>...
   xatag [options]  -x       <tag>... | <query_string>
+  xatag [options]  -e     <tag>...           
+  xatag [options]  -m          
   xatag  -h | --help
   xatag  -V | --version
 
   #bgjknwyz
-
-Tag Management Commands:
-  -e --enter      Add TAG to the known tag list.  Adding a tag to the list
-                will prohibit the warning printed when using an unknown
-                tag.  Known tags are also used for shell completion and
-                interactively choosing tags to apply to a file.
-  -m --manage  
 
 File Tagging Commands:
   -a --add          Add all of the TAG(s) to the FILE(s).  This is the
@@ -65,6 +58,13 @@ File Tagging Commands:
   -c --copy         
   -x --execute      Execute a query.
   
+Tag Management Commands:
+  -e --enter      Add TAG to the known tag list.  Adding a tag to the list
+                will prohibit the warning printed when using an unknown
+                tag.  Known tags are also used for shell completion and
+                interactively choosing tags to apply to a file.
+  -m --manage  
+
 Argument Flags:
   -t <tag> --tag=<tag>     The following argument is a tag; when used, all
                            other positional arguments will be considered
@@ -88,7 +88,8 @@ Genreal Options:
 """
 
 from docopt import docopt
-from schema import Schema, And, Or, Use, SchemaError
+# from schema import Schema, And, Or, Use, SchemaError
+import os.path
 
 from xatag.operations import *
 
@@ -144,20 +145,42 @@ def parse_command_line():
             break
     if not command:
         # TODO: test if all the commands are there
-        command = ('--set' if arguments['<tag>'] else '--interactive')
+        command = ('--add' if arguments['<tag>'] else '--list')
     # This works because of convention.  '--some-name' is sent to 'cmd_some_name', which
     # is called with the arguments array.
     command = globals()["cmd_" + command[2:].replace('-', '_')]
     options = extract_options(arguments)
     return (command, options)
 
+def with_each_file(options):
+    files = options['files']
+    for f in files:
+        if os.path.exists(f):
+            if len(files) > 1: print(f)
+            yield f
+            if len(files) > 1: print
+        else:
+            print("path does not exist: " + f)
+
 def cmd_add(options): 
-    for f in options['files']:
+    for f in with_each_file(options):
         add_tags(f, options['tags'])
 
-def cmd_enter(options):
-    print "enter"
-    print options
+def cmd_list(options):
+    for f in with_each_file(options):
+        print_tags(read_file_tags(f))
+
+def cmd_set(options):
+    for f in with_each_file(options):
+        set_tags(f, options['tags'])
+
+def cmd_delete(options):
+    for f in with_each_file(options):
+        delete_tags(f, options['tags'])
+
+def cmd_delete_all(options):
+    for f in options['files']:
+        delete_all_tags(f)
 
 def cmd_execute(options):
     # When parsing an '--execute' call, everything is put in the array for
@@ -167,27 +190,16 @@ def cmd_execute(options):
         if len(options['<tag>']) == 1:
             options['<query_string>'] = options['<tag>']
             options['<tag>'] = []
-    
-def cmd_list(options):
-    files = options['files']
-    for f in files:
-        if len(files) > 1: print(f)
-        print_tags(read_file_tags(f))
-        if len(files) > 1: print
+def cmd_enter(options):
+    print "enter"
+    print options
 
+    
 # def set(options):
 # def set_all(options):
 # def cmd_manage(options):
 # def cmd_interactive(options):
       
-def cmd_delete(options):
-    for f in options['files']:
-        delete_tags(f, options['tags'])
-
-def cmd_delete_all(options):
-    for f in options['files']:
-        delete_all_tags(f)
-
 if __name__ == '__main__':
     command, options = parse_command_line()
     command(options)
