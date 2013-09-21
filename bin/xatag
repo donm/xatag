@@ -1,0 +1,206 @@
+#!/usr/bin/env python
+  # xatag  -a  [   -qv]    <tag>...           
+  # xatag  -m  [   -qv]         
+  # xatag [-s] [-rRLqv]    <tag>     <file>... 
+  # xatag [-s] [-rRLqv] -t <tag>...  <file>... 
+  # xatag [-s] [-rRLqv] -f <file>... <tag>...  
+  # xatag [-i] [-rRLqv]    <file>
+  # xatag  -l  [-rRLqv]    <file>...
+  # xatag  -d  [-rRLqv]    <tag>     <file>... 
+  # xatag  -d  [-rRLqv] -t <tag>...  <file>... 
+  # xatag  -d  [-rRLqv] -f <file>... <tag>...  
+  # xatag  -D  [-rRLqv]    <file>...
+  # xatag  -p  [   -qv]    <file>    <tag>...
+  # xatag  -x  [   -qv]    <tag>... | <query_string>
+  # xatag  -h | --help
+  # xatag  -V | --version
+
+"""xatag - file tagging using extended attributes (xattr).
+
+Usage:
+  xatag [options]  -e     <tag>...           
+  xatag [options]  -m          
+  xatag [options] [-a]    <tag>        <file>... 
+  xatag [options] [-a] -t <tag>...     <file>... 
+  xatag [options] [-a] -f <file>...    <tag>...  
+  xatag [options] [-l]    <file>...
+  xatag [options]  -i     <file>
+  xatag [options]  -w     <tag>        <file>... 
+  xatag [options]  -w  -t <tag>...     <file>... 
+  xatag [options]  -w  -f <file>...    <tag>...  
+  xatag [options]  -d    <tag>        <file>... 
+  xatag [options]  -d [-n] -t <tag>... <file>... 
+  xatag [options]  -d  -f <file>...    <tag>...  
+  xatag [options]  -D     <file>...
+  xatag [options]  -p     <file>       <tag>...
+  xatag [options]  -c  <src> <dest>...
+  xatag [options]  -c [-n] -t <tag>... <src> <dest>...
+  xatag [options]  -x       <tag>... | <query_string>
+  xatag  -h | --help
+  xatag  -V | --version
+
+  #bgjknwyz
+
+Tag Management Commands:
+  -e --enter      Add TAG to the known tag list.  Adding a tag to the list
+                will prohibit the warning printed when using an unknown
+                tag.  Known tags are also used for shell completion and
+                interactively choosing tags to apply to a file.
+  -m --manage  
+
+File Tagging Commands:
+  -a --add          Add all of the TAG(s) to the FILE(s).  This is the
+                    default command if you provide more than one argument.
+  -l --list         List the tags currently written on FILE.  This is the
+                    default command if you provide only one argument.
+  -i --interactive  Choose tags for FILE interactively.  
+  -s --set          Set the tags of the given FILE(s) to the TAG(s) given, erasing 
+                    any previous xatag data in the extended attributes in the same fields as new TAG(s).
+  -S --set-all      Set the tags of the given FILE(s) to the TAG(s) given, erasing 
+                      any previous xatag data in the extended attributes.
+                      Equivalent to 'xatag -D <file>...; xatag -a <tag> <file>...'
+  -d --delete       Remove all of the given TAG(s) to the given FILE(s).
+  -D --delete-all   Remove all xatag tags from the FILE(s)
+  -p --probe        Probe for TAG(s) in the given FILE.
+  -c --copy         
+  -x --execute      Execute a query.
+  
+Argument Flags:
+  -t <tag> --tag=<tag>     The following argument is a tag; when used, all
+                           other positional arguments will be considered
+                           files.
+  -f <file> --file=<file>  The following argument is a file; when used, all
+                           other positional arguments will be considered
+                           tags.
+                           
+Genreal Options:
+  -n --not
+  -r --recursive
+  -R --recursive-with-dirs  Recursive, including directories themselves.   
+  -L --follow-symlinks
+     --no-follow-symlinks
+  -q --quiet                Quiet.           
+  -v --verbose              Verbose.         
+     --debugging            Print debugging messages.
+  -V --version              Show version.    
+  -h --help                 Show this screen.
+    
+"""
+
+from docopt import docopt
+from schema import Schema, And, Or, Use, SchemaError
+
+from xatag.operations import *
+
+command_list = [
+    "--enter",
+    "--manage",
+    "--add",
+    "--set",
+    "--set-all",
+    "--interactive",
+    "--list",
+    "--delete",
+    "--delete-all",
+    "--probe",
+    "--copy",
+    "--execute",
+    ]
+
+def parse_tags(cli_tags):
+    # Tag.from_string returns a list, so explode it
+    return [t for tag in cli_tags for t in Tag.from_string(tag)]
+
+def fix_arguments(arguments):
+    # When the user manually specifies that an argument is a file or tag, that
+    # goes to a separate key.  Make a new list with the values in both keys. 
+    files = arguments['--file'] + arguments['<file>']
+    tags  = arguments['--tag']  + arguments['<tag>']
+    arguments['files'] = files
+    arguments['tags']  = parse_tags(tags)
+    arguments['src']  = arguments['<src>']
+    arguments['dest']  = arguments['<dest>']
+
+def extract_options(arguments):
+    options = {}
+    for key,val in arguments.items():
+        if not key in command_list:
+            if key.startswith('--'): 
+                newkey = key[2:]
+            elif key.startswith('-'): 
+                newkey = key[1:]
+            else:
+                newkey = key
+            options[newkey] = val
+    return options
+                
+def parse_command_line():
+    arguments = docopt(__doc__, version='xatag version 0.0.0')
+    fix_arguments(arguments)
+    command = False
+    for c in command_list:
+        if arguments[c]: 
+            command = c
+            break
+    if not command:
+        # TODO: test if all the commands are there
+        command = ('--set' if arguments['<tag>'] else '--interactive')
+    # This works because of convention.  '--some-name' is sent to 'cmd_some_name', which
+    # is called with the arguments array.
+    command = globals()["cmd_" + command[2:].replace('-', '_')]
+    options = extract_options(arguments)
+    return (command, options)
+
+def cmd_add(options): 
+    for f in options['files']:
+        add_tags(f, options['tags'])
+
+def cmd_enter(options):
+    print "enter"
+    print options
+
+def cmd_execute(options):
+    # When parsing an '--execute' call, everything is put in the array for
+    # <tag> no matter what.  A single tag is a valid query string, so let's
+    # just call any list of arguments with one element a query.
+    if options('--execute'):
+        if len(options['<tag>']) == 1:
+            options['<query_string>'] = options['<tag>']
+            options['<tag>'] = []
+    
+def cmd_list(options):
+    files = options['files']
+    for f in files:
+        if len(files) > 1: print(f)
+        print_tags(read_file_tags(f))
+        if len(files) > 1: print
+
+# def set(options):
+# def set_all(options):
+# def cmd_manage(options):
+# def cmd_interactive(options):
+      
+def cmd_delete(options):
+    for f in options['files']:
+        delete_tags(f, options['tags'])
+
+def cmd_delete_all(options):
+    for f in options['files']:
+        delete_all_tags(f)
+
+if __name__ == '__main__':
+    command, options = parse_command_line()
+    command(options)
+
+# optionally color tags
+# load options
+# # xatag -l --list (print xattr tag with flag, otherwise pretty print)
+# what about listing files that have certain tags?
+# ls with tags
+# -L do something with following symlinks.  make this configurable
+
+#   print warning if the tag is new, in case of misspellings
+#   check if key:val pair is in special list.  if it is, add it to another field in addition to tag field
+#   add to list of used tags
+#   tell recoll to index the file
+
