@@ -10,6 +10,9 @@ Usage:
   xatag [-rRLqv ]  -s  <tag>         <file>... 
   xatag [-rRLqv ]  -s  <file>...  -t <tag>...    
   xatag [-rRLqv ]  -s  <tag>...   -f <file>...   
+  xatag [-rRLqv ]  -S  <tag>         <file>... 
+  xatag [-rRLqv ]  -S  <file>...  -t <tag>...    
+  xatag [-rRLqv ]  -S  <tag>...   -f <file>...   
   xatag [-rRLqvn]  -d  <tag>         <file>... 
   xatag [-rRLqvn]  -d  <file>...  -t <tag>... 
   xatag [-rRLqvn]  -d  <tag>...   -f <file>... 
@@ -26,26 +29,29 @@ Usage:
 File Tagging Commands:
   -a --add          Add all of the TAG(s) to the FILE(s).  This is the
                     default command if you provide more than one argument.
-  -i --interactive  Choose tags for FILE interactively.  This is the
+  -i --interactive  Add and remove tags for FILE interactively.  This is the
                     default command if you provide only one argument.
   -l --list         List the tags currently written on FILE(s).  
   -s --set          Set the tags of the given FILE(s) to the TAG(s) given, erasing 
-                    any previous xatag data in the extended attributes in the same fields as new TAG(s).
+                    any previous xatag data in the extended attributes in the
+                    same fields as new TAG(s).
   -S --set-all      Set the tags of the given FILE(s) to the TAG(s) given, erasing 
-                      any previous xatag data in the extended attributes.
-                      Equivalent to 'xatag -D <file>...; xatag -a <tag> <file>...'
+                    any previous xatag data in the extended attributes.
+                    Equivalent to 'xatag -D <file>...; xatag -a <tag> <file>...'
   -d --delete       Remove all of the given TAG(s) to the given FILE(s).
   -D --delete-all   Remove all xatag tags from the FILE(s)
   -p --probe        Probe for TAG(s) in the given FILE.
-  -c --copy         
+  -c --copy         Copy xatag fields from SRC to DEST(s)
   -x --execute      Execute a query.
   
 Tag Management Commands:
-  -e --enter      Add TAG to the known tag list.  Adding a tag to the list
-                will prohibit the warning printed when using an unknown
-                tag.  Known tags are also used for shell completion and
-                interactively choosing tags to apply to a file.
-  -m --manage  
+
+  -e --enter        Enter TAG into the known tag list.  Adding a tag to 
+                    the list will prohibit the warning printed when using an
+                    unknown tag.  Known tags are also used for shell
+                    completion and interactively choosing tags to apply to a
+                    file.
+  -m --manage
 
 Argument Flags:
   -t <tag> --tag=<tag>     The following argument is a tag; when used, all
@@ -64,8 +70,8 @@ Genreal Options:
   -q --quiet                Quiet.           
   -v --verbose              Verbose.         
      --debugging            Print debugging messages.
-  -V --version              Show version.    
-  -h --help                 Show this screen.
+  -V --version              Print version.    
+  -h --help                 You managed to find this already.
     
 """
 
@@ -122,7 +128,7 @@ def parse_command_line():
     fix_arguments(arguments)
     command = False
     for c in command_list:
-        if arguments[c]: 
+        if c in arguments.keys() and arguments[c]: 
             command = c
             break
     if not command:
@@ -134,8 +140,8 @@ def parse_command_line():
     options = extract_options(arguments)
     return (command, options)
 
-def with_each_file(options):
-    files = options['files']
+def each_file(options, files=False):
+    if not files: files = options['files']
     for f in files:
         if os.path.exists(f):
             if len(files) > 1: print(f)
@@ -145,21 +151,21 @@ def with_each_file(options):
             print("path does not exist: " + f)
 
 def cmd_add(options): 
-    for f in with_each_file(options):
+    for f in each_file(options):
         add_tags(f, options['tags'])
         print_file_tags(f)
         
 def cmd_list(options):
-    for f in with_each_file(options):
+    for f in each_file(options):
         print_file_tags(f)
 
 def cmd_set(options):
-    for f in with_each_file(options):
+    for f in each_file(options):
         set_tags(f, options['tags'])
         print_file_tags(f)
 
 def cmd_set_all(options):
-    for f in with_each_file(options):
+    for f in each_file(options):
         set_all_tags(f, options['tags'])
         print_file_tags(f)
 
@@ -173,11 +179,13 @@ def cmd_copy(options):
             print("destination path does not exist: " + dest)
     if os.path.exists(source):
         copy_tags(source, destinations)
+        for f in each_file(options, files=destinations):
+            print_file_tags(f)
     else:
         print("source path does not exist: " + source)
 
 def cmd_delete(options):
-    for f in with_each_file(options):
+    for f in each_file(options):
         delete_tags(f, options['tags'])
         print_file_tags(f)
         
