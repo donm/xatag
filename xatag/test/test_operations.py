@@ -38,14 +38,14 @@ def test_xatag_to_xattr_key():
 
 # TODO
 from StringIO import StringIO
-def test_print_tags(file_with_tags):
+def test_print_file_tags(file_with_tags):
     out = StringIO()
-    print_tags(read_file_tags(file_with_tags), out=out)
+    print_file_tags(file_with_tags, out=out)
     output = out.getvalue().strip()
     pass
 
-def test_read_file_tags(file_with_tags):
-    tags = read_file_tags(file_with_tags)  
+def test_read_ags_as_dict(file_with_tags):
+    tags = read_tags_as_dict(file_with_tags)  
     assert tags == {'': ['tag1','tag2','tag3','tag4','tag5'],
                     'genre': ['indie','pop'],
                     'artist': ['The XX']
@@ -115,7 +115,7 @@ def test_add_tags(file_with_tags):
     assert x['user.org.xatag.tags.genre'] == 'awesome;indie;pop'
     add_tags(file_with_tags, [Tag('unused', '')])
     assert 'user.org.xatag.tags.unused' not in x.keys()
-    assert 'unused' not in read_file_tags(file_with_tags)
+    assert 'unused' not in read_tags_as_dict(file_with_tags)
 
 def test_set_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)

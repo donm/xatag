@@ -2,35 +2,33 @@
 """xatag - file tagging using extended attributes (xattr).
 
 Usage:
-  xatag [options] [-a]    <tag>        <file>... 
-  xatag [options] [-a] -t <tag>...     <file>... 
-  xatag [options] [-a] -f <file>...    <tag>...  
-  xatag [options]  -l    <file>...
-  xatag [options] [-i]     <file>
-  xatag [options]  -s     <tag>        <file>... 
-  xatag [options]  -s  -t <tag>...     <file>... 
-  xatag [options]  -s  -f <file>...    <tag>...  
-  xatag [options]  -d    <tag>        <file>... 
-  xatag [options]  -d [-n] -t <tag>... <file>... 
-  xatag [options]  -d  -f <file>...    <tag>...  
-  xatag [options]  -D     <file>...
-  xatag [options]  -p     <file>       <tag>...
-  xatag [options]  -c  <src> <dest>...
-  xatag [options]  -c [-n] -t <tag>... <src> <dest>...
-  xatag [options]  -x       <tag>... | <query_string>
-  xatag [options]  -e     <tag>...           
-  xatag [options]  -m          
+  xatag [-rRLqv ] [-a] <tag>         <file>... 
+  xatag [-rRLqv ] [-a] <file>...  -t <tag>...    
+  xatag [-rRLqv ] [-a] <tag>...   -f <file>...
+  xatag [-rRLqv ] [-i] <file>
+  xatag [-rRLqv ]  -l  <file>...
+  xatag [-rRLqv ]  -s  <tag>         <file>... 
+  xatag [-rRLqv ]  -s  <file>...  -t <tag>...    
+  xatag [-rRLqv ]  -s  <tag>...   -f <file>...   
+  xatag [-rRLqvn]  -d  <tag>         <file>... 
+  xatag [-rRLqvn]  -d  <file>...  -t <tag>... 
+  xatag [-rRLqvn]  -d  <tag>...   -f <file>... 
+  xatag [-rRLqv ]  -D  <file>...
+  xatag [-rRLqv ]  -p  <file>        <tag>...
+  xatag [-rRLqv ]  -c  <src> <dest>...
+  xatag [-rRLqvn]  -c  <src> <dest>... [-t <tag>]...
+  xatag [-rRLqv ]  -x  <tag>... | <query_string>
+  xatag [-rRLqv ]  -e  <tag>...           
+  xatag [-rRLqv ]  -m          
   xatag  -h | --help
   xatag  -V | --version
-
-  #bgjknwyz
 
 File Tagging Commands:
   -a --add          Add all of the TAG(s) to the FILE(s).  This is the
                     default command if you provide more than one argument.
-  -l --list         List the tags currently written on FILE.  This is the
+  -i --interactive  Choose tags for FILE interactively.  This is the
                     default command if you provide only one argument.
-  -i --interactive  Choose tags for FILE interactively.  
+  -l --list         List the tags currently written on FILE(s).  
   -s --set          Set the tags of the given FILE(s) to the TAG(s) given, erasing 
                     any previous xatag data in the extended attributes in the same fields as new TAG(s).
   -S --set-all      Set the tags of the given FILE(s) to the TAG(s) given, erasing 
@@ -78,18 +76,18 @@ import os.path
 from xatag.operations import *
 
 command_list = [
-    "--enter",
-    "--manage",
     "--add",
-    "--set",
-    "--set-all",
     "--interactive",
     "--list",
+    "--set",
+    "--set-all",
     "--delete",
     "--delete-all",
     "--probe",
     "--copy",
     "--execute",
+    "--enter",
+    "--manage",
     ]
 
 def parse_tags(cli_tags):
@@ -103,8 +101,8 @@ def fix_arguments(arguments):
     tags  = arguments['--tag']  + arguments['<tag>']
     arguments['files'] = files
     arguments['tags']  = parse_tags(tags)
-    arguments['src']  = arguments['<src>']
-    arguments['dest']  = arguments['<dest>']
+    arguments['source']       = arguments['<src>']
+    arguments['destinations'] = arguments['<dest>']
 
 def extract_options(arguments):
     options = {}
@@ -149,26 +147,39 @@ def with_each_file(options):
 def cmd_add(options): 
     for f in with_each_file(options):
         add_tags(f, options['tags'])
-        print_tags(read_file_tags(f))
+        print_file_tags(f)
         
 def cmd_list(options):
     for f in with_each_file(options):
-        print_tags(read_file_tags(f))
+        print_file_tags(f)
 
 def cmd_set(options):
     for f in with_each_file(options):
         set_tags(f, options['tags'])
-        print_tags(read_file_tags(f))
+        print_file_tags(f)
 
 def cmd_set_all(options):
     for f in with_each_file(options):
         set_all_tags(f, options['tags'])
-        print_tags(read_file_tags(f))
+        print_file_tags(f)
+
+def cmd_copy(options):
+    source = options['source']
+    destinations = []
+    for d in options['destinations']:
+        if os.path.exists(d):
+            destinations.append(d)
+        else:
+            print("destination path does not exist: " + dest)
+    if os.path.exists(source):
+        copy_tags(source, destinations)
+    else:
+        print("source path does not exist: " + source)
 
 def cmd_delete(options):
     for f in with_each_file(options):
         delete_tags(f, options['tags'])
-        print_tags(read_file_tags(f))
+        print_file_tags(f)
         
 def cmd_delete_all(options):
     for f in options['files']:
@@ -194,6 +205,8 @@ if __name__ == '__main__':
     command, options = parse_command_line()
     command(options)
 
+# pay attention to return values    
+# command line completion
 # optionally color tags
 # load options
 # # xatag -l --list (print xattr tag with flag, otherwise pretty print)
