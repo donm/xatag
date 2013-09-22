@@ -3,11 +3,17 @@
 # def cmd_interactive(options):
 # def cmd_execute(options):
 
-pay attention to return values    
-command line completion
-optionally color tags
 load options
-xatag -l --list (print xattr tag with flag, otherwise pretty print)
+optionally color tags
+color files using lscolors?
+pay attention to return values    
+
+probably list file on same line as 
+list everything on one line for grepping
+list everything on a different line for ... something
+print only certain fields when listing
+
+command line completion
 what about listing files that have certain tags?
 ls with tags
 -L do something with following symlinks.  make this configurable
@@ -24,3 +30,4 @@ tell recoll to index the file
 # TODO: anything that prints, give it an out=sys.stdout keyword
 # TODO: error catching (permissions, etc)
 
+maybe a -i/-I option like rm, or an undo facility
