@@ -2,32 +2,37 @@
 # def cmd_enter(options):
 # def cmd_interactive(options):
 # def cmd_execute(options):
+# def cmd_probe(options):
+
+implement recursive stuff
+implement following links
+verbosity
+
+make following symlinks configurable
 
 load options
 optionally color tags
 color files using lscolors?
 pay attention to return values    
 
+what about listing files that have certain tags?
+ls with tags
 probably list file on same line as 
 list everything on one line for grepping
 list everything on a different line for ... something
 print only certain fields when listing
 
 command line completion
-what about listing files that have certain tags?
-ls with tags
--L do something with following symlinks.  make this configurable
 
 print warning if the tag is new, in case of misspellings
 check if key:val pair is in special list.  if it is, add it to another field in addition to tag field
 add to list of used tags
 tell recoll to index the file
 
-# TODO: line length
-# TODO: tag values relations
-# TODO: options like recursive and stuff
-# TODO: verbosity
-# TODO: anything that prints, give it an out=sys.stdout keyword
-# TODO: error catching (permissions, etc)
+line length
+tag values relations
+
+anything that prints, give it an out=sys.stdout keyword
+error catching (permissions, etc)
 
 maybe a -i/-I option like rm, or an undo facility
