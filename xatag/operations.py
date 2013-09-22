@@ -12,8 +12,8 @@ XATTR_FIELD_SEPARATOR = ';'
 def listify(arg):
     """Make arg iterable, if it's not already.
 
-    I'm sure there's some other iterable object besides a string that you want
-    to listify, but I can't think of them right now.
+    I'm sure there's some other iterable object besides a string that you
+    would want to listify, but I can't think of them right now.
     """
     if (not isinstance(arg, collections.Iterable)) or isinstance(arg, basestring):
         return [arg]
@@ -50,9 +50,6 @@ def read_tags_as_dict(fname):
     # no sense in reading the value if the key isn't going to be chosen
     return {xattr_to_xatag_key(k): xattr_value_to_list(attributes[k])
             for k in attributes if is_xatag_xattr_key(k)}
-
-def write_dict_to_file_tags(fname):
-    pass
 
 def write_file_tags(fname, tags):
     """Write the xatag tags to fname."""
@@ -149,13 +146,6 @@ class Tag:
         else:
             return self.key + ":" + self.value
         
-# TODO: line length
-# TODO: tag values relations
-# TODO: options like recursive and stuff
-# TODO: verbosity
-# TODO: anything that prints, give it an out=sys.stdout keyword
-# TODO: error catching (permissions, etc)
-
 def tag_list_to_dict(tags):
     try:
         k = tags.keys()
@@ -238,4 +228,3 @@ def copy_tags(source, destinations):
     tags = read_tags_as_dict(source)
     for d in destinations:
         set_tags(d, tags)
-

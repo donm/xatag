@@ -202,28 +202,8 @@ def cmd_execute(options):
             options['<query_string>'] = options['<tag>']
             options['<tag>'] = []
 
-def cmd_enter(options):
-    print "enter"
-    print options
-
-# def cmd_manage(options):
-# def cmd_interactive(options):
-      
 if __name__ == '__main__':
     command, options = parse_command_line()
     command(options)
 
-# pay attention to return values    
-# command line completion
-# optionally color tags
-# load options
-# # xatag -l --list (print xattr tag with flag, otherwise pretty print)
-# what about listing files that have certain tags?
-# ls with tags
-# -L do something with following symlinks.  make this configurable
-
-#   print warning if the tag is new, in case of misspellings
-#   check if key:val pair is in special list.  if it is, add it to another field in addition to tag field
-#   add to list of used tags
-#   tell recoll to index the file
 
