@@ -1,176 +1,41 @@
 import sys
-import yaml
 import xattr
 import os
-import collections
 from collections import defaultdict
 from recoll import recoll
 
-XATTR_PREFIX = 'org.xatag.tags'
-XATTR_FIELD_SEPARATOR = ';'
+from helpers import listify
+from tag_dict import *
+from attributes import *
+from tag import *
 
-def listify(arg):
-    """Make arg iterable, if it's not already.
+# Some functions below have the argument '**unused'.  That's to facilitate
+# passing the options array that is returned from docopt (after some fixing)
+# to the function.  The docopt option array has many options that each
+# function doesn't need to accept as a keyword, so the extras are accepted and
+# not used.
 
-    I'm sure there's some other iterable object besides a string that you
-    would want to listify, but I can't think of them right now.
-    """
-    if (not isinstance(arg, collections.Iterable)) or isinstance(arg, basestring):
-        return [arg]
-    else:
-        return arg
+# It's kind of a hack, but consider the alternatives.  Either:
+# 
+# * Check for optional keyword arguments in every caller just to pass them on.
+#   That's unneccesary, boring code and tighter coupling.
+#
+# * Have these functions accept a dictionary of optional arguments, instead of
+#   accepting only the arguments they need as keywords.  This is less
+#   transparent when reading the code and deciding which options are
+#   available, plus it's a step away from functional style.  
+#
+# If you see a better alternatives, let me know.  
 
-def is_xatag_xattr_key(name):
-    """Check if name starts with XATTR_PREFIX."""
-    return name.startswith('user.' + XATTR_PREFIX) or name.startswith(XATTR_PREFIX)
-
-def xatag_to_xattr_key(tag_or_key):
-    """Add XATTR_PREFIX to the given string or to the tag's key."""
-    try:
-        key = tag_or_key.key
-    except AttributeError:
-        key = tag_or_key
-    key = format_tag_key(key)
-    if key == '' or key == 'tags':
-        return 'user.' + XATTR_PREFIX
-    else: 
-        return 'user.' + XATTR_PREFIX + '.' + key
-
-def xattr_to_xatag_key(key):
-    """Remove XATTR_PREFIX from the given string."""
-    key = format_tag_key(key)
-    key = key.replace('user.' + XATTR_PREFIX, '')
-    key = key.replace(XATTR_PREFIX, '')
-    if key != '' and key[0] == '.': key = key[1:]
-    return key
-
-def read_tag_keys(fname):
-    """Return a list of the xatag keys of the xattr fields in fname in the xatag namespace."""
-    attributes = xattr.xattr(fname)
-    return [xattr_to_xatag_key(k) for k in attributes if is_xatag_xattr_key(k)]
-
-def read_tags_as_dict(fname):
-    """Return a dict of the xattr fields in fname in the xatag namespace."""
-    attributes = xattr.xattr(fname)
-    # no sense in reading the value if the key isn't going to be chosen
-    return {xattr_to_xatag_key(k): xattr_value_to_list(attributes[k])
-            for k in attributes if is_xatag_xattr_key(k)}
-
-def write_file_tags(fname, tags):
-    """Write the xatag tags to fname."""
-    attributes = xattr.xattr(fname)
+# Why don't add_tags, delete_tags, etc. use the merge_tags, subtract_tags, and
+# select_tags function?  Only because those require a passing a full dict of
+# all tags, and I don't want to have to read and parse the extended attributes
+# of fields that we know won't change.  Whether that speeds things up or not
+# right now, I don't know, but it could with future changes in either this
+# program or in the xattr package.
     
-def format_tag_key(string):
-    """Format tag key string when reading or writing to extended attributes."""
-    return " ".join(string.strip().split())
+# Some functions below have the argument '**unused'.  That's to facilitate
 
-# quote when printing, not when reading or writing
-def format_tag_value(string, quote=False):
-    """Format tag value string when reading or writing to extended attributes.
-    
-    When formatting the tag value for printing, set quote=True to quote tags
-    with whitespace.
-
-    """
-    string = " ".join(string.strip().split())
-    if quote==True:
-        string = "'" + string + "'" if ' ' in string else string
-    return string
-
-def print_tag_dict(tag_dict, out=sys.stdout):
-    """Print the tags for a file in a nice way."""
-    if '' in tag_dict:
-        out.write(" ".join(map((lambda x: format_tag_value(x, True)), sorted(tag_dict['']))))
-        out.write("\n")
-    for k in sorted(tag_dict.keys()):
-        if k=='' or k=='tags': continue
-        out.write(k + ': ')
-        out.write(" ".join(map((lambda x: format_tag_value(x, True)), sorted(tag_dict[k]))))
-        out.write("\n")
-
-def print_file_tags(fname, out=sys.stdout):
-    print_tag_dict(read_tags_as_dict(fname), out=out)
-
-def xattr_value_to_list(tag_string):
-    """Split the value of a tag xattr and return a list of tag values."""
-    return [format_tag_value(x) for x in tag_string.split(XATTR_FIELD_SEPARATOR)
-            if format_tag_value(x) != '']
-
-def list_to_xattr_value(tag_list):
-    """Return a xattr value that represents the tags in tag_list."""
-    return XATTR_FIELD_SEPARATOR.join(sorted(format_tag_value(x) for x in tag_list))
-
-# TODO: optionally print when the tag wasn't there to begin with.  it's
-# especially important if you mean
-#    -d genre:
-# but type
-#    -d genre
-def remove_tag_values_from_xattr_value(xattr_value, tag_values, complement=False):
-    """Remove the values in tag_values from the xattr formatted value."""
-    tag_values = listify(tag_values)
-    current_values = xattr_value_to_list(xattr_value)
-    tag_values_set = set(tag_values)
-    if complement:
-        if '' in tag_values_set:
-            values = current_values
-        else:
-            values = [value for value in current_values if value in tag_values_set]
-    else:
-        values = [value for value in current_values if value not in tag_values_set] 
-    return list_to_xattr_value(values)
-
-def add_tag_values_to_xattr_value(xattr_value, values_to_add):
-    """Add the values in values_to_remove from the xattr formatted value."""
-    values_to_add = listify(values_to_add)
-    current_values = xattr_value_to_list(xattr_value)
-    values = current_values + [value for value in values_to_add if value not in set(current_values)]
-    return list_to_xattr_value(values)
-
-class Tag:
-    """Simple container for tag key/value pairs."""
-    def __init__(self, key, value=''):
-        if key == 'tags': key = ''
-        self.key = format_tag_key(key)
-        self.value = format_tag_value(value)
-
-    @classmethod
-    def from_string(cls, tag_str):
-        """Create a list of Tag object from a string.
-
-        Where (k,v) denotes Tag(k,v):
-            'multi:part:key:value' -> [('multi:part:key', 'value')]
-            'simple-tag' -> [('', 'simple-tag')]
-            'key:val1;val2;...' -> [('key', 'val1'), ('key', 'val2'), ...]
-        """
-        parts = tag_str.split(':')
-        if len(parts) == 1:
-            key = ''
-            values = tag_str
-        else:
-            key = ':'.join(parts[0:-1])
-            values = parts[-1]
-        return [cls(key, v) for v in values.split(XATTR_FIELD_SEPARATOR)]
-
-    def to_string(self):
-        """Create a 'key:value' formatted string from a Tag object."""
-        if self.key == '' or self.key == 'tags':
-            return self.value
-        else:
-            return self.key + ":" + self.value
-        
-def tag_list_to_dict(tags):
-    """Convert a list of Tags to a dictionary, where the values are lists of strings."""
-    try:
-        k = tags.keys()
-        return tags
-    except:
-        tags = listify(tags)
-        tag_dict = defaultdict(list)
-        for t in tags:
-            tag_dict[t.key].append(t.value)
-        return tag_dict
-
-# TODO: explain why these all have **unused
 def add_tags(fname, tags, **unused):
     """Add the given tags from the xatag managed xattr fields of fname."""
     tags = tag_list_to_dict(tags)
@@ -263,61 +128,6 @@ def delete_all_tags(fname, **unused):
     attributes = xattr.xattr(fname)
     for key in attributes: 
         if is_xatag_xattr_key(key): attributes.remove(key)
-
-def merge_tags(tags1, tags2):
-    """Merge the two tag dicts."""
-    combined = {}
-    for k in tags1.keys():
-        if k in tags2.keys():
-            combined[k] = tags2[k] + [v for v in tags1[k] 
-                                      if v not in set(tags2[k])]
-        else:
-            combined[k] = tags1[k]
-    for k in [k for k in tags2.keys() if k not in tags1.keys()]:
-        combined[k] = tags2[k]        
-    return combined
-
-# For these next two functions, the second argument can be a tag dict from a
-# file, but it can also have tags with empty values, which means "all tags
-# with this key."
-
-def subtract_tags(minuend, subtrahend):
-    """Remove the tag values in subtrahend from minuend.
-    
-    If subtrahend has a key with a value of '' in its list, then that will
-    remove all tag values from minuend from the same key.
-    """
-    difference = {}
-    for k,vlist in minuend.items():
-        if k in subtrahend.keys():
-            if '' in subtrahend[k]:
-                pass
-            else:
-                new_vlist = [v for v in vlist 
-                             if v not in subtrahend[k]]
-                if len(new_vlist) > 0: 
-                    difference[k] = new_vlist
-        else:
-            difference[k] = vlist
-    return difference
-
-def select_tags(original, selection):
-    """Return the tags in original that are also in selection.
-
-    If selection has a key with a value of '' in its list, then that will
-    select all tag values from original from the same key.
-
-    """
-    subset = {}
-    for k,vlist in selection.items():
-        if k in original:
-            if '' in vlist:
-                subset[k] = original[k]
-            else:
-                new_vlist = [v for v in vlist if v in original[k]]
-                if len(new_vlist) > 0: 
-                    subset[k] = new_vlist
-    return subset
 
 def copy_tags(source, destinations, tags=False, complement=False, **unused):
     """Copy all xatag managed xattr fields of fname to each file in destinations."""
