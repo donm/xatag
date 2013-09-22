@@ -13,7 +13,7 @@ XATAG_TAGS = {
 @pytest.fixture
 def file_with_tags(tmpdir):
     f = tmpdir.join('test.txt')
-    path = str(f.dirpath())
+    path = str(f.dirpath() + '/test.txt')
     f.open('a').close
     x = xattr.xattr(path)
     for k, v in NON_XATAG_TAGS.items():
@@ -21,7 +21,21 @@ def file_with_tags(tmpdir):
     for k, v in XATAG_TAGS.items():
         x[k] = v
     return path
-    
+
+@pytest.fixture
+def file_with_tags2(tmpdir):
+    tags = {'user.org.xatag.tags': 'tag1;tag6',
+            'user.org.xatag.tags.genre': 'good',
+            'user.org.xatag.tags.other': 'yes'}
+
+    f = tmpdir.join('test2.txt')
+    path = str(f.dirpath() + '/test2.txt')
+    f.open('a').close
+    x = xattr.xattr(path)
+    for k, v in tags.items():
+        x[k] = v
+    return path
+
 def test_is_xatag_xattr_key():
     assert is_xatag_xattr_key('user.org.xatag.tags')
     assert is_xatag_xattr_key('user.org.xatag.tags.whatever')
@@ -195,3 +209,85 @@ def test_delete_all_tags(file_with_tags):
     assert 'user.org.xatag.tags.artist' not in x.keys()
     assert 'user.org.xatag.tags.genre' not in x.keys()
     assert x['user.other.tag'] == 'something'
+
+@pytest.fixture
+def tag_dict1():
+    return {'': ['some', 'simple', 'tags'],
+            'scope': ['home', 'work'],
+            'first': ['one', 'tag'],
+            'third': ['a', 'b']
+            }
+
+@pytest.fixture
+def tag_dict2():
+    return {'': ['some', 'other', 'tags'],
+            'scope': ['hacking', 'programming'],
+            'second': ['another', 'tag']
+            }
+
+@pytest.fixture
+def tag_dict_with_empty_vals():
+    return {'': ['some', 'simple', 'other'],
+            'scope': [''],
+            'second': ['another'],
+            'third': ['a', 'b']
+            }
+
+def test_merge_tags(tag_dict1, tag_dict2):
+    m = merge_tags(tag_dict1, tag_dict2)
+    assert sorted(m['']) == sorted(['some', 'other', 'simple', 'tags'])
+    assert sorted(m['scope']) == sorted(['home', 'work', 'hacking', 'programming'])
+    assert sorted(m['first']) == sorted(['one', 'tag'])
+    assert sorted(m['second']) == sorted(['another', 'tag'])
+
+def test_subtract_tags(tag_dict1, tag_dict_with_empty_vals):
+    s = subtract_tags(tag_dict1, tag_dict_with_empty_vals)
+    assert sorted(s['']) == sorted(['tags'])
+    assert 'scope' not in s.keys()
+    assert s['first'] == tag_dict1['first']
+    assert 'second' not in s.keys()
+    assert 'third' not in s.keys()
+
+def test_select_tags(tag_dict1, tag_dict_with_empty_vals):
+    s = select_tags(tag_dict1, tag_dict_with_empty_vals)
+    assert sorted(s['']) == sorted(['some', 'simple'])
+    assert sorted(s['scope']) == sorted(tag_dict1['scope'])
+    assert 'first' not in s.keys()
+    assert 'second' not in s.keys()
+    
+def test_copy_tags(file_with_tags, file_with_tags2):
+    d1a = read_tags_as_dict(file_with_tags)
+    copy_tags(file_with_tags, file_with_tags2)
+    d1b = read_tags_as_dict(file_with_tags)
+    d2 = read_tags_as_dict(file_with_tags2)
+    assert d1a == d1b
+    assert sorted(d2['']) == sorted(['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'])
+    assert sorted(d2['genre']) == sorted(['indie', 'pop', 'good'])
+    assert sorted(d2['artist']) == sorted(['The XX'])
+    assert sorted(d2['other']) == sorted(['yes'])
+
+def test_copy_tags2(file_with_tags, file_with_tags2):
+    tags = [Tag('', 'tag2'), Tag('genre', '')]
+    d1a = read_tags_as_dict(file_with_tags)
+    copy_tags(file_with_tags, file_with_tags2, tags=tags)
+    d1b = read_tags_as_dict(file_with_tags)
+    d2 = read_tags_as_dict(file_with_tags2)
+    assert d1a == d1b
+    assert sorted(d2['']) == sorted(['tag1', 'tag2', 'tag6'])
+    assert sorted(d2['genre']) == sorted(['indie', 'pop', 'good'])
+    assert 'artist' not in d2.keys()
+    assert sorted(d2['other']) == sorted(['yes'])
+
+def test_copy_tags3(file_with_tags, file_with_tags2):
+    tags = [Tag('', 'tag2'), Tag('genre', '')]
+    d1a = read_tags_as_dict(file_with_tags)
+    copy_tags(file_with_tags, file_with_tags2, tags=tags, complement=True)
+    d1b = read_tags_as_dict(file_with_tags)
+    d2 = read_tags_as_dict(file_with_tags2)
+    assert d1a == d1b
+    assert sorted(d2['']) == sorted(['tag1', 'tag3', 'tag4', 'tag5', 'tag6'])
+    assert sorted(d2['genre']) == sorted(['good'])
+    assert sorted(d2['artist']) == sorted(['The XX'])
+    assert sorted(d2['other']) == sorted(['yes'])
+    
+    

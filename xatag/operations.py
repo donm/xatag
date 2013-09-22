@@ -264,9 +264,71 @@ def delete_all_tags(fname, **unused):
     for key in attributes: 
         if is_xatag_xattr_key(key): attributes.remove(key)
 
-def copy_tags(source, destinations, **unused):
+def merge_tags(tags1, tags2):
+    """Merge the two tag dicts."""
+    combined = {}
+    for k in tags1.keys():
+        if k in tags2.keys():
+            combined[k] = tags2[k] + [v for v in tags1[k] 
+                                      if v not in set(tags2[k])]
+        else:
+            combined[k] = tags1[k]
+    for k in [k for k in tags2.keys() if k not in tags1.keys()]:
+        combined[k] = tags2[k]        
+    return combined
+
+# For these next two functions, the second argument can be a tag dict from a
+# file, but it can also have tags with empty values, which means "all tags
+# with this key."
+
+def subtract_tags(minuend, subtrahend):
+    """Remove the tag values in subtrahend from minuend.
+    
+    If subtrahend has a key with a value of '' in its list, then that will
+    remove all tag values from minuend from the same key.
+    """
+    difference = {}
+    for k,vlist in minuend.items():
+        if k in subtrahend.keys():
+            if '' in subtrahend[k]:
+                pass
+            else:
+                new_vlist = [v for v in vlist 
+                             if v not in subtrahend[k]]
+                if len(new_vlist) > 0: 
+                    difference[k] = new_vlist
+        else:
+            difference[k] = vlist
+    return difference
+
+def select_tags(original, selection):
+    """Return the tags in original that are also in selection.
+
+    If selection has a key with a value of '' in its list, then that will
+    select all tag values from original from the same key.
+
+    """
+    subset = {}
+    for k,vlist in selection.items():
+        if k in original:
+            if '' in vlist:
+                subset[k] = original[k]
+            else:
+                new_vlist = [v for v in vlist if v in original[k]]
+                if len(new_vlist) > 0: 
+                    subset[k] = new_vlist
+    return subset
+
+def copy_tags(source, destinations, tags=False, complement=False, **unused):
     """Copy all xatag managed xattr fields of fname to each file in destinations."""
     destinations = listify(destinations)
-    tags = read_tags_as_dict(source)
+    source_tags = read_tags_as_dict(source)
+    if tags:
+        tags = tag_list_to_dict(tags)
+        if complement:
+            source_tags = subtract_tags(source_tags, tags)
+        else:
+            source_tags = select_tags(source_tags, tags)
     for d in destinations:
-        set_tags(d, tags)
+        new_tags = merge_tags(source_tags, read_tags_as_dict(d))
+        set_tags(d, new_tags)

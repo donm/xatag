@@ -181,7 +181,7 @@ def cmd_copy(options):
         else:
             print("destination path does not exist: " + dest)
     if os.path.exists(source):
-        copy_tags(source, destinations)
+        copy_tags(source, destinations, **options)
         for f in each_file(options, files=destinations):
             print_file_tags(f)
     else:
