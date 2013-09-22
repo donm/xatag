@@ -21,6 +21,8 @@ Usage:
   xatag [-rRLqv ]  -p  <file>        <tag>...
   xatag [-rRLqv ]  -c  <src> <dest>...
   xatag [-rRLqvn]  -c  <src> <dest>... [-t <tag>]...
+  xatag [-rRLqv ]  -C  <src> <dest>...
+  xatag [-rRLqvn]  -C  <src> <dest>... [-t <tag>]...
   xatag [-rRLqv ]  -x  <tag>... | <query_string>
   xatag [-rRLqv ]  -e  <tag>...           
   xatag [-rRLqv ]  -m          
@@ -43,6 +45,9 @@ File Tagging Commands:
   -D --delete-all   Remove all xatag tags from the FILE(s)
   -p --probe        Probe for TAG(s) in the given FILE.
   -c --copy         Copy xatag fields from SRC to DEST(s)
+  -C --copy-over    Copy xatag fields from SRC to DEST(s), erasing any 
+                    previous xatag data in the extended attributes.
+                    Equivalent to 'xatag -D <file>...; xatag -c <tag> <file>...'
   -x --execute      Execute a query.
   
 Tag Management Commands:
@@ -92,6 +97,7 @@ command_list = [
     "--delete-all",
     "--probe",
     "--copy",
+    "--copy-over",
     "--execute",
     "--enter",
     "--manage",
@@ -172,7 +178,7 @@ def cmd_set_all(options):
         set_all_tags(f, **options)
         print_file_tags(f)
 
-def cmd_copy(options):
+def validate_source_and_destinations(options):
     source = options['source']
     destinations = []
     for d in options['destinations']:
@@ -181,11 +187,24 @@ def cmd_copy(options):
         else:
             print("destination path does not exist: " + dest)
     if os.path.exists(source):
+    else:
+        source = False
+        print("source path does not exist: " + source)
+    return (source, destinations)
+
+def cmd_copy(options):
+    source, destinations = validate_source_and_destinations(options)
+    if source:
         copy_tags(source, destinations, **options)
         for f in each_file(options, files=destinations):
             print_file_tags(f)
-    else:
-        print("source path does not exist: " + source)
+
+def cmd_copy_over(options):
+    source, destinations = validate_source_and_destinations(options)
+    if source:
+        copy_over_tags(source, destinations, **options)
+        for f in each_file(options, files=destinations):
+            print_file_tags(f)
 
 def cmd_delete(options):
     for f in each_file(options):

@@ -130,7 +130,7 @@ def delete_all_tags(fname, **unused):
         if is_xatag_xattr_key(key): attributes.remove(key)
 
 def copy_tags(source, destinations, tags=False, complement=False, **unused):
-    """Copy all xatag managed xattr fields of fname to each file in destinations."""
+    """Copy xatag managed xattr fields of fname to each file in destinations."""
     destinations = listify(destinations)
     source_tags = read_tags_as_dict(source)
     if tags:
@@ -142,3 +142,12 @@ def copy_tags(source, destinations, tags=False, complement=False, **unused):
     for d in destinations:
         new_tags = merge_tags(source_tags, read_tags_as_dict(d))
         set_tags(d, new_tags)
+
+def copy_over_tags(source, destinations, tags=False, complement=False, **unused):
+     """Copy xatag managed xattr fields, removing all other tags."""
+     destinations = listify(destinations)
+     for d in destinations:
+         delete_all_tags(d)
+         # do it one at a time in case there's an error
+         copy_tags(source, d, tags, complement)
+
