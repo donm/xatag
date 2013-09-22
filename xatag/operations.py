@@ -44,6 +44,11 @@ def xattr_to_xatag_key(key):
     if key != '' and key[0] == '.': key = key[1:]
     return key
 
+def read_tag_keys(fname):
+    """Return a list of the xatag keys of the xattr fields in fname in the xatag namespace."""
+    attributes = xattr.xattr(fname)
+    return [xattr_to_xatag_key(k) for k in attributes if is_xatag_xattr_key(k)]
+
 def read_tags_as_dict(fname):
     """Return a dict of the xattr fields in fname in the xatag namespace."""
     attributes = xattr.xattr(fname)
@@ -100,11 +105,18 @@ def list_to_xattr_value(tag_list):
 #    -d genre:
 # but type
 #    -d genre
-def remove_tag_values_from_xattr_value(xattr_value, values_to_remove):
-    """Remove the values in values_to_remove from the xattr formatted value."""
-    values_to_remove = listify(values_to_remove)
+def remove_tag_values_from_xattr_value(xattr_value, tag_values, complement=False):
+    """Remove the values in tag_values from the xattr formatted value."""
+    tag_values = listify(tag_values)
     current_values = xattr_value_to_list(xattr_value)
-    values = [value for value in current_values if value not in set(values_to_remove)] 
+    tag_values_set = set(tag_values)
+    if complement:
+        if '' in tag_values_set:
+            values = current_values
+        else:
+            values = [value for value in current_values if value in tag_values_set]
+    else:
+        values = [value for value in current_values if value not in tag_values_set] 
     return list_to_xattr_value(values)
 
 def add_tag_values_to_xattr_value(xattr_value, values_to_add):
@@ -147,6 +159,7 @@ class Tag:
             return self.key + ":" + self.value
         
 def tag_list_to_dict(tags):
+    """Convert a list of Tags to a dictionary, where the values are lists of strings."""
     try:
         k = tags.keys()
         return tags
@@ -157,7 +170,8 @@ def tag_list_to_dict(tags):
             tag_dict[t.key].append(t.value)
         return tag_dict
 
-def add_tags(fname, tags):
+# TODO: explain why these all have **unused
+def add_tags(fname, tags, **unused):
     """Add the given tags from the xatag managed xattr fields of fname."""
     tags = tag_list_to_dict(tags)
     attributes = xattr.xattr(fname)
@@ -177,7 +191,7 @@ def add_tags(fname, tags):
             new_field = add_tag_values_to_xattr_value(current_field, values_to_add)
             attributes[xattr_key] = new_field
    
-def set_tags(fname, tags):
+def set_tags(fname, tags, **unused):
     """Set any key mentioned in tags to the values in tags for that key."""
     tags = tag_list_to_dict(tags)
     attributes = xattr.xattr(fname)
@@ -189,12 +203,18 @@ def set_tags(fname, tags):
         else:
             attributes[xattr_key] = xattr_value
 
-def set_all_tags(fname, tags):
+def set_all_tags(fname, tags, **unused):
      """Set and keep only the keys mentioned in tags, removing all other keys."""
      delete_all_tags(fname)
      set_tags(fname, tags)
 
-def delete_tags(fname, tags):
+def delete_tags(fname, tags, complement=False, **unused):
+    if complement:
+        return delete_other_tags(fname, tags)
+    else:
+        return delete_these_tags(fname, tags)
+
+def delete_these_tags(fname, tags, **unused):
     """Delete the given tags from the xatag managed xattr fields of fname."""
     tags = tag_list_to_dict(tags)
     attributes = xattr.xattr(fname)
@@ -217,13 +237,35 @@ def delete_tags(fname, tags):
             else:
                 print("key not found: " + k)
 
-def delete_all_tags(fname):
+def delete_other_tags(fname, tags, **unused):
+    """Delete tags other than the given tags from the xatag managed xattr fields of fname."""
+    tags = tag_list_to_dict(tags)
+    attributes = xattr.xattr(fname)
+    # We have to be careful here, because we're iterating over every xattr,
+    # not just those in the xatag namespace.
+    for xattr_key in attributes.keys():
+        if not is_xatag_xattr_key(xattr_key): continue
+        k = xattr_to_xatag_key(xattr_key)
+        if k not in tags.keys():
+            attributes.remove(xattr_key)
+        else:
+            current_field = attributes[xattr_key]
+            vlist = tags[k]
+            new_field = remove_tag_values_from_xattr_value(current_field, vlist, complement=True)
+            if new_field == '': 
+                print("removing empty tag key:" + k)
+                attributes.remove(xattr_key)                    
+            else:
+                attributes[xattr_key] = new_field
+                
+def delete_all_tags(fname, **unused):
     """Delete all xatag managed xattr fields of fname."""
     attributes = xattr.xattr(fname)
     for key in attributes: 
         if is_xatag_xattr_key(key): attributes.remove(key)
 
-def copy_tags(source, destinations):
+def copy_tags(source, destinations, **unused):
+    """Copy all xatag managed xattr fields of fname to each file in destinations."""
     destinations = listify(destinations)
     tags = read_tags_as_dict(source)
     for d in destinations:

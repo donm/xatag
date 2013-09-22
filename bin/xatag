@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """xatag - file tagging using extended attributes (xattr).
 
 Usage:
@@ -51,7 +52,7 @@ Tag Management Commands:
                     unknown tag.  Known tags are also used for shell
                     completion and interactively choosing tags to apply to a
                     file.
-  -m --manage
+  -m --manage       Manage. 
 
 Argument Flags:
   -t <tag> --tag=<tag>     The following argument is a tag; when used, all
@@ -59,10 +60,9 @@ Argument Flags:
                            files.
   -f <file> --file=<file>  The following argument is a file; when used, all
                            other positional arguments will be considered
-                           tags.
-                           
+
 Genreal Options:
-  -n --not
+  -n --complement          The -n stands for "not".
   -r --recursive
   -R --recursive-with-dirs  Recursive, including directories themselves.   
   -L --follow-symlinks
@@ -72,7 +72,8 @@ Genreal Options:
      --debugging            Print debugging messages.
   -V --version              Print version.    
   -h --help                 You managed to find this already.
-    
+                              tags.
+ 
 """
 
 from docopt import docopt
@@ -111,6 +112,7 @@ def fix_arguments(arguments):
     arguments['destinations'] = arguments['<dest>']
 
 def extract_options(arguments):
+    """Make an options dict for passing to the functions that actually do stuff."""
     options = {}
     for key,val in arguments.items():
         if not key in command_list:
@@ -140,6 +142,7 @@ def parse_command_line():
     options = extract_options(arguments)
     return (command, options)
 
+# TODO: think of a better name for this
 def each_file(options, files=False):
     if not files: files = options['files']
     for f in files:
@@ -152,7 +155,7 @@ def each_file(options, files=False):
 
 def cmd_add(options): 
     for f in each_file(options):
-        add_tags(f, options['tags'])
+        add_tags(f, **options)
         print_file_tags(f)
         
 def cmd_list(options):
@@ -161,12 +164,12 @@ def cmd_list(options):
 
 def cmd_set(options):
     for f in each_file(options):
-        set_tags(f, options['tags'])
+        set_tags(f, **options)
         print_file_tags(f)
 
 def cmd_set_all(options):
     for f in each_file(options):
-        set_all_tags(f, options['tags'])
+        set_all_tags(f, **options)
         print_file_tags(f)
 
 def cmd_copy(options):
@@ -186,7 +189,7 @@ def cmd_copy(options):
 
 def cmd_delete(options):
     for f in each_file(options):
-        delete_tags(f, options['tags'])
+        delete_tags(f, **options)
         print_file_tags(f)
         
 def cmd_delete_all(options):

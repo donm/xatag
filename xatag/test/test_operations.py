@@ -44,7 +44,11 @@ def test_print_file_tags(file_with_tags):
     output = out.getvalue().strip()
     pass
 
-def test_read_ags_as_dict(file_with_tags):
+def test_read_tag_keys(file_with_tags):
+    keys = read_tag_keys(file_with_tags)  
+    assert sorted(keys) == sorted(['', 'genre', 'artist'])
+
+def test_read_tags_as_dict(file_with_tags):
     tags = read_tags_as_dict(file_with_tags)  
     assert tags == {'': ['tag1','tag2','tag3','tag4','tag5'],
                     'genre': ['indie','pop'],
@@ -68,6 +72,11 @@ def test_remove_tag_values_from_xattr_value():
     assert remove_tag_values_from_xattr_value('one', 'one') == ''
     assert remove_tag_values_from_xattr_value('one;two;three;four', ['two','four']) == 'one;three'
     assert remove_tag_values_from_xattr_value('', ['notfound']) == ''
+
+    assert remove_tag_values_from_xattr_value('one', 'one', True) == 'one'
+    assert remove_tag_values_from_xattr_value('one;two;three;four', ['two','five'], True) == 'two'
+    assert remove_tag_values_from_xattr_value('one;two', [''], True) == 'one;two'
+    assert remove_tag_values_from_xattr_value('', ['notfound'], True) == ''
 
 class TestTag():
     def test___init__(self):
@@ -135,7 +144,7 @@ def test_set_all_tags(file_with_tags):
     assert x['user.org.xatag.tags.genre'] == 'awesome'
     assert 'user.org.xatag.tags.artist' not in x.keys()
 
-def test_delete_tags(file_with_tags):
+def test_delete_these_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
 
     delete_tags(file_with_tags, [Tag('', 'tag4')])
@@ -163,6 +172,21 @@ def test_delete_tags(file_with_tags):
     delete_tags(file_with_tags, Tag('artist', 'The XX'))
     assert 'user.org.xatag.tags.artist' not in x.keys()
     assert 'user.org.xatag.tags' not in x.keys()
+
+def test_delete_other_tags(file_with_tags):
+    x = xattr.xattr(file_with_tags)
+
+    delete_other_tags(file_with_tags, [Tag('', 'tag4'), Tag('genre', '')])
+    assert 'user.org.xatag.tags.artist' not in x.keys()
+    assert x['user.org.xatag.tags'] == 'tag4'
+    assert x['user.org.xatag.tags.genre'] == 'indie;pop'
+
+    delete_other_tags(file_with_tags, [Tag('', 'tag3'), Tag('genre', 'indie')])
+    assert x['user.org.xatag.tags.genre'] == 'indie'
+    assert 'user.org.xatag.tags' not in x.keys()
+
+    delete_other_tags(file_with_tags, Tag('notakey', 'tag'))
+    assert 'user.org.xatag.tags.genre' not in x.keys()
 
 def test_delete_all_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
