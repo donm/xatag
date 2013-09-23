@@ -5,6 +5,7 @@
 # def cmd_probe(options):
 
 quiet/verbosity
+implement --one-line, and --key-val-pairs (or something like that)
 
 load options
 optionally color tags
@@ -35,5 +36,4 @@ error catching (permissions, etc)
 
 maybe a -i/-I option like rm, or an undo facility
 
-test and document accepting semicolons in tag string from command line
 
