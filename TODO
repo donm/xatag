@@ -3,8 +3,6 @@
 # def cmd_interactive(options):
 # def cmd_execute(options):
 
-quiet
-implement --one-line, and --key-val-pairs (or something like that)
 anything that prints, give it an out=sys.stdout keyword
 error catching (permissions, etc)
 

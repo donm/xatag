@@ -163,6 +163,7 @@ def cmd_add(options):
         print_file_tags(f, **options)
         
 def cmd_list(options):
+    options['quiet'] = False
     for f in each_file(options):
         print_file_tags(f, subset=True, **options)
 

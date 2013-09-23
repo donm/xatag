@@ -73,13 +73,13 @@ def set_all_tags(fname, tags, **unused):
      delete_all_tags(fname)
      set_tags(fname, tags)
 
-def delete_tags(fname, tags, complement=False, **unused):
+def delete_tags(fname, tags, complement=False, quiet=False, **unused):
     if complement:
-        return delete_other_tags(fname, tags)
+        return delete_other_tags(fname, tags, quiet=quiet)
     else:
-        return delete_these_tags(fname, tags)
+        return delete_these_tags(fname, tags, quiet=quiet)
 
-def delete_these_tags(fname, tags, **unused):
+def delete_these_tags(fname, tags, quiet=False, **unused):
     """Delete the given tags from the xatag managed xattr fields of fname."""
     tags = tag_list_to_dict(tags)
     attributes = xattr.xattr(fname)
@@ -92,17 +92,17 @@ def delete_these_tags(fname, tags, **unused):
                 current_field = attributes[xattr_key]
                 new_field = remove_tag_values_from_xattr_value(current_field, vlist)
                 if new_field == '': 
-                    print("removing empty tag key:" + k)
+                    if not quiet: print("removing empty tag key:" + k)
                     attributes.remove(xattr_key)                    
                 else:
                     attributes[xattr_key] = new_field
-        else:
+        elif not quiet:
             if k == '':
                 print("no simple tags not found")
             else:
                 print("key not found: " + k)
 
-def delete_other_tags(fname, tags, **unused):
+def delete_other_tags(fname, tags, quiet=False, **unused):
     """Delete tags other than the given tags from the xatag managed xattr fields of fname."""
     tags = tag_list_to_dict(tags)
     attributes = xattr.xattr(fname)
@@ -118,7 +118,7 @@ def delete_other_tags(fname, tags, **unused):
             vlist = tags[k]
             new_field = remove_tag_values_from_xattr_value(current_field, vlist, complement=True)
             if new_field == '': 
-                print("removing empty tag key:" + k)
+                if not quiet: print("removing empty tag key:" + k)
                 attributes.remove(xattr_key)                    
             else:
                 attributes[xattr_key] = new_field
@@ -130,10 +130,14 @@ def delete_all_tags(fname, **unused):
         if is_xatag_xattr_key(key): attributes.remove(key)
 
 def print_file_tags(fname, tags=False, subset=False, complement=False,
-                    terse=False,
+                    terse=False, quiet=False,
                     longest_filename=0, fsep=":", ksep=':', vsep=' ', 
                     one_line=False, key_val_pairs=False, 
                     out=sys.stdout, **unused):
+    # It's a little funny having this check here, but the alternative is
+    # having it in every function that calls this one.  Also, maybe in the
+    # future quiet will do something else.
+    if quiet: return
     padding = max(1, longest_filename - len(fname) + 1)
     prefix = fname + fsep + " "*padding
     tag_dict = read_tags_as_dict(fname)
