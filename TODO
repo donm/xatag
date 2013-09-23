@@ -4,11 +4,7 @@
 # def cmd_execute(options):
 # def cmd_probe(options):
 
-implement recursive stuff
-implement following links
 quiet/verbosity
-
-make following symlinks configurable
 
 load options
 optionally color tags
