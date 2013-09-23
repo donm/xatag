@@ -68,7 +68,7 @@ Argument Flags:
                            other positional arguments will be considered
 
 Genreal Options:
-  -n --complement                    The -n stands for "not".  Can be used on -d and -c/-C.
+  -n --complement                    The -n stands for "not".  Can be used on -d, -l, and -c/-C.
   -q --quiet                         Be as quiet as possible.
   -v --verbose                       Verbose.         
      --debugging                     Print debugging messages.
@@ -181,7 +181,7 @@ def cmd_add(options):
         
 def cmd_list(options):
     for f in each_file(options):
-        print_file_tags(f, **options)
+        print_file_tags(f, subset=True, **options)
 
 def cmd_set(options):
     for f in each_file(options):

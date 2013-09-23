@@ -67,14 +67,6 @@ def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', tsep=' ',
     if (not tag_dict) and prefix:
         out.write(prefix + "\n")
 
-def print_file_tags(fname, longest_filename=0, fsep=":", ksep=':', tsep=' ', 
-                    one_line=False, key_val_pairs=False, 
-                    out=sys.stdout, **unused):
-    padding = max(1, longest_filename - len(fname) + 1)
-    prefix = fname + fsep + " "*padding
-    print_tag_dict(read_tags_as_dict(fname), prefix=prefix, fsep=fsep, ksep=ksep, tsep=tsep, 
-                   one_line=one_line, key_val_pairs=key_val_pairs, out=out)
-
 def merge_tags(tags1, tags2):
     """Merge the two tag dicts."""
     combined = {}

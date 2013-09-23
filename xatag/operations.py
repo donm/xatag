@@ -129,16 +129,32 @@ def delete_all_tags(fname, **unused):
     for key in attributes: 
         if is_xatag_xattr_key(key): attributes.remove(key)
 
-def copy_tags(source, destinations, tags=False, complement=False, **unused):
-    """Copy xatag managed xattr fields of fname to each file in destinations."""
-    destinations = listify(destinations)
-    source_tags = read_tags_as_dict(source)
+def print_file_tags(fname, tags=False, subset=False, complement=False, 
+                    longest_filename=0, fsep=":", ksep=':', tsep=' ', 
+                    one_line=False, key_val_pairs=False, 
+                    out=sys.stdout, **unused):
+    padding = max(1, longest_filename - len(fname) + 1)
+    prefix = fname + fsep + " "*padding
+    tag_dict = read_tags_as_dict(fname)
+    if subset:
+        tag_dict = subsetted_tags(tag_dict, tags, complement=complement)
+    print_tag_dict(tag_dict, prefix=prefix, fsep=fsep, ksep=ksep, tsep=tsep, 
+                   one_line=one_line, key_val_pairs=key_val_pairs, out=out)
+
+def subsetted_tags(source_tags, tags=False, complement=False):
     if tags:
         tags = tag_list_to_dict(tags)
         if complement:
             source_tags = subtract_tags(source_tags, tags)
         else:
             source_tags = select_tags(source_tags, tags)
+    return source_tags
+
+def copy_tags(source, destinations, tags=False, complement=False, **unused):
+    """Copy xatag managed xattr fields of fname to each file in destinations."""
+    destinations = listify(destinations)
+    source_tags = read_tags_as_dict(source)
+    source_tags = subsetted_tags(source_tags, tags, complement=complement)
     for d in destinations:
         new_tags = merge_tags(source_tags, read_tags_as_dict(d))
         set_tags(d, new_tags)
