@@ -2,10 +2,11 @@
 # def cmd_enter(options):
 # def cmd_interactive(options):
 # def cmd_execute(options):
-# def cmd_probe(options):
 
-quiet/verbosity
+quiet
 implement --one-line, and --key-val-pairs (or something like that)
+anything that prints, give it an out=sys.stdout keyword
+error catching (permissions, etc)
 
 load options
 optionally color tags
@@ -14,13 +15,6 @@ pay attention to return values
 send things to stdout and stderr appropriately
 change formatting if stdout is console or a pipe
 
-what about listing files that have certain tags?
-ls with tags
-probably list file on same line as 
-list everything on one line for grepping
-list everything on a different line for ... something
-print only certain fields when listing
-
 command line completion
 
 print warning if the tag is new, in case of misspellings
@@ -28,11 +22,9 @@ check if key:val pair is in special list.  if it is, add it to another field in 
 add to list of used tags
 tell recoll to index the file
 
-line length
-tag values relations
+check line lengths in python code
 
-anything that prints, give it an out=sys.stdout keyword
-error catching (permissions, etc)
+tag values relations
 
 maybe a -i/-I option like rm, or an undo facility
 
