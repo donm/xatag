@@ -3,31 +3,15 @@
 """xatag - file tagging using extended attributes (xattr).
 
 Usage:
-  xatag [options] [-a] <tag>         <file>... 
-  xatag [options] [-a] <file>...  -t <tag>...    
-  xatag [options] [-a] <tag>...   -f <file>...
+  xatag [options] ([-a] | -l | -s | -S | -d) <tag> <file>... 
+  xatag [options] ([-a] | -l | -s | -S | -d) <file>... -t <tag>...    
+  xatag [options] ([-a] | -l | -s | -S | -d) <tag>...  -f <file>...
   xatag [options] [-i] <file>
-  xatag [options]  -l  <file>...
-  xatag [options]  -l  <file>...  -t <tag>...
-  xatag [options]  -l  <tag>...   -f <file>...
-  xatag [options]  -s  <tag>         <file>... 
-  xatag [options]  -s  <file>...  -t <tag>...    
-  xatag [options]  -s  <tag>...   -f <file>...   
-  xatag [options]  -S  <tag>         <file>... 
-  xatag [options]  -S  <file>...  -t <tag>...    
-  xatag [options]  -S  <tag>...   -f <file>...   
-  xatag [options]  -d  <tag>         <file>... 
-  xatag [options]  -d  <file>...  -t <tag>... 
-  xatag [options]  -d  <tag>...   -f <file>... 
-  xatag [options]  -D  <file>...
-  xatag [options]  -p  <file>        <tag>...
-  xatag [options]  -c  <src> <dest>...
-  xatag [options]  -c  <src> <dest>... [-t <tag>]...
-  xatag [options]  -C  <src> <dest>...
-  xatag [options]  -C  <src> <dest>... [-t <tag>]...
-  xatag [options]  -x  <tag>... | <query_string>
-  xatag [options]  -e  <tag>...           
-  xatag [options]  -m          
+  xatag [options] (-c | -C) <src> <dest>... [-t <tag>]...
+  xatag [options] -D  <file>...
+  xatag [options] -x  <tag>... | <query_string>
+  xatag [options] -e  <tag>...           
+  xatag [options] -m          
   xatag  -h | --help
   xatag  -V | --version
 
@@ -45,7 +29,6 @@ File Tagging Commands:
                     Equivalent to 'xatag -D <file>...; xatag -a <tag> <file>...'
   -d --delete       Remove all of the given TAG(s) to the given FILE(s).
   -D --delete-all   Remove all xatag tags from the FILE(s)
-  -p --probe        Probe for TAG(s) in the given FILE.
   -c --copy         Copy xatag fields from SRC to DEST(s)
   -C --copy-over    Copy xatag fields from SRC to DEST(s), erasing any 
                     previous xatag data in the extended attributes of DEST(s).
@@ -70,14 +53,14 @@ Argument Flags:
 Genreal Options:
   -n --complement                    The -n stands for "not".  Can be used on -d, -l, and -c/-C.
   -q --quiet                         Be as quiet as possible.
-  -v --verbose                       Verbose.         
+  -T --terse                         Only print values for tag keys that have been altered.  
      --debugging                     Print debugging messages.
   -F <fsep> --file-separator=<fsep>  [default: :]
   -K <ksep> --key-separator=<ksep>   [default: :]
-  -T <tsep> --tag-separator=<tsep>   [default:  ] (a space)
+  -V <vsep> --val-separator=<vsep>   [default:  ] (a space)
   -k --key-val-pairs
   -o --one-line
-  -V --version                       Print version.    
+  -v --version                       Print version.    
   -h --help                          You managed to find this already.
 
   
@@ -126,7 +109,7 @@ def fix_arguments(arguments):
     arguments['destinations'] = arguments['<dest>']
     arguments['fsep'] = arguments['--file-separator']
     arguments['ksep'] = arguments['--key-separator']
-    arguments['tsep'] = arguments['--tag-separator']
+    arguments['vsep'] = arguments['--val-separator']
 
 def extract_options(arguments):
     """Make an options dict for passing to the functions that actually do stuff."""
@@ -200,18 +183,18 @@ def validate_source_and_destinations(options):
         if os.path.exists(d):
             destinations.append(d)
         else:
-            print("destination path does not exist: " + dest)
+            print("destination path does not exist: " + d)
     if not os.path.exists(source):
         source = False
         print("source path does not exist: " + source)
-    return (source, destinations)
+    options['source'] = source
+    options['destinations'] = destinations
 
 def cmd_copy(options):
-    source, destinations = validate_source_and_destinations(options)
-    if source:
-        copy_tags(source, destinations, **options)
-        for f in each_file(options, files=destinations):
-            print_file_tags(f, **options)
+    validate_source_and_destinations(options)
+    if options['source']:
+        for d in copy_tags(**options):
+            print_file_tags(d, **options)
 
 def cmd_copy_over(options):
     source, destinations = validate_source_and_destinations(options)

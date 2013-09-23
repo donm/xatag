@@ -25,7 +25,7 @@ def tag_list_to_dict(tags):
             tag_dict[t.key].append(t.value)
         return tag_dict
 
-def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', tsep=' ', 
+def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', vsep=' ', 
                    one_line=False, key_val_pairs=False, out=sys.stdout):
     """Print the tags for a file in a nice way."""
     def write_tag(key_name, dict_key):
@@ -34,23 +34,23 @@ def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', tsep=' ',
         if (key_val_pairs and one_line):
             do_quote_vals = False 
         else:
-            do_quote_vals = (tsep==' ')
+            do_quote_vals = (vsep==' ')
         formatted_vals = map((lambda x: format_tag_value(x, do_quote_vals)), 
                              sorted_vals)
         if key_val_pairs:
             if one_line: 
                 for val in formatted_vals:
-                    out.write(key_name + ksep + val + tsep)
+                    out.write(key_name + ksep + val + vsep)
             else:
                 for val in formatted_vals:
                     out.write(prefix + key_name + ksep + " "*padding + val + "\n")
         else:
             if one_line:
                 out.write(key_name + ksep)
-                out.write('"' + tsep.join(formatted_vals) + '" ')
+                out.write('"' + vsep.join(formatted_vals) + '" ')
             else:
                 out.write(prefix + key_name + ksep + " "*padding)
-                out.write(tsep.join(formatted_vals))
+                out.write(vsep.join(formatted_vals))
                 out.write("\n")
         
     # TODO: compute this using the known tag list, or the tags passed on the

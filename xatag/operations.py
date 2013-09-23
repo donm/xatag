@@ -129,8 +129,9 @@ def delete_all_tags(fname, **unused):
     for key in attributes: 
         if is_xatag_xattr_key(key): attributes.remove(key)
 
-def print_file_tags(fname, tags=False, subset=False, complement=False, 
-                    longest_filename=0, fsep=":", ksep=':', tsep=' ', 
+def print_file_tags(fname, tags=False, subset=False, complement=False,
+                    terse=False,
+                    longest_filename=0, fsep=":", ksep=':', vsep=' ', 
                     one_line=False, key_val_pairs=False, 
                     out=sys.stdout, **unused):
     padding = max(1, longest_filename - len(fname) + 1)
@@ -138,7 +139,14 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
     tag_dict = read_tags_as_dict(fname)
     if subset:
         tag_dict = subsetted_tags(tag_dict, tags, complement=complement)
-    print_tag_dict(tag_dict, prefix=prefix, fsep=fsep, ksep=ksep, tsep=tsep, 
+    elif terse:
+        tags = tag_list_to_dict(tags)
+        if complement:
+            just_tag_keys_dict = {k:'' for k in tag_dict if k not in tags}
+        else:
+            just_tag_keys_dict = {k:'' for k in tags}
+        tag_dict = subsetted_tags(tag_dict, just_tag_keys_dict, complement=complement)
+    print_tag_dict(tag_dict, prefix=prefix, fsep=fsep, ksep=ksep, vsep=vsep, 
                    one_line=one_line, key_val_pairs=key_val_pairs, out=out)
 
 def subsetted_tags(source_tags, tags=False, complement=False):
@@ -158,6 +166,8 @@ def copy_tags(source, destinations, tags=False, complement=False, **unused):
     for d in destinations:
         new_tags = merge_tags(source_tags, read_tags_as_dict(d))
         set_tags(d, new_tags)
+        # Yield the destination so we can print stuff about it, if necessary
+        yield d
 
 def copy_over_tags(source, destinations, tags=False, complement=False, **unused):
      """Copy xatag managed xattr fields, removing all other tags."""
