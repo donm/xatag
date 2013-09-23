@@ -10,6 +10,8 @@ load options
 optionally color tags
 color files using lscolors?
 pay attention to return values    
+send things to stdout and stderr appropriately
+change formatting if stdout is console or a pipe
 
 what about listing files that have certain tags?
 ls with tags

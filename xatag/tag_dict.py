@@ -4,6 +4,7 @@ from collections import defaultdict
 
 from helpers import listify
 from attributes import *
+from tag import format_tag_value
 
 def read_tags_as_dict(fname):
     """Return a dict of the xattr fields in fname in the xatag namespace."""
