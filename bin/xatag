@@ -8,6 +8,8 @@ Usage:
   xatag [options] [-a] <tag>...   -f <file>...
   xatag [options] [-i] <file>
   xatag [options]  -l  <file>...
+  xatag [options]  -l  <file>...  -t <tag>...
+  xatag [options]  -l  <tag>...   -f <file>...
   xatag [options]  -s  <tag>         <file>... 
   xatag [options]  -s  <file>...  -t <tag>...    
   xatag [options]  -s  <tag>...   -f <file>...   
@@ -66,15 +68,17 @@ Argument Flags:
                            other positional arguments will be considered
 
 Genreal Options:
-  -n --complement                   The -n stands for "not".  Can be used on -d and -c/-C.
-  -q --quiet                        Quiet.           
-  -v --verbose                      Verbose.         
-     --debugging                    Print debugging messages.
-  -F <fsep> --separator=<fsep>      [default: :]
-  -T <tsep> --tag-separator=<tsep>  [default:  ] (a space)
-  -1
-  -V --version                      Print version.    
-  -h --help                         You managed to find this already.
+  -n --complement                    The -n stands for "not".  Can be used on -d and -c/-C.
+  -q --quiet                         Be as quiet as possible.
+  -v --verbose                       Verbose.         
+     --debugging                     Print debugging messages.
+  -F <fsep> --file-separator=<fsep>  [default: :]
+  -K <ksep> --key-separator=<ksep>   [default: :]
+  -T <tsep> --tag-separator=<tsep>   [default:  ] (a space)
+  -k --key-val-pairs
+  -o --one-line
+  -V --version                       Print version.    
+  -h --help                          You managed to find this already.
 
   
 When reading and writing extended attributes, symlinks are followed by default.  
@@ -120,7 +124,8 @@ def fix_arguments(arguments):
     arguments['tags']  = parse_tags(tags)
     arguments['source']       = arguments['<src>']
     arguments['destinations'] = arguments['<dest>']
-    arguments['fsep'] = arguments['--separator']
+    arguments['fsep'] = arguments['--file-separator']
+    arguments['ksep'] = arguments['--key-separator']
     arguments['tsep'] = arguments['--tag-separator']
 
 def extract_options(arguments):
@@ -134,6 +139,7 @@ def extract_options(arguments):
                 newkey = key[1:]
             else:
                 newkey = key
+            newkey = newkey.replace('-', '_')
             options[newkey] = val
     files_to_print = options['files'] + options['destinations']
     if files_to_print and not ('longest_filename' in options):
