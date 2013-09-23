@@ -3,29 +3,29 @@
 """xatag - file tagging using extended attributes (xattr).
 
 Usage:
-  xatag [-qv ] [-a] <tag>         <file>... 
-  xatag [-qv ] [-a] <file>...  -t <tag>...    
-  xatag [-qv ] [-a] <tag>...   -f <file>...
-  xatag [-qv ] [-i] <file>
-  xatag [-qv ]  -l  <file>...
-  xatag [-qv ]  -s  <tag>         <file>... 
-  xatag [-qv ]  -s  <file>...  -t <tag>...    
-  xatag [-qv ]  -s  <tag>...   -f <file>...   
-  xatag [-qv ]  -S  <tag>         <file>... 
-  xatag [-qv ]  -S  <file>...  -t <tag>...    
-  xatag [-qv ]  -S  <tag>...   -f <file>...   
-  xatag [-qvn]  -d  <tag>         <file>... 
-  xatag [-qvn]  -d  <file>...  -t <tag>... 
-  xatag [-qvn]  -d  <tag>...   -f <file>... 
-  xatag [-qv ]  -D  <file>...
-  xatag [-qv ]  -p  <file>        <tag>...
-  xatag [-qv ]  -c  <src> <dest>...
-  xatag [-qvn]  -c  <src> <dest>... [-t <tag>]...
-  xatag [-qv ]  -C  <src> <dest>...
-  xatag [-qvn]  -C  <src> <dest>... [-t <tag>]...
-  xatag [-qv ]  -x  <tag>... | <query_string>
-  xatag [-qv ]  -e  <tag>...           
-  xatag [-qv ]  -m          
+  xatag [options] [-a] <tag>         <file>... 
+  xatag [options] [-a] <file>...  -t <tag>...    
+  xatag [options] [-a] <tag>...   -f <file>...
+  xatag [options] [-i] <file>
+  xatag [options]  -l  <file>...
+  xatag [options]  -s  <tag>         <file>... 
+  xatag [options]  -s  <file>...  -t <tag>...    
+  xatag [options]  -s  <tag>...   -f <file>...   
+  xatag [options]  -S  <tag>         <file>... 
+  xatag [options]  -S  <file>...  -t <tag>...    
+  xatag [options]  -S  <tag>...   -f <file>...   
+  xatag [options]  -d  <tag>         <file>... 
+  xatag [options]  -d  <file>...  -t <tag>... 
+  xatag [options]  -d  <tag>...   -f <file>... 
+  xatag [options]  -D  <file>...
+  xatag [options]  -p  <file>        <tag>...
+  xatag [options]  -c  <src> <dest>...
+  xatag [options]  -c  <src> <dest>... [-t <tag>]...
+  xatag [options]  -C  <src> <dest>...
+  xatag [options]  -C  <src> <dest>... [-t <tag>]...
+  xatag [options]  -x  <tag>... | <query_string>
+  xatag [options]  -e  <tag>...           
+  xatag [options]  -m          
   xatag  -h | --help
   xatag  -V | --version
 
@@ -66,12 +66,15 @@ Argument Flags:
                            other positional arguments will be considered
 
 Genreal Options:
-  -n --complement   The -n stands for "not".
-  -q --quiet        Quiet.           
-  -v --verbose      Verbose.         
-     --debugging    Print debugging messages.
-  -V --version      Print version.    
-  -h --help         You managed to find this already.
+  -n --complement                   The -n stands for "not".  Can be used on -d and -c/-C.
+  -q --quiet                        Quiet.           
+  -v --verbose                      Verbose.         
+     --debugging                    Print debugging messages.
+  -F <fsep> --separator=<fsep>      [default: :]
+  -T <tsep> --tag-separator=<tsep>  [default:  ] (a space)
+  -1
+  -V --version                      Print version.    
+  -h --help                         You managed to find this already.
 
   
 When reading and writing extended attributes, symlinks are followed by default.  
@@ -117,6 +120,8 @@ def fix_arguments(arguments):
     arguments['tags']  = parse_tags(tags)
     arguments['source']       = arguments['<src>']
     arguments['destinations'] = arguments['<dest>']
+    arguments['fsep'] = arguments['--separator']
+    arguments['tsep'] = arguments['--tag-separator']
 
 def extract_options(arguments):
     """Make an options dict for passing to the functions that actually do stuff."""
@@ -130,6 +135,9 @@ def extract_options(arguments):
             else:
                 newkey = key
             options[newkey] = val
+    files_to_print = options['files'] + options['destinations']
+    if files_to_print and not ('longest_filename' in options):
+        options['longest_filename'] = max(len(f) for f in files_to_print)
     return options
                 
 def parse_command_line():
@@ -154,30 +162,30 @@ def each_file(options, files=False):
     if not files: files = options['files']
     for f in files:
         if os.path.exists(f):
-            if len(files) > 1: print(f)
+            # if len(files) > 1: print(f)
             yield f
-            if len(files) > 1: print
+            # if len(files) > 1: print
         else:
             print("path does not exist: " + f)
 
 def cmd_add(options): 
     for f in each_file(options):
         add_tags(f, **options)
-        print_file_tags(f)
+        print_file_tags(f, **options)
         
 def cmd_list(options):
     for f in each_file(options):
-        print_file_tags(f)
+        print_file_tags(f, **options)
 
 def cmd_set(options):
     for f in each_file(options):
         set_tags(f, **options)
-        print_file_tags(f)
+        print_file_tags(f, **options)
 
 def cmd_set_all(options):
     for f in each_file(options):
         set_all_tags(f, **options)
-        print_file_tags(f)
+        print_file_tags(f, **options)
 
 def validate_source_and_destinations(options):
     source = options['source']
@@ -197,19 +205,19 @@ def cmd_copy(options):
     if source:
         copy_tags(source, destinations, **options)
         for f in each_file(options, files=destinations):
-            print_file_tags(f)
+            print_file_tags(f, **options)
 
 def cmd_copy_over(options):
     source, destinations = validate_source_and_destinations(options)
     if source:
         copy_over_tags(source, destinations, **options)
         for f in each_file(options, files=destinations):
-            print_file_tags(f)
+            print_file_tags(f, **options)
 
 def cmd_delete(options):
     for f in each_file(options):
         delete_tags(f, **options)
-        print_file_tags(f)
+        print_file_tags(f, **options)
         
 def cmd_delete_all(options):
     for f in options['files']:

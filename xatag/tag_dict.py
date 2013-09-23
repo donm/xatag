@@ -25,19 +25,27 @@ def tag_list_to_dict(tags):
             tag_dict[t.key].append(t.value)
         return tag_dict
 
-def print_tag_dict(tag_dict, out=sys.stdout):
+def print_tag_dict(tag_dict, prefix='', fsep=':', tsep=' ', out=sys.stdout):
     """Print the tags for a file in a nice way."""
-    if '' in tag_dict:
-        out.write(" ".join(map((lambda x: format_tag_value(x, True)), sorted(tag_dict['']))))
+    def write_tag(key_name, dict_key):
+        padding = max(1, longest_tag - len(key_name) + 1)
+        out.write(prefix + key_name + fsep + " "*padding)
+        out.write(tsep.join(map((lambda x: format_tag_value(x, tsep==' ')), sorted(tag_dict[dict_key]))))
         out.write("\n")
+        
+    longest_tag = 8     # TODO: compute this using the known tag list
+    if '' in tag_dict:
+        write_tag('tags', '')
     for k in sorted(tag_dict.keys()):
         if k=='' or k=='tags': continue
-        out.write(k + ': ')
-        out.write(" ".join(map((lambda x: format_tag_value(x, True)), sorted(tag_dict[k]))))
-        out.write("\n")
+        write_tag(k, k)
+    if (not tag_dict) and prefix:
+        out.write(prefix + "\n")
 
-def print_file_tags(fname, out=sys.stdout):
-    print_tag_dict(read_tags_as_dict(fname), out=out)
+def print_file_tags(fname, longest_filename=0, fsep=":", tsep=' ', out=sys.stdout, **unused):
+    padding = max(1, longest_filename - len(fname) + 1)
+    prefix = fname + fsep + " "*padding
+    print_tag_dict(read_tags_as_dict(fname), prefix=prefix, fsep=fsep, tsep=tsep, out=out)
 
 def merge_tags(tags1, tags2):
     """Merge the two tag dicts."""
