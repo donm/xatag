@@ -75,6 +75,7 @@ When reading and writing extended attributes, symlinks are followed by default.
 
 from docopt import docopt
 import os.path
+from xatag.warn import warn
 
 from xatag.operations import *
 
@@ -151,11 +152,9 @@ def each_file(options, files=False):
     if not files: files = options['files']
     for f in files:
         if os.path.exists(f):
-            # if len(files) > 1: print(f)
             yield f
-            # if len(files) > 1: print
         else:
-            print("path does not exist: " + f)
+            warn("path does not exist: " + f)
 
 def cmd_add(options): 
     for f in each_file(options):
@@ -184,10 +183,10 @@ def validate_source_and_destinations(options):
         if os.path.exists(d):
             destinations.append(d)
         else:
-            print("destination path does not exist: " + d)
+            warn("destination path does not exist: " + d)
     if not os.path.exists(source):
         source = False
-        print("source path does not exist: " + source)
+        warn("source path does not exist: " + source)
     options['source'] = source
     options['destinations'] = destinations
 

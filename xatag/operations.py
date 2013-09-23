@@ -8,6 +8,7 @@ from helpers import listify
 from tag_dict import *
 from attributes import *
 from tag import *
+from warn import warn
 
 # Some functions below have the argument '**unused'.  That's to facilitate
 # passing the options array that is returned from docopt (after some fixing)
@@ -44,7 +45,7 @@ def add_tags(fname, tags, **unused):
         values_to_add = []
         for v in value_list:
             if v == '':
-                print "tag is missing value: " + Tag(key,v).to_string()
+                warn("tag is missing value: " + Tag(key,v).to_string())
             else: 
                 values_to_add.append(v)
         if len(values_to_add) != 0:
@@ -92,15 +93,15 @@ def delete_these_tags(fname, tags, quiet=False, **unused):
                 current_field = attributes[xattr_key]
                 new_field = remove_tag_values_from_xattr_value(current_field, vlist)
                 if new_field == '': 
-                    if not quiet: print("removing empty tag key:" + k)
+                    if not quiet: warn(fname + ": removing empty tag key: " + k)
                     attributes.remove(xattr_key)                    
                 else:
                     attributes[xattr_key] = new_field
-        elif not quiet:
-            if k == '':
-                print("no simple tags not found")
-            else:
-                print("key not found: " + k)
+        # elif not quiet:
+        #     if k == '':
+        #         print("no simple tags not found")
+        #     else:
+        #         print("key not found: " + k)
 
 def delete_other_tags(fname, tags, quiet=False, **unused):
     """Delete tags other than the given tags from the xatag managed xattr fields of fname."""
@@ -130,7 +131,7 @@ def delete_all_tags(fname, **unused):
         if is_xatag_xattr_key(key): attributes.remove(key)
 
 def print_file_tags(fname, tags=False, subset=False, complement=False,
-                    terse=False, quiet=False,
+                    terse=False, quiet=False,  
                     longest_filename=0, fsep=":", ksep=':', vsep=' ', 
                     one_line=False, key_val_pairs=False, 
                     out=sys.stdout, **unused):
