@@ -75,5 +75,3 @@ def read_tags_as_dict(fname):
     # no sense in reading the value if the key isn't going to be chosen
     return {xattr_to_xatag_key(k): xattr_value_to_list(attributes[k])
             for k in attributes if is_xatag_xattr_key(k)}
-
-

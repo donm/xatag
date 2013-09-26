@@ -35,8 +35,6 @@ from warn import warn
 # right now, I don't know, but it could with future changes in either this
 # program or in the xattr package.
     
-# Some functions below have the argument '**unused'.  That's to facilitate
-
 def add_tags(fname, tags, **unused):
     """Add the given tags from the xatag managed xattr fields of fname."""
     tags = tag_list_to_dict(tags)
