@@ -4,7 +4,6 @@
 # def cmd_execute(options):
 
 check line lengths in python code
-anything that prints, give it an out=sys.stdout keyword
 error catching (permissions, etc)
 maybe a -i/-I option like rm, or an undo facility
 pay attention to return values    

@@ -103,7 +103,7 @@ def delete_these_tags(fname, tags, quiet=False, **unused):
         #     else:
         #         print("key not found: " + k)
 
-def delete_other_tags(fname, tags, quiet=False, **unused):
+def delete_other_tags(fname, tags, quiet=False, out=sys.stdout, **unused):
     """Delete tags other than the given tags from the xatag managed xattr fields of fname."""
     tags = tag_list_to_dict(tags)
     attributes = xattr.xattr(fname)
@@ -119,7 +119,7 @@ def delete_other_tags(fname, tags, quiet=False, **unused):
             vlist = tags[k]
             new_field = remove_tag_values_from_xattr_value(current_field, vlist, complement=True)
             if new_field == '': 
-                if not quiet: print("removing empty tag key:" + k)
+                if not quiet: out.write("removing empty tag key:" + k + "\n")
                 attributes.remove(xattr_key)                    
             else:
                 attributes[xattr_key] = new_field
