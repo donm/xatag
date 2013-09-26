@@ -6,13 +6,6 @@ from helpers import listify
 from attributes import *
 from tag import format_tag_value
 
-def read_tags_as_dict(fname):
-    """Return a dict of the xattr fields in fname in the xatag namespace."""
-    attributes = xattr.xattr(fname)
-    # no sense in reading the value if the key isn't going to be chosen
-    return {xattr_to_xatag_key(k): xattr_value_to_list(attributes[k])
-            for k in attributes if is_xatag_xattr_key(k)}
-
 def tag_list_to_dict(tags):
     """Convert a list of Tags to a dictionary, where the values are lists of strings."""
     try:

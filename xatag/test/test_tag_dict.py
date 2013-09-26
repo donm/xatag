@@ -43,13 +43,6 @@ def tag_dict_with_empty_vals():
             'third': ['a', 'b']
             }
 
-def test_read_tags_as_dict(file_with_tags):
-    tags = read_tags_as_dict(file_with_tags)  
-    assert tags == {'': ['tag1','tag2','tag3','tag4','tag5'],
-                    'genre': ['indie','pop'],
-                    'artist': ['The XX']
-                    }
-
 # TODO
 from StringIO import StringIO
 def test_print_file_tags(file_with_tags):

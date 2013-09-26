@@ -69,4 +69,11 @@ def add_tag_values_to_xattr_value(xattr_value, values_to_add):
     values = current_values + [value for value in values_to_add if value not in set(current_values)]
     return list_to_xattr_value(values)
 
+def read_tags_as_dict(fname):
+    """Return a dict of the xattr fields in fname in the xatag namespace."""
+    attributes = xattr.xattr(fname)
+    # no sense in reading the value if the key isn't going to be chosen
+    return {xattr_to_xatag_key(k): xattr_value_to_list(attributes[k])
+            for k in attributes if is_xatag_xattr_key(k)}
+
 
