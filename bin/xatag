@@ -195,17 +195,18 @@ def cmd_copy(options):
     if options['source']:
         source_tags = read_tags_as_dict(source)
         source_tags = subsetted_tags(source_tags, tags, complement=complement)
-        copy_tags(source_tags, call_with_destination=lambda d: print_file_tags(d, **options), 
-                  **options)
+        for d in each_file(options, files=destinations):
+            copy_tags(source_tags, d, **options)
+            print_file_tags(d, **options)
 
 def cmd_copy_over(options):
     source, destinations = validate_source_and_destinations(options)
     if source:
         source_tags = read_tags_as_dict(source)
         source_tags = subsetted_tags(source_tags, tags, complement=complement)
-        copy_tags_over(source_tags, destinations, **options)
-        for f in each_file(options, files=destinations):
-            print_file_tags(f, **options)
+        for d in each_file(options, files=destinations):
+            copy_tags_over(source_tags, d, **options)
+            print_file_tags(d, **options)
 
 def cmd_delete(options):
     for f in each_file(options):
