@@ -152,7 +152,7 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
     print_tag_dict(tag_dict, prefix=prefix, fsep=fsep, ksep=ksep, vsep=vsep, 
                    one_line=one_line, key_val_pairs=key_val_pairs, out=out)
 
-def subsetted_tags(source_tags, tags=False, complement=False):
+def subsetted_tags(source_tags, tags=False, complement=False, **unused):
     if tags:
         tags = tag_list_to_dict(tags)
         if complement:

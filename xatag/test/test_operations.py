@@ -189,6 +189,3 @@ def test_copy_tags_over3(file_with_tags, file_with_tags2):
     assert 'genre' not in d2.keys()
     assert set(d2['artist']) == set(['The XX'])
     assert 'other' not in d2.keys()
-
-
-    

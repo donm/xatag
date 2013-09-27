@@ -3,9 +3,10 @@
 """xatag - file tagging using extended attributes (xattr).
 
 Usage:
-  xatag [options] ([-a] | -l | -s | -S | -d) <tag> <file>... 
-  xatag [options] ([-a] | -l | -s | -S | -d) <file>... -t <tag>...    
-  xatag [options] ([-a] | -l | -s | -S | -d) <tag>...  -f <file>...
+  xatag [options] ([-a] | -s | -S | -d)      <tag> <file>... 
+  xatag [options] ([-a] | -s | -S | -d | -l) <file>... -t <tag>...    
+  xatag [options] ([-a] | -s | -S | -d | -l) <tag>...  -f <file>...
+  xatag [options] -l <file>... 
   xatag [options] [-i] <file>
   xatag [options] (-c | -C) <src> <dest>... [-t <tag>]...
   xatag [options] -D  <file>...
@@ -147,34 +148,42 @@ def parse_command_line():
     options = extract_options(arguments)
     return (command, options)
 
-# TODO: think of a better name for this
-def each_file(options, files=False):
+def apply_to_files(fun, options, files=False):
     if not files: files = options['files']
     for f in files:
         if os.path.exists(f):
-            yield f
+            try:
+                fun(f)
+            except IOError:
+                warn("could not write extended attributes: " + f)
+            # xattr throws this when trying to reference an attribute that
+            # exists if the file isn't readable
+            except KeyError:
+                warn("could not read extended attributes: " + f)
         else:
             warn("path does not exist: " + f)
 
 def cmd_add(options): 
-    for f in each_file(options):
+    def per_file(f):
         add_tags(f, **options)
         print_file_tags(f, **options)
-        
+    apply_to_files(per_file, options)
+                
 def cmd_list(options):
-    options['quiet'] = False
-    for f in each_file(options):
+    def per_file(f):
         print_file_tags(f, subset=True, **options)
+    options['quiet'] = False
+    apply_to_files(per_file, options)
 
 def cmd_set(options):
-    for f in each_file(options):
+    def per_file():
         set_tags(f, **options)
         print_file_tags(f, **options)
-
 def cmd_set_all(options):
-    for f in each_file(options):
+    def per_file():
         set_all_tags(f, **options)
         print_file_tags(f, **options)
+    apply_to_files(per_file, options)
 
 def validate_source_and_destinations(options):
     source = options['source']
@@ -190,32 +199,49 @@ def validate_source_and_destinations(options):
     options['source'] = source
     options['destinations'] = destinations
 
-def cmd_copy(options):
-    validate_source_and_destinations(options)
-    if options['source']:
+def try_read_tags_as_dict(source):
+    try:
         source_tags = read_tags_as_dict(source)
-        source_tags = subsetted_tags(source_tags, tags, complement=complement)
-        for d in each_file(options, files=destinations):
-            copy_tags(source_tags, d, **options)
-            print_file_tags(d, **options)
+    except:
+        sys.exit("could not read extended attributes: " + source)
+    return source_tags
+
+def cmd_copy(options):
+    def per_file(d):
+        copy_tags(source_tags, d, **options)
+        print_file_tags(d, **options)
+    validate_source_and_destinations(options)
+    source = options['source']
+    destinations = options['destinations']
+    if source:
+        source_tags = try_read_tags_as_dict(source)
+        source_tags = subsetted_tags(source_tags, **options)
+        options['tags'] = []
+        apply_to_files(per_file, options, files=destinations)
 
 def cmd_copy_over(options):
-    source, destinations = validate_source_and_destinations(options)
+    def per_file(d):
+        copy_tags_over(source_tags, d, **options)
+        print_file_tags(d, **options)
+    validate_source_and_destinations(options)
+    source = options['source']
+    destinations = options['destinations']
     if source:
-        source_tags = read_tags_as_dict(source)
-        source_tags = subsetted_tags(source_tags, tags, complement=complement)
-        for d in each_file(options, files=destinations):
-            copy_tags_over(source_tags, d, **options)
-            print_file_tags(d, **options)
+        source_tags = try_read_tags_as_dict(source)
+        source_tags = subsetted_tags(source_tags, **options)
+        options['tags'] = []
+        apply_to_files(per_file, options, files=destinations)
 
 def cmd_delete(options):
-    for f in each_file(options):
+    def per_file(f):
         delete_tags(f, **options)
         print_file_tags(f, **options)
+    apply_to_files(per_file, options)
         
 def cmd_delete_all(options):
-    for f in options['files']:
+    def per_file(f):
         delete_all_tags(f)
+    apply_to_files(per_file, options)
 
 def cmd_execute(options):
     # When parsing an '--execute' call, everything is put in the array for
