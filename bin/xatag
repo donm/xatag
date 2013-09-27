@@ -193,13 +193,17 @@ def validate_source_and_destinations(options):
 def cmd_copy(options):
     validate_source_and_destinations(options)
     if options['source']:
-        copy_tags(call_with_destination=lambda d: print_file_tags(d, **options), 
+        source_tags = read_tags_as_dict(source)
+        source_tags = subsetted_tags(source_tags, tags, complement=complement)
+        copy_tags(source_tags, call_with_destination=lambda d: print_file_tags(d, **options), 
                   **options)
 
 def cmd_copy_over(options):
     source, destinations = validate_source_and_destinations(options)
     if source:
-        copy_over_tags(source, destinations, **options)
+        source_tags = read_tags_as_dict(source)
+        source_tags = subsetted_tags(source_tags, tags, complement=complement)
+        copy_tags_over(source_tags, destinations, **options)
         for f in each_file(options, files=destinations):
             print_file_tags(f, **options)
 

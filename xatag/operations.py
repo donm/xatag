@@ -171,7 +171,7 @@ def copy_tags(source_tags, destinations, tags=False, complement=False,
         set_tags(d, new_tags)
         if call_with_destination: call_with_destination(d)
 
-def copy_over_tags(source_tags, destinations, tags=False, complement=False, **unused):
+def copy_tags_over(source_tags, destinations, tags=False, complement=False, **unused):
      """Copy xatag managed xattr fields, removing all other tags."""
      destinations = listify(destinations)
      for d in destinations:
