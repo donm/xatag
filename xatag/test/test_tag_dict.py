@@ -53,14 +53,14 @@ def test_print_file_tags(file_with_tags):
 
 def test_merge_tags(tag_dict1, tag_dict2):
     m = merge_tags(tag_dict1, tag_dict2)
-    assert sorted(m['']) == sorted(['some', 'other', 'simple', 'tags'])
-    assert sorted(m['scope']) == sorted(['home', 'work', 'hacking', 'programming'])
-    assert sorted(m['first']) == sorted(['one', 'tag'])
-    assert sorted(m['second']) == sorted(['another', 'tag'])
+    assert set(m['']) == set(['some', 'other', 'simple', 'tags'])
+    assert set(m['scope']) == set(['home', 'work', 'hacking', 'programming'])
+    assert set(m['first']) == set(['one', 'tag'])
+    assert set(m['second']) == set(['another', 'tag'])
 
 def test_subtract_tags(tag_dict1, tag_dict_with_empty_vals):
     s = subtract_tags(tag_dict1, tag_dict_with_empty_vals)
-    assert sorted(s['']) == sorted(['tags'])
+    assert set(s['']) == set(['tags'])
     assert 'scope' not in s.keys()
     assert s['first'] == tag_dict1['first']
     assert 'second' not in s.keys()
@@ -68,8 +68,8 @@ def test_subtract_tags(tag_dict1, tag_dict_with_empty_vals):
 
 def test_select_tags(tag_dict1, tag_dict_with_empty_vals):
     s = select_tags(tag_dict1, tag_dict_with_empty_vals)
-    assert sorted(s['']) == sorted(['some', 'simple'])
-    assert sorted(s['scope']) == sorted(tag_dict1['scope'])
+    assert set(s['']) == set(['some', 'simple'])
+    assert set(s['scope']) == set(tag_dict1['scope'])
     assert 'first' not in s.keys()
     assert 'second' not in s.keys()
     

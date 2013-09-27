@@ -24,7 +24,7 @@ def file_with_tags(tmpdir):
 
 def test_read_tag_keys(file_with_tags):
     keys = read_tag_keys(file_with_tags)  
-    assert sorted(keys) == sorted(['', 'genre', 'artist'])
+    assert set(keys) == set(['', 'genre', 'artist'])
 
 def test_read_tags_as_dict(file_with_tags):
     tags = read_tags_as_dict(file_with_tags)  

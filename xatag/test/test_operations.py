@@ -124,10 +124,10 @@ def test_copy_tags(file_with_tags, file_with_tags2):
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
-    assert sorted(d2['']) == sorted(['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'])
-    assert sorted(d2['genre']) == sorted(['indie', 'pop', 'good'])
-    assert sorted(d2['artist']) == sorted(['The XX'])
-    assert sorted(d2['other']) == sorted(['yes'])
+    assert set(d2['']) == set(['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'])
+    assert set(d2['genre']) == set(['indie', 'pop', 'good'])
+    assert set(d2['artist']) == set(['The XX'])
+    assert set(d2['other']) == set(['yes'])
 
 def test_copy_tags2(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
@@ -137,10 +137,10 @@ def test_copy_tags2(file_with_tags, file_with_tags2):
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
-    assert sorted(d2['']) == sorted(['tag1', 'tag2', 'tag6'])
-    assert sorted(d2['genre']) == sorted(['indie', 'pop', 'good'])
+    assert set(d2['']) == set(['tag1', 'tag2', 'tag6'])
+    assert set(d2['genre']) == set(['indie', 'pop', 'good'])
     assert 'artist' not in d2.keys()
-    assert sorted(d2['other']) == sorted(['yes'])
+    assert set(d2['other']) == set(['yes'])
 
 def test_copy_tags3(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
@@ -150,10 +150,10 @@ def test_copy_tags3(file_with_tags, file_with_tags2):
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
-    assert sorted(d2['']) == sorted(['tag1', 'tag3', 'tag4', 'tag5', 'tag6'])
-    assert sorted(d2['genre']) == sorted(['good'])
-    assert sorted(d2['artist']) == sorted(['The XX'])
-    assert sorted(d2['other']) == sorted(['yes'])
+    assert set(d2['']) == set(['tag1', 'tag3', 'tag4', 'tag5', 'tag6'])
+    assert set(d2['genre']) == set(['good'])
+    assert set(d2['artist']) == set(['The XX'])
+    assert set(d2['other']) == set(['yes'])
 
 def test_copy_tags_over(file_with_tags, file_with_tags2):
     d1a = read_tags_as_dict(file_with_tags)
@@ -172,8 +172,8 @@ def test_copy_tags_over2(file_with_tags, file_with_tags2):
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
-    assert sorted(d2['']) == sorted(['tag2'])
-    assert sorted(d2['genre']) == sorted(['indie', 'pop'])
+    assert set(d2['']) == set(['tag2'])
+    assert set(d2['genre']) == set(['indie', 'pop'])
     assert 'artist' not in d2.keys()
     assert 'other' not in d2.keys()
 
@@ -185,9 +185,9 @@ def test_copy_tags_over3(file_with_tags, file_with_tags2):
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
-    assert sorted(d2['']) == sorted(['tag1', 'tag3', 'tag4', 'tag5'])
+    assert set(d2['']) == set(['tag1', 'tag3', 'tag4', 'tag5'])
     assert 'genre' not in d2.keys()
-    assert sorted(d2['artist']) == sorted(['The XX'])
+    assert set(d2['artist']) == set(['The XX'])
     assert 'other' not in d2.keys()
 
 
