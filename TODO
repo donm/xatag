@@ -3,15 +3,15 @@
 # def cmd_interactive(options):
 # def cmd_execute(options):
 
+test command line interface
 check line lengths in python code
-maybe a -i/-I option like rm, or an undo facility
-pay attention to return values    
-
-add to list of used tags
-tell recoll to index the file
-print warning if the tag is new, in case of misspellings
+maybe a -i/-I option like rm, or an undo facility (hook into apply_to_files)
 
 load options
+add to list of used tags
+print warning if the tag is new, in case of misspellings
+
+tell recoll to index the file when changing tags
 
 = color
 optionally color tags
