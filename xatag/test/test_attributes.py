@@ -22,6 +22,17 @@ def file_with_tags(tmpdir):
         x[k] = v
     return path
 
+def test_read_tag_keys(file_with_tags):
+    keys = read_tag_keys(file_with_tags)  
+    assert sorted(keys) == sorted(['', 'genre', 'artist'])
+
+def test_read_tags_as_dict(file_with_tags):
+    tags = read_tags_as_dict(file_with_tags)  
+    assert tags == {'': ['tag1','tag2','tag3','tag4','tag5'],
+                    'genre': ['indie','pop'],
+                    'artist': ['The XX']
+                    }
+
 def test_is_xatag_xattr_key():
     assert is_xatag_xattr_key('user.org.xatag.tags')
     assert is_xatag_xattr_key('user.org.xatag.tags.whatever')
@@ -35,10 +46,6 @@ def test_xatag_to_xattr_key():
     assert xatag_to_xattr_key('other') == 'user.org.xatag.tags.other'
     tag = Tag('genre', 'classical')
     assert xatag_to_xattr_key(tag) == 'user.org.xatag.tags.genre'
-
-def test_read_tag_keys(file_with_tags):
-    keys = read_tag_keys(file_with_tags)  
-    assert sorted(keys) == sorted(['', 'genre', 'artist'])
 
 def test_xattr_value_to_list():
     assert xattr_value_to_list('') == []
@@ -63,10 +70,5 @@ def test_remove_tag_values_from_xattr_value():
     assert remove_tag_values_from_xattr_value('one;two', [''], True) == 'one;two'
     assert remove_tag_values_from_xattr_value('', ['notfound'], True) == ''
 
-def test_read_tags_as_dict(file_with_tags):
-    tags = read_tags_as_dict(file_with_tags)  
-    assert tags == {'': ['tag1','tag2','tag3','tag4','tag5'],
-                    'genre': ['indie','pop'],
-                    'artist': ['The XX']
-                    }
+
 

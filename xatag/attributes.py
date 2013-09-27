@@ -5,6 +5,18 @@ import tag
 XATTR_PREFIX = 'org.xatag.tags'
 XATTR_FIELD_SEPARATOR = ';'
 
+def read_tag_keys(fname):
+    """Return a list of the xatag keys of the xattr fields in fname in the xatag namespace."""
+    attributes = xattr.xattr(fname)
+    return [xattr_to_xatag_key(k) for k in attributes if is_xatag_xattr_key(k)]
+
+def read_tags_as_dict(fname):
+    """Return a dict of the xattr fields in fname in the xatag namespace."""
+    attributes = xattr.xattr(fname)
+    # no sense in reading the value if the key isn't going to be chosen
+    return {xattr_to_xatag_key(k): xattr_value_to_list(attributes[k])
+            for k in attributes if is_xatag_xattr_key(k)}
+
 def is_xatag_xattr_key(name):
     """Check if name starts with XATTR_PREFIX."""
     return name.startswith('user.' + XATTR_PREFIX) or name.startswith(XATTR_PREFIX)
@@ -28,11 +40,6 @@ def xattr_to_xatag_key(key):
     key = key.replace(XATTR_PREFIX, '')
     if key != '' and key[0] == '.': key = key[1:]
     return key
-
-def read_tag_keys(fname):
-    """Return a list of the xatag keys of the xattr fields in fname in the xatag namespace."""
-    attributes = xattr.xattr(fname)
-    return [xattr_to_xatag_key(k) for k in attributes if is_xatag_xattr_key(k)]
 
 def xattr_value_to_list(tag_string):
     """Split the value of a tag xattr and return a list of tag values."""
@@ -68,10 +75,3 @@ def add_tag_values_to_xattr_value(xattr_value, values_to_add):
     current_values = xattr_value_to_list(xattr_value)
     values = current_values + [value for value in values_to_add if value not in set(current_values)]
     return list_to_xattr_value(values)
-
-def read_tags_as_dict(fname):
-    """Return a dict of the xattr fields in fname in the xatag namespace."""
-    attributes = xattr.xattr(fname)
-    # no sense in reading the value if the key isn't going to be chosen
-    return {xattr_to_xatag_key(k): xattr_value_to_list(attributes[k])
-            for k in attributes if is_xatag_xattr_key(k)}
