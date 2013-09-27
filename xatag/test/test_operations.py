@@ -119,7 +119,8 @@ def test_delete_all_tags(file_with_tags):
 
 def test_copy_tags(file_with_tags, file_with_tags2):
     d1a = read_tags_as_dict(file_with_tags)
-    copy_tags(file_with_tags, file_with_tags2)
+    source_tags = read_tags_as_dict(file_with_tags)
+    copy_tags(source_tags, file_with_tags2)
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
@@ -131,7 +132,8 @@ def test_copy_tags(file_with_tags, file_with_tags2):
 def test_copy_tags2(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
     d1a = read_tags_as_dict(file_with_tags)
-    copy_tags(file_with_tags, file_with_tags2, tags=tags)
+    source_tags = read_tags_as_dict(file_with_tags)
+    copy_tags(source_tags, file_with_tags2, tags=tags)
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
@@ -143,7 +145,8 @@ def test_copy_tags2(file_with_tags, file_with_tags2):
 def test_copy_tags3(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
     d1a = read_tags_as_dict(file_with_tags)
-    copy_tags(file_with_tags, file_with_tags2, tags=tags, complement=True)
+    source_tags = read_tags_as_dict(file_with_tags)
+    copy_tags(source_tags, file_with_tags2, tags=tags, complement=True)
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
@@ -154,7 +157,8 @@ def test_copy_tags3(file_with_tags, file_with_tags2):
 
 def test_copy_over_tags(file_with_tags, file_with_tags2):
     d1a = read_tags_as_dict(file_with_tags)
-    copy_over_tags(file_with_tags, file_with_tags2)
+    source_tags = read_tags_as_dict(file_with_tags)
+    copy_over_tags(source_tags, file_with_tags2)
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
@@ -163,7 +167,8 @@ def test_copy_over_tags(file_with_tags, file_with_tags2):
 def test_copy_over_tags2(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
     d1a = read_tags_as_dict(file_with_tags)
-    copy_over_tags(file_with_tags, file_with_tags2, tags=tags)
+    source_tags = read_tags_as_dict(file_with_tags)
+    copy_over_tags(source_tags, file_with_tags2, tags=tags)
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
@@ -175,7 +180,8 @@ def test_copy_over_tags2(file_with_tags, file_with_tags2):
 def test_copy_over_tags3(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
     d1a = read_tags_as_dict(file_with_tags)
-    copy_over_tags(file_with_tags, file_with_tags2, tags=tags, complement=True)
+    source_tags = read_tags_as_dict(file_with_tags)
+    copy_over_tags(source_tags, file_with_tags2, tags=tags, complement=True)
     d1b = read_tags_as_dict(file_with_tags)
     d2 = read_tags_as_dict(file_with_tags2)
     assert d1a == d1b

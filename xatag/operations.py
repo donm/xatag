@@ -161,22 +161,22 @@ def subsetted_tags(source_tags, tags=False, complement=False):
             source_tags = select_tags(source_tags, tags)
     return source_tags
 
-def copy_tags(source, destinations, tags=False, complement=False, 
+def copy_tags(source_tags, destinations, tags=False, complement=False, 
               call_with_destination=False, **unused):
-    """Copy xatag managed xattr fields of fname to each file in destinations."""
+    """Copy tags in dict souce_tags to each file in destinations."""
     destinations = listify(destinations)
-    source_tags = read_tags_as_dict(source)
     source_tags = subsetted_tags(source_tags, tags, complement=complement)
     for d in destinations:
         new_tags = merge_tags(source_tags, read_tags_as_dict(d))
         set_tags(d, new_tags)
         if call_with_destination: call_with_destination(d)
 
-def copy_over_tags(source, destinations, tags=False, complement=False, **unused):
+def copy_over_tags(source_tags, destinations, tags=False, complement=False, **unused):
      """Copy xatag managed xattr fields, removing all other tags."""
      destinations = listify(destinations)
      for d in destinations:
          delete_all_tags(d)
-         # do it one at a time in case there's an error
-         copy_tags(source, d, tags, complement)
+         # do it one at a time in case there's an error 
+         # (don't delete everything first)
+         copy_tags(source_tags, d, tags, complement)
 
