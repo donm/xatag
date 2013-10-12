@@ -7,7 +7,6 @@ Usage:
   xatag [options] ([-a] | -s | -S | -d | -l) <file>... -t <tag>...    
   xatag [options] ([-a] | -s | -S | -d | -l) <tag>...  -f <file>...
   xatag [options] -l <file>... 
-  xatag [options] [-i] <file>
   xatag [options] (-c | -C) <src> <dest>... [-t <tag>]...
   xatag [options] -D  <file>...
   xatag [options] -x  <tag>... | <query_string>
@@ -19,8 +18,6 @@ Usage:
 File Tagging Commands:
   -a --add          Add all of the TAG(s) to the FILE(s).  This is the
                     default command if you provide more than one argument.
-  -i --interactive  Add and remove tags for FILE interactively.  This is the
-                    default command if you provide only one argument.
   -l --list         List the tags currently written on FILE(s).  
   -s --set          Set the tags of the given FILE(s) to the TAG(s) given, erasing 
                     any previous xatag data in the extended attributes in the
@@ -49,7 +46,7 @@ Argument Flags:
                            other positional arguments will be considered
                            files.
   -f <file> --file=<file>  The following argument is a file; when used, all
-                           other positional arguments will be considered
+                           other positional arguments will be considered tags.
 
 Genreal Options:
   -n --complement                    The -n stands for "not".  Can be used on -d, -l, and -c/-C.
@@ -69,6 +66,9 @@ When reading and writing extended attributes, symlinks are followed by default.
 """
 
 # Not implemented:
+#   xatag [options] [-i] <file>
+#  -i --interactive  Add and remove tags for FILE interactively.  This is the
+#                    default command if you provide only one argument.
 #  -L --no-follow-symlinks   Not implemented.  
 #     --follow-symlinks      The default.
 # The way to do it, if required, is
@@ -216,6 +216,8 @@ def cmd_copy(options):
     if source:
         source_tags = try_read_tags_as_dict(source)
         source_tags = subsetted_tags(source_tags, **options)
+        # remove 'tag' from the options dict so that copy_tags() doesn't try
+        # to repeat the subsetting on source_tags
         options['tags'] = []
         apply_to_files(per_file, options, files=destinations)
 
@@ -229,6 +231,8 @@ def cmd_copy_over(options):
     if source:
         source_tags = try_read_tags_as_dict(source)
         source_tags = subsetted_tags(source_tags, **options)
+        # remove 'tag' from the options dict so that copy_tags() doesn't try
+        # to repeat the subsetting on source_tags
         options['tags'] = []
         apply_to_files(per_file, options, files=destinations)
 
