@@ -1,3 +1,4 @@
+#pylint: disable-all
 from xatag.tag import *
 
 class TestTag():

@@ -1,4 +1,7 @@
+#pylint: disable-all
 import pytest
+import xattr
+
 from xatag.tag_dict import *
 
 NON_XATAG_TAGS = {'user.other.tag':  'something'}

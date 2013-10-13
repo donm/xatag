@@ -7,5 +7,6 @@ def xatag_formatwarning(msg, *a):
 warnings.formatwarning = xatag_formatwarning
 
 def warn(message):
+    "Print a warning to stderr."
     warnings.warn(message)
 

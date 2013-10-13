@@ -1,3 +1,4 @@
+#pylint: disable-all
 import pytest
 
 from xatag.tag import Tag
@@ -73,6 +74,4 @@ def test_remove_tag_values_from_xattr_value():
                                               ['two','five'], True) == 'two'
     assert remove_tag_values_from_xattr_value('one;two', [''], True) == 'one;two'
     assert remove_tag_values_from_xattr_value('', ['notfound'], True) == ''
-
-
 

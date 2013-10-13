@@ -1,9 +1,7 @@
-import xattr
 import sys
 from collections import defaultdict
 
 from xatag.helpers import listify
-from xatag.attributes import *
 from xatag.tag import format_tag_value
 
 def tag_list_to_dict(tags):
@@ -25,7 +23,8 @@ def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', vsep=' ',
     # We need 'out' to be set to the current value of sys.stdout, in case
     # stdout is captured for tests or something.  So we can't say
     # "out=sys.stdout" above.
-    if not out: out=sys.stdout
+    if not out: out = sys.stdout
+
     def write_tag(key_name, dict_key, last_tag=False):
         padding = max(1, longest_tag - len(key_name) + 1)
         sorted_vals = sorted(tag_dict[dict_key])
@@ -56,13 +55,15 @@ def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', vsep=' ',
     # command line
     longest_tag = 8     
 
-    if one_line and tag_dict and prefix: out.write(prefix)
+    if one_line and tag_dict and prefix: 
+        out.write(prefix)
     keys = [k for k in sorted(tag_dict.keys())
             if k != '']
-    if '' in tag_dict: keys = [''] + keys
+    if '' in tag_dict: 
+        keys = [''] + keys
     for ind, k in enumerate(keys):
         last_tag = (ind==len(keys)-1)
-        if k=='':
+        if k == '':
             write_tag('tags', '', last_tag=last_tag)
         else:
             write_tag(k, k, last_tag=last_tag)
@@ -95,7 +96,7 @@ def subtract_tags(minuend, subtrahend):
     remove all tag values from minuend from the same key.
     """
     difference = {}
-    for k,vlist in minuend.items():
+    for k, vlist in minuend.items():
         if k in subtrahend.keys():
             if '' in subtrahend[k]:
                 pass
@@ -116,7 +117,7 @@ def select_tags(original, selection):
 
     """
     subset = {}
-    for k,vlist in selection.items():
+    for k, vlist in selection.items():
         if k in original:
             if '' in vlist:
                 subset[k] = original[k]

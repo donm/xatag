@@ -1,8 +1,11 @@
 from docopt import docopt
 import os.path
+import sys
 
 from xatag.warn import warn
-from xatag.operations import *
+from xatag.tag import Tag
+import xatag.operations as op
+from xatag.attributes import read_tags_as_dict
 
 command_list = [
     "--add",
@@ -40,7 +43,7 @@ def fix_arguments(arguments):
 def extract_options(arguments):
     """Make an options dict for passing to the cmd functions."""
     options = {}
-    for key,val in arguments.items():
+    for key, val in arguments.items():
         if not key in command_list:
             if key.startswith('--'): 
                 newkey = key[2:]
@@ -78,41 +81,41 @@ def run_cli(usage, argv=None):
 
 def apply_to_files(fun, options, files=False):
     if not files: files = options['files']
-    for f in files:
-        if os.path.exists(f):
+    for file in files:
+        if os.path.exists(file):
             try:
-                fun(f)
+                fun(file)
             except IOError:
-                warn("could not write extended attributes: " + f)
+                warn("could not write extended attributes: " + file)
             # xattr throws this when trying to reference an attribute that
             # exists if the file isn't readable
             except KeyError:
-                warn("could not read extended attributes: " + f)
+                warn("could not read extended attributes: " + file)
         else:
-            warn("path does not exist: " + f)
+            warn("path does not exist: " + file)
 
 def cmd_add(options): 
-    def per_file(f):
-        add_tags(f, **options)
-        print_file_tags(f, **options)
+    def per_file(fname):
+        op.add_tags(fname, **options)
+        op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
                 
 def cmd_list(options):
-    def per_file(f):
-        print_file_tags(f, subset=True, **options)
+    def per_file(fname):
+        op.print_file_tags(fname, subset=True, **options)
     options['quiet'] = False
     apply_to_files(per_file, options)
 
 def cmd_set(options):
-    def per_file(f):
-        set_tags(f, **options)
-        print_file_tags(f, **options)
+    def per_file(fname):
+        op.set_tags(fname, **options)
+        op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
 
 def cmd_set_all(options):
-    def per_file(f):
-        set_all_tags(f, **options)
-        print_file_tags(f, **options)
+    def per_file(fname):
+        op.set_all_tags(fname, **options)
+        op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
 
 def validate_source_and_destinations(options):
@@ -138,43 +141,43 @@ def try_read_tags_as_dict(source):
 
 def cmd_copy(options):
     def per_file(d):
-        copy_tags(source_tags, d, **options)
-        print_file_tags(d, **options)
+        op.copy_tags(source_tags, d, **options)
+        op.print_file_tags(d, **options)
     validate_source_and_destinations(options)
     source = options['source']
     destinations = options['destinations']
     if source:
         source_tags = try_read_tags_as_dict(source)
-        source_tags = subsetted_tags(source_tags, **options)
+        source_tags = op.subsetted_tags(source_tags, **options)
         # remove 'tag' from the options dict so that copy_tags() doesn't try
         # to repeat the subsetting on source_tags
         options['tags'] = []
         apply_to_files(per_file, options, files=destinations)
 
 def cmd_copy_over(options):
-    def per_file(d):
-        copy_tags_over(source_tags, d, **options)
-        print_file_tags(d, **options)
+    def per_file(fname):
+        op.copy_tags_over(source_tags, fname, **options)
+        op.print_file_tags(fname, **options)
     validate_source_and_destinations(options)
     source = options['source']
     destinations = options['destinations']
     if source:
         source_tags = try_read_tags_as_dict(source)
-        source_tags = subsetted_tags(source_tags, **options)
+        source_tags = op.subsetted_tags(source_tags, **options)
         # remove 'tag' from the options dict so that copy_tags() doesn't try
         # to repeat the subsetting on source_tags
         options['tags'] = []
         apply_to_files(per_file, options, files=destinations)
 
 def cmd_delete(options):
-    def per_file(f):
-        delete_tags(f, **options)
-        print_file_tags(f, **options)
+    def per_file(fname):
+        op.delete_tags(fname, **options)
+        op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
         
 def cmd_delete_all(options):
-    def per_file(f):
-        delete_all_tags(f)
+    def per_file(fname):
+        op.delete_all_tags(fname)
     apply_to_files(per_file, options)
 
 def cmd_execute(options):

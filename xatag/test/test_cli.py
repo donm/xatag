@@ -1,5 +1,7 @@
+#pylint: disable-all
 import pytest
 import re
+import xattr
 
 from xatag.cli import *
 from xatag.tag import Tag
