@@ -19,21 +19,26 @@ def tag_list_to_dict(tags):
         return tag_dict
 
 def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', vsep=' ', 
-                   one_line=False, key_val_pairs=False, out=sys.stdout):
+                   one_line=False, key_val_pairs=False, out=None):
     """Print the tags for a file in a nice way."""
-    def write_tag(key_name, dict_key):
+
+    # We need 'out' to be set to the current value of sys.stdout, in case
+    # stdout is captured for tests or something.  So we can't say
+    # "out=sys.stdout" above.
+    if not out: out=sys.stdout
+    def write_tag(key_name, dict_key, last_tag=False):
         padding = max(1, longest_tag - len(key_name) + 1)
         sorted_vals = sorted(tag_dict[dict_key])
-        if (key_val_pairs and one_line):
-            do_quote_vals = False 
-        else:
-            do_quote_vals = (vsep==' ')
+        do_quote_vals = (vsep==' ')
         formatted_vals = map((lambda x: format_tag_value(x, do_quote_vals)), 
                              sorted_vals)
         if key_val_pairs:
             if one_line: 
-                for val in formatted_vals:
+                for val in formatted_vals[0:-1]:
                     out.write(key_name + ksep + val + vsep)
+                val = formatted_vals[-1]
+                out.write(key_name + ksep + val)
+                if not last_tag: out.write(vsep)
             else:
                 for val in formatted_vals:
                     out.write(prefix + key_name + ksep + " "*padding + val + "\n")
@@ -51,11 +56,16 @@ def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', vsep=' ',
     longest_tag = 8     
 
     if one_line and tag_dict and prefix: out.write(prefix)
-    if '' in tag_dict:
-        write_tag('tags', '')
-    for k in sorted(tag_dict.keys()):
-        if k=='' or k=='tags': continue
-        write_tag(k, k)
+    keys = [k for k in sorted(tag_dict.keys())
+            if k != '']
+    if '' in tag_dict: keys = [''] + keys
+    for ind, k in enumerate(keys):
+        last_tag = (ind==len(keys)-1)
+        if k=='':
+            write_tag('tags', '', last_tag=last_tag)
+        else:
+            write_tag(k, k, last_tag=last_tag)
+        
     if one_line and tag_dict and prefix: out.write("\n")
     if (not tag_dict) and prefix:
         out.write(prefix + "\n")
