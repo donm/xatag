@@ -173,9 +173,6 @@ def test_parse_cli():
 # These are not unit tests, but this functional testing needs to be done
 # anyway and this seems like a fine place to put it.
     
-# The output is all lumped together because, though more difficult to read,
-# it's a lot easier to copy and paste.
-
 def standardize_output(out):
     out = re.sub('^.*/', '', out, flags=re.MULTILINE)
     out = re.sub(' +', ' ', out, flags=re.MULTILINE)
@@ -202,6 +199,8 @@ def test_cmd_add(tmpfile, tmpfile2, capsys):
 
     stdout = get_stdout(capsys)
 
+    # The output is all lumped together because, though more difficult to read,
+    # it's a lot easier to copy and paste.
     gold="""test.txt: tags: tag1 tag2 tag4 'two words'
 test2.txt: tags: tag2 tag3 tag4
 
@@ -244,6 +243,8 @@ def test_cmd_list(tmpfile, tmpfile2, capsys):
 
     stdout = get_stdout(capsys)
 
+    # The output is all lumped together because, though more difficult to read,
+    # it's a lot easier to copy and paste.
     gold="""test.txt: tags: tag1 tag2 'two words'
 test.txt: artist: 'The XX'
 test.txt: genre: indie pop
@@ -292,7 +293,8 @@ test2.txt: tags:tag2,tags:tag3,genre:classical
 
 def test_cmd_set(tmpfile, tmpfile2, capsys):
 
-    run_cli(USAGE, ['-s', 'tag', 'genre:awesome', '-f', tmpfile, '-f', tmpfile2])
+    run_cli(USAGE, ['-s', 'tag', 'genre:awesome', '-f', tmpfile,
+                    '-f', tmpfile2])
 
     stdout = get_stdout(capsys)
 
@@ -306,7 +308,8 @@ test2.txt: genre: awesome
 
 def test_cmd_set_all(tmpfile, tmpfile2, capsys):
 
-    run_cli(USAGE, ['-S', 'tag', 'genre:awesome', '-f', tmpfile, '-f', tmpfile2])
+    run_cli(USAGE, ['-S', 'tag', 'genre:awesome', '-f', tmpfile,
+                    '-f', tmpfile2])
 
     stdout = get_stdout(capsys)
 

@@ -7,7 +7,7 @@ from xatag.attributes import *
 from xatag.tag import format_tag_value
 
 def tag_list_to_dict(tags):
-    """Convert a list of Tags to a dictionary, where the values are lists of strings."""
+    """Convert a list of Tags to a dict, where values are lists of strings."""
     try:
         k = tags.keys()
         return tags
@@ -41,7 +41,8 @@ def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', vsep=' ',
                 if not last_tag: out.write(vsep)
             else:
                 for val in formatted_vals:
-                    out.write(prefix + key_name + ksep + " "*padding + val + "\n")
+                    out.write(prefix + key_name + ksep
+                              + " "*padding + val + "\n")
         else:
             if one_line:
                 out.write(key_name + ksep)

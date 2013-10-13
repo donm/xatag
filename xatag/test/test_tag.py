@@ -19,7 +19,8 @@ class TestTag():
         t = Tag.from_string('genre:classical')[0]
         assert t.key == 'genre'
         assert t.value == 'classical'
-        ts = Tag.from_string('genre:classical;   rock;\n bluegrass\tstuff') # Nigel Kennedy?
+        # Nigel Kennedy?
+        ts = Tag.from_string('genre:classical;   rock;\n bluegrass\tstuff') 
         assert len(ts) == 3
         assert ts[0].key == 'genre'
         assert ts[0].value == 'classical'

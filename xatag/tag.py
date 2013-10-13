@@ -24,7 +24,8 @@ class Tag:
         else:
             key = ':'.join(parts[0:-1])
             values = parts[-1]
-        return [cls(key, v) for v in values.split(constants.XATTR_FIELD_SEPARATOR)]
+        return [cls(key, v)
+                for v in values.split(constants.XATTR_FIELD_SEPARATOR)]
 
     def to_string(self):
         """Create a 'key:value' formatted string from a Tag object."""

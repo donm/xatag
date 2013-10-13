@@ -53,8 +53,10 @@ def test_xattr_value_to_list():
     assert xattr_value_to_list('one') == ['one']
     assert xattr_value_to_list('one tag') == ['one tag']
     assert xattr_value_to_list('one;two;three') == ['one', 'two', 'three']
-    assert xattr_value_to_list('one;two words;three') == ['one', 'two words', 'three']
-    assert xattr_value_to_list('one; two words   ;\nthree\t') == ['one', 'two words', 'three']
+    assert (xattr_value_to_list('one;two words;three') ==
+            ['one', 'two words', 'three'])
+    assert (xattr_value_to_list('one; two words   ;\nthree\t') 
+            == ['one', 'two words', 'three'])
 
 def test_list_to_xattr_value():
     assert list_to_xattr_value([]) == ''
@@ -62,11 +64,13 @@ def test_list_to_xattr_value():
 
 def test_remove_tag_values_from_xattr_value():
     assert remove_tag_values_from_xattr_value('one', 'one') == ''
-    assert remove_tag_values_from_xattr_value('one;two;three;four', ['two','four']) == 'one;three'
+    assert remove_tag_values_from_xattr_value('one;two;three;four',
+                                              ['two','four']) == 'one;three'
     assert remove_tag_values_from_xattr_value('', ['notfound']) == ''
 
     assert remove_tag_values_from_xattr_value('one', 'one', True) == 'one'
-    assert remove_tag_values_from_xattr_value('one;two;three;four', ['two','five'], True) == 'two'
+    assert remove_tag_values_from_xattr_value('one;two;three;four',
+                                              ['two','five'], True) == 'two'
     assert remove_tag_values_from_xattr_value('one;two', [''], True) == 'one;two'
     assert remove_tag_values_from_xattr_value('', ['notfound'], True) == ''
 

@@ -38,9 +38,10 @@ def file_with_tags2(tmpdir):
 
 def test_add_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
-    add_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'), Tag('genre', 'awesome'),
-                              Tag('artist', '')])
-    assert x['user.org.xatag.tags'] == 'another;tag1;tag2;tag3;tag4;tag5;zanother'
+    add_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'),
+                              Tag('genre', 'awesome'), Tag('artist', '')])
+    assert (x['user.org.xatag.tags']
+            == 'another;tag1;tag2;tag3;tag4;tag5;zanother')
     assert x['user.org.xatag.tags.artist'] == 'The XX'
     assert x['user.org.xatag.tags.genre'] == 'awesome;indie;pop'
     add_tags(file_with_tags, [Tag('unused', '')])
@@ -49,7 +50,8 @@ def test_add_tags(file_with_tags):
 
 def test_set_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
-    set_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'), Tag('genre', 'awesome')])
+    set_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'),
+                              Tag('genre', 'awesome')])
     assert x['user.org.xatag.tags'] == 'another;zanother'
     assert x['user.org.xatag.tags.artist'] == 'The XX'
     assert x['user.org.xatag.tags.genre'] == 'awesome'
@@ -60,7 +62,8 @@ def test_set_tags(file_with_tags):
 
 def test_set_all_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
-    set_all_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'), Tag('genre', 'awesome')])
+    set_all_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'),
+                                  Tag('genre', 'awesome')])
     assert x['user.org.xatag.tags'] == 'another;zanother'
     assert x['user.org.xatag.tags.genre'] == 'awesome'
     assert 'user.org.xatag.tags.artist' not in x.keys()
@@ -73,7 +76,7 @@ def test_delete_these_tags(file_with_tags):
     assert x['user.org.xatag.tags.artist'] == 'The XX'
     assert x['user.org.xatag.tags.genre'] == 'indie;pop'
 
-    delete_tags(file_with_tags, [Tag('', t) for t in ['tag2','tag4','tag5']])        
+    delete_tags(file_with_tags, [Tag('', t) for t in ['tag2','tag4','tag5']])  
     assert x['user.org.xatag.tags'] == 'tag1;tag3'
     assert x['user.org.xatag.tags.artist'] == 'The XX'
     assert x['user.org.xatag.tags.genre'] == 'indie;pop'

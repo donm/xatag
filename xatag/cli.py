@@ -38,7 +38,7 @@ def fix_arguments(arguments):
     arguments['vsep'] = arguments['--val-separator']
 
 def extract_options(arguments):
-    """Make an options dict for passing to the functions that actually do stuff."""
+    """Make an options dict for passing to the cmd functions."""
     options = {}
     for key,val in arguments.items():
         if not key in command_list:
@@ -66,8 +66,8 @@ def parse_cli(usage, argv=None):
     if not command:
         # TODO: test if all the commands are there
         command = ('--add' if arguments['<tag>'] else '--list')
-    # This works because of convention.  '--some-name' is sent to 'cmd_some_name', which
-    # is called with the arguments array.
+    # This works because of convention.  '--some-name' is sent to
+    # 'cmd_some_name', which is called with the arguments array.
     command = globals()["cmd_" + command[2:].replace('-', '_')]
     options = extract_options(arguments)
     return (command, options)
