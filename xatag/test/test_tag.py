@@ -37,3 +37,11 @@ class TestTag():
         t = Tag('genre', 'classical')
         assert t.to_string() == 'genre:classical'
 
+    def test___eq__(self):
+        t1 = Tag('', 'tag')
+        t2 = Tag('', 'tag')
+        t3 = Tag('key', 'val')
+        t4 = Tag('key', 'val')
+        assert t1 == t2
+        assert t3 == t4
+        assert t2 != t3

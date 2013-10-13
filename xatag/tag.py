@@ -33,6 +33,11 @@ class Tag:
         else:
             return self.key + ":" + self.value
         
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.__dict__ == other.__dict__
+        return False
+
 def format_tag_key(string):
     """Format tag key string when reading or writing to extended attributes."""
     return " ".join(string.strip().split())
