@@ -1,17 +1,21 @@
 # def cmd_manage(options):
 # def cmd_enter(options):
-# def cmd_interactive(options):
 # def cmd_execute(options):
 
-test command line interface
-check line lengths in python code
-maybe a -i/-I option like rm, or an undo facility (hook into apply_to_files)
+run pylint
+return proper error codes along with warnings
+add license info
 
 load options
 add to list of used tags
+use recoll to print list of tags
 print warning if the tag is new, in case of misspellings
 
 tell recoll to index the file when changing tags
+
+= maybe
+interactively tag a file
+an options like -i/-I in rm, or an undo facility (hook into apply_to_files)
 
 = color
 optionally color tags
