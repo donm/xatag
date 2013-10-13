@@ -4,11 +4,11 @@ import os
 from collections import defaultdict
 from recoll import recoll
 
-from helpers import listify
-from tag_dict import *
-from attributes import *
-from tag import *
-from warn import warn
+from xatag.helpers import listify
+from xatag.tag_dict import *
+from xatag.attributes import *
+from xatag.tag import *
+from xatag.warn import warn
 
 # Some functions below have the argument '**unused'.  That's to facilitate
 # passing the options array that is returned from docopt (after some fixing)

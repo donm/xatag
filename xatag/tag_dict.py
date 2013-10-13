@@ -2,9 +2,9 @@ import xattr
 import sys
 from collections import defaultdict
 
-from helpers import listify
-from attributes import *
-from tag import format_tag_value
+from xatag.helpers import listify
+from xatag.attributes import *
+from xatag.tag import format_tag_value
 
 def tag_list_to_dict(tags):
     """Convert a list of Tags to a dictionary, where the values are lists of strings."""

@@ -1,9 +1,7 @@
 import xattr
-from helpers import listify
-import tag
-
-XATTR_PREFIX = 'org.xatag.tags'
-XATTR_FIELD_SEPARATOR = ';'
+from xatag.helpers import listify
+import xatag.tag as tag
+from xatag.constants import XATTR_PREFIX, XATTR_FIELD_SEPARATOR
 
 def read_tag_keys(fname):
     """Return a list of the xatag keys of the xattr fields in fname in the xatag namespace."""
