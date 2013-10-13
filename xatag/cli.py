@@ -1,7 +1,7 @@
 from docopt import docopt
 import os.path
-from xatag.warn import warn
 
+from xatag.warn import warn
 from xatag.operations import *
 
 command_list = [
@@ -55,8 +55,8 @@ def extract_options(arguments):
         options['longest_filename'] = max(len(f) for f in files_to_print)
     return options
                 
-def parse_command_line(usage):
-    arguments = docopt(usage, version='xatag version 0.0.0')
+def parse_cli(usage, argv=None):
+    arguments = docopt(usage, argv=argv, version='xatag version 0.0.0')
     fix_arguments(arguments)
     command = False
     for c in command_list:
@@ -65,12 +65,16 @@ def parse_command_line(usage):
             break
     if not command:
         # TODO: test if all the commands are there
-        command = ('--add' if arguments['<tag>'] else '--interactive')
+        command = ('--add' if arguments['<tag>'] else '--list')
     # This works because of convention.  '--some-name' is sent to 'cmd_some_name', which
     # is called with the arguments array.
     command = globals()["cmd_" + command[2:].replace('-', '_')]
     options = extract_options(arguments)
     return (command, options)
+
+def run_cli(usage, argv=None):
+    command, options = parse_cli(usage, argv=argv)
+    command(options)
 
 def apply_to_files(fun, options, files=False):
     if not files: files = options['files']
@@ -100,11 +104,13 @@ def cmd_list(options):
     apply_to_files(per_file, options)
 
 def cmd_set(options):
-    def per_file():
+    def per_file(f):
         set_tags(f, **options)
         print_file_tags(f, **options)
+    apply_to_files(per_file, options)
+
 def cmd_set_all(options):
-    def per_file():
+    def per_file(f):
         set_all_tags(f, **options)
         print_file_tags(f, **options)
     apply_to_files(per_file, options)
