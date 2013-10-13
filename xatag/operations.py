@@ -132,7 +132,11 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
                     terse=False, quiet=False,  
                     longest_filename=0, fsep=":", ksep=':', vsep=' ', 
                     one_line=False, key_val_pairs=False, 
-                    out=sys.stdout, **unused):
+                    out=None, **unused):
+    # We need 'out' to be set to the current value of sys.stdout, in case
+    # stdout is captured for tests or something.  So we can't say
+    # "out=sys.stdout" above.
+    if not out: out=sys.stdout
     # It's a little funny having this check here, but the alternative is
     # having it in every function that calls this one.  Also, maybe in the
     # future quiet will do something else.
