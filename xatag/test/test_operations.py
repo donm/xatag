@@ -2,7 +2,7 @@
 import pytest
 import xattr
 
-import xatag.attributes as attr 
+import xatag.attributes as attr
 from xatag.operations import *
 
 NON_XATAG_TAGS = {'user.other.tag':  'something'}
@@ -11,6 +11,7 @@ XATAG_TAGS = {
     'user.org.xatag.tags.genre': 'indie;pop',
     'user.org.xatag.tags.artist': 'The XX'
     }
+
 
 @pytest.fixture
 def file_with_tags(tmpdir):
@@ -23,6 +24,7 @@ def file_with_tags(tmpdir):
     for k, v in XATAG_TAGS.items():
         x[k] = v
     return path
+
 
 @pytest.fixture
 def file_with_tags2(tmpdir):
@@ -38,6 +40,7 @@ def file_with_tags2(tmpdir):
         x[k] = v
     return path
 
+
 def test_add_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
     add_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'),
@@ -49,6 +52,7 @@ def test_add_tags(file_with_tags):
     add_tags(file_with_tags, [Tag('unused', '')])
     assert 'user.org.xatag.tags.unused' not in x.keys()
     assert 'unused' not in attr.read_tags_as_dict(file_with_tags)
+
 
 def test_set_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
@@ -62,6 +66,7 @@ def test_set_tags(file_with_tags):
     assert x['user.org.xatag.tags.genre'] == 'awesome'
     assert 'user.org.xatag.tags.artist' not in x.keys()
 
+
 def test_set_all_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
     set_all_tags(file_with_tags, [Tag('', 'another'), Tag('', 'zanother'),
@@ -69,6 +74,7 @@ def test_set_all_tags(file_with_tags):
     assert x['user.org.xatag.tags'] == 'another;zanother'
     assert x['user.org.xatag.tags.genre'] == 'awesome'
     assert 'user.org.xatag.tags.artist' not in x.keys()
+
 
 def test_delete_these_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
@@ -78,7 +84,7 @@ def test_delete_these_tags(file_with_tags):
     assert x['user.org.xatag.tags.artist'] == 'The XX'
     assert x['user.org.xatag.tags.genre'] == 'indie;pop'
 
-    delete_tags(file_with_tags, [Tag('', t) for t in ['tag2','tag4','tag5']])  
+    delete_tags(file_with_tags, [Tag('', t) for t in ['tag2','tag4','tag5']])
     assert x['user.org.xatag.tags'] == 'tag1;tag3'
     assert x['user.org.xatag.tags.artist'] == 'The XX'
     assert x['user.org.xatag.tags.genre'] == 'indie;pop'
@@ -99,6 +105,7 @@ def test_delete_these_tags(file_with_tags):
     assert 'user.org.xatag.tags.artist' not in x.keys()
     assert 'user.org.xatag.tags' not in x.keys()
 
+
 def test_delete_other_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
 
@@ -114,6 +121,7 @@ def test_delete_other_tags(file_with_tags):
     delete_other_tags(file_with_tags, Tag('notakey', 'tag'))
     assert 'user.org.xatag.tags.genre' not in x.keys()
 
+
 def test_delete_all_tags(file_with_tags):
     x = xattr.xattr(file_with_tags)
     delete_all_tags(file_with_tags)
@@ -121,6 +129,7 @@ def test_delete_all_tags(file_with_tags):
     assert 'user.org.xatag.tags.artist' not in x.keys()
     assert 'user.org.xatag.tags.genre' not in x.keys()
     assert x['user.other.tag'] == 'something'
+
 
 def test_copy_tags(file_with_tags, file_with_tags2):
     d1a = attr.read_tags_as_dict(file_with_tags)
@@ -133,6 +142,7 @@ def test_copy_tags(file_with_tags, file_with_tags2):
     assert set(d2['genre']) == set(['indie', 'pop', 'good'])
     assert set(d2['artist']) == set(['The XX'])
     assert set(d2['other']) == set(['yes'])
+
 
 def test_copy_tags2(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
@@ -147,6 +157,7 @@ def test_copy_tags2(file_with_tags, file_with_tags2):
     assert 'artist' not in d2.keys()
     assert set(d2['other']) == set(['yes'])
 
+
 def test_copy_tags3(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
     d1a = attr.read_tags_as_dict(file_with_tags)
@@ -160,6 +171,7 @@ def test_copy_tags3(file_with_tags, file_with_tags2):
     assert set(d2['artist']) == set(['The XX'])
     assert set(d2['other']) == set(['yes'])
 
+
 def test_copy_tags_over(file_with_tags, file_with_tags2):
     d1a = attr.read_tags_as_dict(file_with_tags)
     source_tags = attr.read_tags_as_dict(file_with_tags)
@@ -168,6 +180,7 @@ def test_copy_tags_over(file_with_tags, file_with_tags2):
     d2 = attr.read_tags_as_dict(file_with_tags2)
     assert d1a == d1b
     assert d1a == d2
+
 
 def test_copy_tags_over2(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
@@ -181,6 +194,7 @@ def test_copy_tags_over2(file_with_tags, file_with_tags2):
     assert set(d2['genre']) == set(['indie', 'pop'])
     assert 'artist' not in d2.keys()
     assert 'other' not in d2.keys()
+
 
 def test_copy_tags_over3(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]

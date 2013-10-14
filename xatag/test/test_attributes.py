@@ -11,6 +11,7 @@ XATAG_TAGS = {
     'user.org.xatag.tags.artist': 'The XX'
     }
 
+
 @pytest.fixture
 def file_with_tags(tmpdir):
     f = tmpdir.join('test.txt')
@@ -23,9 +24,11 @@ def file_with_tags(tmpdir):
         x[k] = v
     return path
 
+
 def test_read_tag_keys(file_with_tags):
     keys = read_tag_keys(file_with_tags)
     assert set(keys) == set(['', 'genre', 'artist'])
+
 
 def test_read_tags_as_dict(file_with_tags):
     tags = read_tags_as_dict(file_with_tags)
@@ -34,6 +37,7 @@ def test_read_tags_as_dict(file_with_tags):
                     'artist': ['The XX']
                     }
 
+
 def test_is_xatag_xattr_key():
     assert is_xatag_xattr_key('user.org.xatag.tags')
     assert is_xatag_xattr_key('user.org.xatag.tags.whatever')
@@ -41,12 +45,14 @@ def test_is_xatag_xattr_key():
     assert is_xatag_xattr_key('org.xatag.tags.whatever')
     assert not is_xatag_xattr_key('anything else')
 
+
 def test_xatag_to_xattr_key():
     assert xatag_to_xattr_key('') == 'user.org.xatag.tags'
     assert xatag_to_xattr_key('tags') == 'user.org.xatag.tags'
     assert xatag_to_xattr_key('other') == 'user.org.xatag.tags.other'
     tag = Tag('genre', 'classical')
     assert xatag_to_xattr_key(tag) == 'user.org.xatag.tags.genre'
+
 
 def test_xattr_value_to_list():
     assert xattr_value_to_list('') == []
@@ -59,9 +65,11 @@ def test_xattr_value_to_list():
     assert (xattr_value_to_list('one; two words   ;\nthree\t')
             == ['one', 'two words', 'three'])
 
+
 def test_list_to_xattr_value():
     assert list_to_xattr_value([]) == ''
     assert list_to_xattr_value(["one", "   two words\n"]) == 'one;two words'
+
 
 def test_remove_tag_values_from_xattr_value():
     assert remove_tag_values_from_xattr_value('one', 'one') == ''

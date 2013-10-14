@@ -11,6 +11,7 @@ XATAG_TAGS = {
     'user.org.xatag.tags.artist': 'The XX'
     }
 
+
 @pytest.fixture
 def file_with_tags(tmpdir):
     f = tmpdir.join('test.txt')
@@ -23,6 +24,7 @@ def file_with_tags(tmpdir):
         x[k] = v
     return path
 
+
 @pytest.fixture
 def tag_dict1():
     return {'': ['some', 'simple', 'tags'],
@@ -31,12 +33,14 @@ def tag_dict1():
             'third': ['a', 'b']
             }
 
+
 @pytest.fixture
 def tag_dict2():
     return {'': ['some', 'other', 'tags'],
             'scope': ['hacking', 'programming'],
             'second': ['another', 'tag']
             }
+
 
 @pytest.fixture
 def tag_dict_with_empty_vals():
@@ -46,7 +50,8 @@ def tag_dict_with_empty_vals():
             'third': ['a', 'b']
             }
 
-# TODO
+
+# TODO but pretty well tested already in test_cli.py
 from StringIO import StringIO
 def test_print_file_tags(file_with_tags):
     out = StringIO()
@@ -54,12 +59,14 @@ def test_print_file_tags(file_with_tags):
     output = out.getvalue().strip()
     pass
 
+
 def test_merge_tags(tag_dict1, tag_dict2):
     m = merge_tags(tag_dict1, tag_dict2)
     assert set(m['']) == set(['some', 'other', 'simple', 'tags'])
     assert set(m['scope']) == set(['home', 'work', 'hacking', 'programming'])
     assert set(m['first']) == set(['one', 'tag'])
     assert set(m['second']) == set(['another', 'tag'])
+
 
 def test_subtract_tags(tag_dict1, tag_dict_with_empty_vals):
     s = subtract_tags(tag_dict1, tag_dict_with_empty_vals)
@@ -69,10 +76,10 @@ def test_subtract_tags(tag_dict1, tag_dict_with_empty_vals):
     assert 'second' not in s.keys()
     assert 'third' not in s.keys()
 
+
 def test_select_tags(tag_dict1, tag_dict_with_empty_vals):
     s = select_tags(tag_dict1, tag_dict_with_empty_vals)
     assert set(s['']) == set(['some', 'simple'])
     assert set(s['scope']) == set(tag_dict1['scope'])
     assert 'first' not in s.keys()
     assert 'second' not in s.keys()
-    

@@ -91,6 +91,7 @@ def tmpfile(tmpdir):
         x[k] = v
     return path
 
+
 @pytest.fixture
 def tmpfile2(tmpdir):
     tags = {
@@ -105,6 +106,7 @@ def tmpfile2(tmpdir):
     for k, v in tags.items():
         x[k] = v
     return path
+
 
 def test_parse_tags():
     cli_tags = ["tag", "two words", "key:value", "key2:value1;value2"]
@@ -121,8 +123,10 @@ def test_parse_tags():
     assert tags[4].value == 'value2'
     assert len(tags) == 5
 
+
 def test_fix_arguments():
     pass
+
 
 def test_extract_options():
     arguments = {
@@ -138,6 +142,7 @@ def test_extract_options():
     assert options['opt3'] == 'c'
     assert options['files'] == ['f1', 'f2', 'longest']
     assert options['longest_filename'] == 7
+
 
 def test_parse_cli():
     argv=['-a', 'tag', 'f1', 'f2']
@@ -175,20 +180,24 @@ def test_parse_cli():
 # These are not unit tests, but this functional testing needs to be done
 # anyway and this seems like a fine place to put it.
 
+
 def standardize_output(out):
     out = re.sub('^.*/', '', out, flags=re.MULTILINE)
     out = re.sub(' +', ' ', out, flags=re.MULTILINE)
     out = re.sub(' $', '', out, flags=re.MULTILINE)
     return out
 
+
 def compare_output(str1, str2):
     return standardize_output(str1) == standardize_output(str2)
+
 
 def get_stdout(capsys):
     stdout, stderr = capsys.readouterr()
     stdout=standardize_output(stdout)
     print stdout
     return stdout
+
 
 def test_cmd_add(tmpfile, tmpfile2, capsys):
 
@@ -223,6 +232,7 @@ test2.txt: genre: classical
 test2.txt: new key: tag1 tag2
 """
     assert compare_output(stdout, gold)
+
 
 def test_cmd_list(tmpfile, tmpfile2, capsys):
 
@@ -294,8 +304,8 @@ test2.txt: tags:tag2,tags:tag3,genre:classical
 """
     assert compare_output(stdout, gold)
 
-def test_cmd_set(tmpfile, tmpfile2, capsys):
 
+def test_cmd_set(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-s', 'tag', 'genre:awesome', '-f', tmpfile,
                     '-f', tmpfile2])
 
@@ -309,8 +319,8 @@ test2.txt: genre: awesome
 """
     assert compare_output(stdout, gold)
 
-def test_cmd_set_all(tmpfile, tmpfile2, capsys):
 
+def test_cmd_set_all(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-S', 'tag', 'genre:awesome', '-f', tmpfile,
                     '-f', tmpfile2])
 
@@ -323,8 +333,8 @@ test2.txt: genre: awesome
 """
     assert compare_output(stdout, gold)
 
-def test_cmd_copy(tmpfile, tmpfile2, capsys):
 
+def test_cmd_copy(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-c', tmpfile, tmpfile2])
 
     stdout = get_stdout(capsys)
@@ -335,8 +345,8 @@ test2.txt: genre: classical indie pop
 """
     assert compare_output(stdout, gold)
 
-def test_cmd_copy2(tmpfile, tmpfile2, capsys):
 
+def test_cmd_copy2(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-c', "-t", "tag1", tmpfile, tmpfile2])
     print
     run_cli(USAGE, ['-c', "-t", "tags:", tmpfile, tmpfile2])
@@ -352,8 +362,8 @@ test2.txt: genre: classical
     assert compare_output(stdout, gold)
 
 
-def test_cmd_copy3(tmpfile, tmpfile2, capsys):
 
+def test_cmd_copy3(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-c', "-t", ":", tmpfile, tmpfile2])
 
     stdout = get_stdout(capsys)
@@ -363,8 +373,8 @@ test2.txt: genre: classical
 """
     assert compare_output(stdout, gold)
 
-def test_cmd_copy4(tmpfile, tmpfile2, capsys):
 
+def test_cmd_copy4(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-c', "-nt", "tag1", tmpfile, tmpfile2])
 
     stdout = get_stdout(capsys)
@@ -375,8 +385,8 @@ test2.txt: genre: classical indie pop
 """
     assert compare_output(stdout, gold)
 
-def test_cmd_copy_over(tmpfile, tmpfile2, capsys):
 
+def test_cmd_copy_over(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-C', tmpfile, tmpfile2])
     print
     run_cli(USAGE, ['-C', "-t", "genre:", tmpfile, tmpfile2])
@@ -396,8 +406,8 @@ test2.txt: artist: 'The XX'
 """
     assert compare_output(stdout, gold)
 
-def test_cmd_delete(tmpfile, tmpfile2, capsys):
 
+def test_cmd_delete(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-d', "tag1", tmpfile, tmpfile2])
     print
     run_cli(USAGE, ['-d', "-nt", ":", tmpfile, tmpfile2])
@@ -422,8 +432,8 @@ test2.txt:
 """
     assert compare_output(stdout, gold)
 
-def test_cmd_delete(tmpfile, tmpfile2, capsys):
 
+def test_cmd_delete(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-D', tmpfile, tmpfile2])
     print
     run_cli(USAGE, ['-l', tmpfile, tmpfile2])
