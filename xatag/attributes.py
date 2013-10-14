@@ -37,7 +37,8 @@ def xattr_to_xatag_key(key):
     key = tag.format_tag_key(key)
     key = key.replace('user.' + XATTR_PREFIX, '')
     key = key.replace(XATTR_PREFIX, '')
-    if key != '' and key[0] == '.': key = key[1:]
+    if key != '' and key[0] == '.': 
+        key = key[1:]
     return key
 
 def xattr_value_to_list(tag_string):

@@ -7,7 +7,7 @@ from xatag.tag import Tag
 import xatag.operations as op
 from xatag.attributes import read_tags_as_dict
 
-command_list = [
+COMMAND_LIST = [
     "--add",
     "--interactive",
     "--list",
@@ -24,10 +24,12 @@ command_list = [
     ]
 
 def parse_tags(cli_tags):
+    """Return a list of Tags representing the array of tag arguments."""
     # Tag.from_string returns a list, so explode it
     return [t for tag in cli_tags for t in Tag.from_string(tag)]
 
 def fix_arguments(arguments):
+    """Make canonical keys, renaming or combining various keys in the dict."""
     # When the user manually specifies that an argument is a file or tag, that
     # goes to a separate key.  Make a new list with the values in both keys. 
     files = arguments['--file'] + arguments['<file>']
@@ -44,7 +46,7 @@ def extract_options(arguments):
     """Make an options dict for passing to the cmd functions."""
     options = {}
     for key, val in arguments.items():
-        if not key in command_list:
+        if not key in COMMAND_LIST:
             if key.startswith('--'): 
                 newkey = key[2:]
             elif key.startswith('-'): 
@@ -59,16 +61,22 @@ def extract_options(arguments):
     return options
                 
 def parse_cli(usage, argv=None):
+    """Parse ARGV using the usage docstring."""
     arguments = docopt(usage, argv=argv, version='xatag version 0.0.0')
     fix_arguments(arguments)
-    command = False
-    for c in command_list:
-        if c in arguments.keys() and arguments[c]: 
-            command = c
-            break
-    if not command:
-        # TODO: test if all the commands are there
+    # The command to run is the key in arguments dict with a true value, where
+    # that key is also in COMMAND_LIST.  
+    commands = [k for k in arguments.keys()
+                if k in COMMAND_LIST and arguments[k]]
+    # Hopefully the user only specified one, and if not then docopt probably
+    # caught it.  But just in case...
+    if len(commands) > 1: 
+        sys.exit("Multiple commands specified: " + 
+                 ','.join(commands))
+    if len(commands) == 0:
         command = ('--add' if arguments['<tag>'] else '--list')
+    else:
+        command = commands[0]
     # This works because of convention.  '--some-name' is sent to
     # 'cmd_some_name', which is called with the arguments array.
     command = globals()["cmd_" + command[2:].replace('-', '_')]
@@ -76,56 +84,68 @@ def parse_cli(usage, argv=None):
     return (command, options)
 
 def run_cli(usage, argv=None):
+    """Parse ARGV and run what was specified."""
     command, options = parse_cli(usage, argv=argv)
     command(options)
 
 def apply_to_files(fun, options, files=False):
-    if not files: files = options['files']
-    for file in files:
-        if os.path.exists(file):
+    """Call fun on files or options['files'], with error checking."""
+    if not files: 
+        files = options['files']
+    for fname in files:
+        if os.path.exists(fname):
             try:
-                fun(file)
+                fun(fname)
             except IOError:
-                warn("could not write extended attributes: " + file)
+                warn("could not write extended attributes: " + fname)
             # xattr throws this when trying to reference an attribute that
             # exists if the file isn't readable
             except KeyError:
-                warn("could not read extended attributes: " + file)
+                warn("could not read extended attributes: " + fname)
         else:
-            warn("path does not exist: " + file)
+            warn("path does not exist: " + fname)
 
 def cmd_add(options): 
+    """Perform the actions corresponding to --add."""
     def per_file(fname):
         op.add_tags(fname, **options)
         op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
                 
 def cmd_list(options):
+    """Perform the actions corresponding to --list."""
     def per_file(fname):
         op.print_file_tags(fname, subset=True, **options)
     options['quiet'] = False
     apply_to_files(per_file, options)
 
 def cmd_set(options):
+    """Perform the actions corresponding to --set."""
     def per_file(fname):
         op.set_tags(fname, **options)
         op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
 
 def cmd_set_all(options):
+    """Perform the actions corresponding to --set-all."""
     def per_file(fname):
         op.set_all_tags(fname, **options)
         op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
 
 def validate_source_and_destinations(options):
+    """Check that the source and each destination exists.
+
+    If a particular destination doesn't exist, then print a warning but run on
+    the remaining destinations.
+    """
     source = options['source']
     destinations = []
-    for d in options['destinations']:
-        if os.path.exists(d):
-            destinations.append(d)
+    for dest in options['destinations']:
+        if os.path.exists(dest):
+            destinations.append(dest)
         else:
-            warn("destination path does not exist: " + d)
+            warn("destination path does not exist: " + dest)
     if not os.path.exists(source):
         source = False
         warn("source path does not exist: " + source)
@@ -133,6 +153,7 @@ def validate_source_and_destinations(options):
     options['destinations'] = destinations
 
 def try_read_tags_as_dict(source):
+    """Call read_tags_as_dict, exiting on an exception."""
     try:
         source_tags = read_tags_as_dict(source)
     except:
@@ -140,9 +161,10 @@ def try_read_tags_as_dict(source):
     return source_tags
 
 def cmd_copy(options):
-    def per_file(d):
-        op.copy_tags(source_tags, d, **options)
-        op.print_file_tags(d, **options)
+    """Perform the actions corresponding to --copy."""
+    def per_file(dest):
+        op.copy_tags(source_tags, dest, **options)
+        op.print_file_tags(dest, **options)
     validate_source_and_destinations(options)
     source = options['source']
     destinations = options['destinations']
@@ -155,9 +177,10 @@ def cmd_copy(options):
         apply_to_files(per_file, options, files=destinations)
 
 def cmd_copy_over(options):
-    def per_file(fname):
-        op.copy_tags_over(source_tags, fname, **options)
-        op.print_file_tags(fname, **options)
+    """Perform the actions corresponding to --copy-over."""
+    def per_file(dest):
+        op.copy_tags_over(source_tags, dest, **options)
+        op.print_file_tags(dest, **options)
     validate_source_and_destinations(options)
     source = options['source']
     destinations = options['destinations']
@@ -170,17 +193,20 @@ def cmd_copy_over(options):
         apply_to_files(per_file, options, files=destinations)
 
 def cmd_delete(options):
+    """Perform the actions corresponding to --delete."""
     def per_file(fname):
         op.delete_tags(fname, **options)
         op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
         
 def cmd_delete_all(options):
+    """Perform the actions corresponding to --delete-all."""
     def per_file(fname):
         op.delete_all_tags(fname)
     apply_to_files(per_file, options)
 
 def cmd_execute(options):
+    """Perform the actions corresponding to --execute."""
     # When parsing an '--execute' call, everything is put in the array for
     # <tag> no matter what.  A single tag is a valid query string, so let's
     # just call any list of arguments with one element a query.

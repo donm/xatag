@@ -7,16 +7,16 @@ from xatag.tag import format_tag_value
 def tag_list_to_dict(tags):
     """Convert a list of Tags to a dict, where values are lists of strings."""
     try:
-        k = tags.keys()
+        tags.keys()
         return tags
-    except:
+    except AttributeError:
         tags = listify(tags)
         tag_dict = defaultdict(list)
-        for t in tags:
-            tag_dict[t.key].append(t.value)
+        for tag in tags:
+            tag_dict[tag.key].append(tag.value)
         return tag_dict
 
-def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', vsep=' ', 
+def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ', 
                    one_line=False, key_val_pairs=False, out=None):
     """Print the tags for a file in a nice way."""
 
@@ -26,11 +26,12 @@ def print_tag_dict(tag_dict, prefix='', fsep=':', ksep=':', vsep=' ',
     if not out: out = sys.stdout
 
     def write_tag(key_name, dict_key, last_tag=False):
+        """Print a single tag formatted properly."""
         padding = max(1, longest_tag - len(key_name) + 1)
         sorted_vals = sorted(tag_dict[dict_key])
         do_quote_vals = (vsep==' ')
-        formatted_vals = map((lambda x: format_tag_value(x, do_quote_vals)), 
-                             sorted_vals)
+        formatted_vals = [format_tag_value(x, do_quote_vals) 
+                          for x in sorted_vals]
         if key_val_pairs:
             if one_line: 
                 for val in formatted_vals[0:-1]:
@@ -81,8 +82,8 @@ def merge_tags(tags1, tags2):
                                       if v not in set(tags2[k])]
         else:
             combined[k] = tags1[k]
-    for k in [k for k in tags2.keys() if k not in tags1.keys()]:
-        combined[k] = tags2[k]        
+    for key in [k for k in tags2.keys() if k not in tags1.keys()]:
+        combined[key] = tags2[key]        
     return combined
 
 # For these next two functions, the second argument can be a tag dict from a

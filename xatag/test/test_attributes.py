@@ -1,4 +1,3 @@
-#pylint: disable-all
 import pytest
 
 from xatag.tag import Tag
@@ -29,8 +28,8 @@ def test_read_tag_keys(file_with_tags):
 
 def test_read_tags_as_dict(file_with_tags):
     tags = read_tags_as_dict(file_with_tags)  
-    assert tags == {'': ['tag1','tag2','tag3','tag4','tag5'],
-                    'genre': ['indie','pop'],
+    assert tags == {'': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
+                    'genre': ['indie', 'pop'],
                     'artist': ['The XX']
                     }
 
@@ -72,6 +71,7 @@ def test_remove_tag_values_from_xattr_value():
     assert remove_tag_values_from_xattr_value('one', 'one', True) == 'one'
     assert remove_tag_values_from_xattr_value('one;two;three;four',
                                               ['two','five'], True) == 'two'
-    assert remove_tag_values_from_xattr_value('one;two', [''], True) == 'one;two'
+    assert (remove_tag_values_from_xattr_value('one;two', [''], True) 
+            == 'one;two')
     assert remove_tag_values_from_xattr_value('', ['notfound'], True) == ''
 

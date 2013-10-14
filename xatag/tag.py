@@ -1,10 +1,10 @@
 import xatag.constants as constants
-import xattr
 
 class Tag:
     """Simple container for tag key/value pairs."""
     def __init__(self, key, value=''):
-        if key == 'tags': key = ''
+        if key == 'tags':
+            key = ''
         self.key = format_tag_key(key)
         self.value = format_tag_value(value)
 
@@ -52,7 +52,7 @@ def format_tag_value(string, quote=False):
 
     """
     string = " ".join(string.strip().split())
-    if quote==True:
+    if quote == True:
         string = "'" + string + "'" if ' ' in string else string
     return string
 

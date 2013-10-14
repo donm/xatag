@@ -1,10 +1,7 @@
 import sys
 import xattr
-import os
-from collections import defaultdict
 from recoll import recoll
 
-from xatag.helpers import listify
 import xatag.tag_dict as xtd 
 import xatag.attributes as attr 
 from xatag.tag import Tag
@@ -74,6 +71,12 @@ def set_all_tags(fname, tags, **unused):
     set_tags(fname, tags)
 
 def delete_tags(fname, tags, complement=False, quiet=False, **unused):
+    """Delete tags from fname.
+    
+    A tag with tag.value=='' will delete all tags for that key.
+
+    If complement is true, then delete all tags other than those given.  
+    """
     if complement:
         return delete_other_tags(fname, tags, quiet=quiet)
     else:
@@ -152,12 +155,12 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
     elif terse:
         tags = xtd.tag_list_to_dict(tags)
         if complement:
-            just_tag_keys_dict = {k:'' for k in tag_dict if k not in tags}
+            just_tag_keys_dict = {key:'' for key in tag_dict if key not in tags}
         else:
-            just_tag_keys_dict = {k:'' for k in tags}
+            just_tag_keys_dict = {key:'' for key in tags}
         tag_dict = subsetted_tags(tag_dict, just_tag_keys_dict,
                                   complement=complement)
-    xtd.print_tag_dict(tag_dict, prefix=prefix, fsep=fsep, ksep=ksep, 
+    xtd.print_tag_dict(tag_dict, prefix=prefix, ksep=ksep, 
                        vsep=vsep, one_line=one_line, 
                        key_val_pairs=key_val_pairs, out=out)
 
