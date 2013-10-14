@@ -9,43 +9,43 @@ from xatag.tag import Tag
 USAGE="""xatag - file tagging using extended attributes (xattr).
 
 Usage:
-  xatag [options] ([-a] | -s | -S | -d)      <tag> <file>... 
-  xatag [options] ([-a] | -s | -S | -d | -l) <file>... -t <tag>...    
+  xatag [options] ([-a] | -s | -S | -d)      <tag> <file>...
+  xatag [options] ([-a] | -s | -S | -d | -l) <file>... -t <tag>...
   xatag [options] ([-a] | -s | -S | -d | -l) <tag>...  -f <file>...
-  xatag [options] -l <file>... 
+  xatag [options] -l <file>...
   xatag [options] (-c | -C) <src> <dest>... [-t <tag>]...
   xatag [options] -D  <file>...
   xatag [options] -x  <tag>... | <query_string>
-  xatag [options] -e  <tag>...           
-  xatag [options] -m          
+  xatag [options] -e  <tag>...
+  xatag [options] -m
   xatag  -h | --help
   xatag  -v | --version
 
 File Tagging Commands:
   -a --add          Add all of the TAG(s) to the FILE(s).  This is the
                     default command if you provide more than one argument.
-  -l --list         List the tags currently written on FILE(s).  
-  -s --set          Set the tags of the given FILE(s) to the TAG(s) given, erasing 
+  -l --list         List the tags currently written on FILE(s).
+  -s --set          Set the tags of the given FILE(s) to the TAG(s) given, erasing
                     any previous xatag data in the extended attributes in the
                     same fields as new TAG(s).
-  -S --set-all      Set the tags of the given FILE(s) to the TAG(s) given, erasing 
+  -S --set-all      Set the tags of the given FILE(s) to the TAG(s) given, erasing
                     any previous xatag data in the extended attributes.
                     Equivalent to 'xatag -D <file>...; xatag -a <tag> <file>...'
   -d --delete       Remove all of the given TAG(s) to the given FILE(s).
   -D --delete-all   Remove all xatag tags from the FILE(s)
   -c --copy         Copy xatag fields from SRC to DEST(s)
-  -C --copy-over    Copy xatag fields from SRC to DEST(s), erasing any 
+  -C --copy-over    Copy xatag fields from SRC to DEST(s), erasing any
                     previous xatag data in the extended attributes of DEST(s).
                     Equivalent to 'xatag -D <file>...; xatag -c <tag> <file>...'
   -x --execute      Execute a query.
 
 Tag Management Commands:
-  -e --enter        Enter TAG into the known tag list.  Adding a tag to 
+  -e --enter        Enter TAG into the known tag list.  Adding a tag to
                     the list will prohibit the warning printed when using an
                     unknown tag.  Known tags are also used for shell
                     completion and interactively choosing tags to apply to a
                     file.
-  -m --manage       Manage. 
+  -m --manage       Manage.
 
 Argument Flags:
   -t <tag> --tag=<tag>     The following argument is a tag; when used, all
@@ -57,18 +57,18 @@ Argument Flags:
 Genreal Options:
   -n --complement                    The -n stands for "not".  Can be used on -d, -l, and -c/-C.
   -q --quiet                         Be as quiet as possible.
-  -T --terse                         Only print values for tag keys that have been altered.  
+  -T --terse                         Only print values for tag keys that have been altered.
      --debugging                     Print debugging messages.
   -F <fsep> --file-separator=<fsep>  [default: :]
   -K <ksep> --key-separator=<ksep>   [default: :]
   -V <vsep> --val-separator=<vsep>   [default:  ] (a space)
   -k --key-val-pairs
   -o --one-line
-  -v --version                       Print version.    
+  -v --version                       Print version.
   -h --help                          You managed to find this already.
 
-  
-When reading and writing extended attributes, symlinks are followed by default.  
+
+When reading and writing extended attributes, symlinks are followed by default.
 """
 
 
@@ -171,13 +171,14 @@ def test_parse_cli():
     assert options['tags'] == [Tag('', 'tag')]
     assert options['source'] == 's'
     assert options['destinations'] == ['d1', 'd2']
-    
+
 # These are not unit tests, but this functional testing needs to be done
 # anyway and this seems like a fine place to put it.
-    
+
 def standardize_output(out):
     out = re.sub('^.*/', '', out, flags=re.MULTILINE)
     out = re.sub(' +', ' ', out, flags=re.MULTILINE)
+    out = re.sub(' $', '', out, flags=re.MULTILINE)
     return out
 
 def compare_output(str1, str2):
@@ -282,8 +283,8 @@ test2.txt: tags: tag2
 test2.txt: tags: tag3
 test2.txt: genre: classical
 
-test.txt: tags:"tag1 tag2 'two words'" artist:"'The XX'" genre:"indie pop" 
-test2.txt: tags:"tag2 tag3" genre:"classical" 
+test.txt: tags:"tag1 tag2 'two words'" artist:"'The XX'" genre:"indie pop"
+test2.txt: tags:"tag2 tag3" genre:"classical"
 
 test.txt: tags:tag1 tags:tag2 tags:'two words' artist:'The XX' genre:indie genre:pop
 test2.txt: tags:tag2 tags:tag3 genre:classical
@@ -416,7 +417,7 @@ test.txt: tags: tag2 'two words'
 test2.txt: tags: tag2 tag3
 
 test.txt: tags: 'two words'
-test2.txt: 
+test2.txt:
 
 """
     assert compare_output(stdout, gold)
@@ -428,8 +429,5 @@ def test_cmd_delete(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-l', tmpfile, tmpfile2])
     stdout = get_stdout(capsys)
 
-    gold="""
-test.txt: 
-test2.txt: 
-"""
+    gold="\ntest.txt: \ntest2.txt: \n"
     assert compare_output(stdout, gold)

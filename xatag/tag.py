@@ -1,5 +1,6 @@
 import xatag.constants as constants
 
+
 class Tag:
     """Simple container for tag key/value pairs."""
     def __init__(self, key, value=''):
@@ -33,26 +34,27 @@ class Tag:
             return self.value
         else:
             return self.key + ":" + self.value
-        
+
     def __eq__(self, other):
         if type(other) is type(self):
             return self.__dict__ == other.__dict__
         return False
 
+
 def format_tag_key(string):
     """Format tag key string when reading or writing to extended attributes."""
     return " ".join(string.strip().split())
 
+
 # quote when printing, not when reading or writing
 def format_tag_value(string, quote=False):
     """Format tag value string when reading or writing to extended attributes.
-    
+
     When formatting the tag value for printing, set quote=True to quote tags
     with whitespace.
 
     """
     string = " ".join(string.strip().split())
-    if quote == True:
+    if quote:
         string = "'" + string + "'" if ' ' in string else string
     return string
-

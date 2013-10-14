@@ -3,10 +3,12 @@ from xatag.helpers import listify
 import xatag.tag as tag
 from xatag.constants import XATTR_PREFIX, XATTR_FIELD_SEPARATOR
 
+
 def read_tag_keys(fname):
     """Return a list of the xatag keys of the xattr fields in fname."""
     attributes = xattr.xattr(fname)
     return [xattr_to_xatag_key(k) for k in attributes if is_xatag_xattr_key(k)]
+
 
 def read_tags_as_dict(fname):
     """Return a dict of the xattr fields in fname in the xatag namespace."""
@@ -15,10 +17,12 @@ def read_tags_as_dict(fname):
     return {xattr_to_xatag_key(k): xattr_value_to_list(attributes[k])
             for k in attributes if is_xatag_xattr_key(k)}
 
+
 def is_xatag_xattr_key(name):
     """Check if name starts with XATTR_PREFIX."""
-    return (name.startswith('user.' + XATTR_PREFIX) or 
+    return (name.startswith('user.' + XATTR_PREFIX) or
             name.startswith(XATTR_PREFIX))
+
 
 def xatag_to_xattr_key(tag_or_key):
     """Add XATTR_PREFIX to the given string or to the tag's key."""
@@ -29,28 +33,32 @@ def xatag_to_xattr_key(tag_or_key):
     key = tag.format_tag_key(key)
     if key == '' or key == 'tags':
         return 'user.' + XATTR_PREFIX
-    else: 
+    else:
         return 'user.' + XATTR_PREFIX + '.' + key
+
 
 def xattr_to_xatag_key(key):
     """Remove XATTR_PREFIX from the given string."""
     key = tag.format_tag_key(key)
     key = key.replace('user.' + XATTR_PREFIX, '')
     key = key.replace(XATTR_PREFIX, '')
-    if key != '' and key[0] == '.': 
+    if key != '' and key[0] == '.':
         key = key[1:]
     return key
 
+
 def xattr_value_to_list(tag_string):
     """Split the value of a tag xattr and return a list of tag values."""
-    return [tag.format_tag_value(x) 
+    return [tag.format_tag_value(x)
             for x in tag_string.split(XATTR_FIELD_SEPARATOR)
             if tag.format_tag_value(x) != '']
 
+
 def list_to_xattr_value(tag_list):
     """Return a xattr value that represents the tags in tag_list."""
-    return XATTR_FIELD_SEPARATOR.join(sorted(tag.format_tag_value(x) 
+    return XATTR_FIELD_SEPARATOR.join(sorted(tag.format_tag_value(x)
                                              for x in tag_list))
+
 
 # TODO: optionally print when the tag wasn't there to begin with.  it's
 # especially important if you mean
@@ -71,8 +79,9 @@ def remove_tag_values_from_xattr_value(xattr_value, tag_values,
                       if value in tag_values_set]
     else:
         values = [value for value in current_values
-                  if value not in tag_values_set] 
+                  if value not in tag_values_set]
     return list_to_xattr_value(values)
+
 
 def add_tag_values_to_xattr_value(xattr_value, values_to_add):
     """Add the values in values_to_remove from the xattr formatted value."""
