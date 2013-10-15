@@ -15,6 +15,18 @@ def tmp_known_tags(tmpdir):
         f.write("  key1  : val1   ;  val2  \n")
     return fname
 
+def test_create_config_dir(tmpdir, capsys):
+    os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
+    create_config_dir()
+    fname = tmpdir.join('known_tags')
+    with fname.open('r') as f:
+        known_tags_file = f.read()
+    assert known_tags_file == constants.DEFAULT_KNOWN_TAGS_FILE
+    capsys.readouterr()
+    create_config_dir()
+    out, err = capsys.readouterr()
+    print err
+    assert err.startswith('xatag config dir already exists:')
 
 def test_get_config_dir(tmpdir):
     # TODO: mock the other possibilities

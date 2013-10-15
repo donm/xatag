@@ -6,28 +6,46 @@ from xatag.warn import warn
 import xatag.constants as constants
 import xatag.tag_dict as xtd
 
-def get_config_dir(path=None):
-    envvar = os.environ.get(constants.CONFIG_DIR_VAR)
-    if envvar:
-        envvar = os.path.expanduser(envvar)
-        envvar = os.path.expandvars(envvar)
-    if path:
-        if not os.path.isdir(path):
-            attempt = path
-            path = None
-    elif envvar:
-        attempt = envvar
-        if os.path.isdir(envvar):
-            path = envvar
-    else:
-        default = os.path.expanduser(constants.DEFAULT_CONFIG_DIR)
-        attempt = default
-        if os.path.isdir(default):
-            path = default
 
-    if not path:
-        warn("xatag config dir is missing or cannot be read: " + attempt)
-    return path
+def create_config_dir(path=None):
+    confdir = guess_config_dir(path=None)
+    # check that the directory doesn't exist or is empty
+    if os.path.isdir(confdir) and os.listdir(confdir):
+        warn("xatag config dir already exists: " + confdir)
+    else:
+        try:
+            os.mkdir(confdir)
+        except:
+            warn("cannot make xatag config dir: " + confdir)
+        known_tags_file = os.path.join(confdir, constants.KNOWN_TAGS_FILE)
+        try:
+            with open(known_tags_file, 'w') as f:
+                f.write(constants.DEFAULT_KNOWN_TAGS_FILE)
+        except:
+            warn("cannot make known_tags file: " + known_tags_file)
+
+
+def guess_config_dir(path=None):
+    if path:
+        guess = path
+    else:
+        envvar = os.environ.get(constants.CONFIG_DIR_VAR)
+        if envvar:
+            envvar = os.path.expanduser(envvar)
+            envvar = os.path.expandvars(envvar)
+            guess = envvar
+        else:
+            guess = os.path.expanduser(constants.DEFAULT_CONFIG_DIR)
+    return guess
+
+
+def get_config_dir(path=None):
+    guess = guess_config_dir(path=path)
+    if os.path.isdir(guess):
+        return guess
+    else:
+        warn("xatag config dir is missing or cannot be read: " + guess)
+        return None
 
 
 def get_known_tags_file():

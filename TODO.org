@@ -1,5 +1,5 @@
 * for 1.0
-- set up new .xatag directory
+- missing some tests for config.py
 - add license info
 
 ** recoll

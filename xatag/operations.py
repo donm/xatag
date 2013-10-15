@@ -1,6 +1,6 @@
 import sys
 import xattr
-from recoll import recoll
+# from recoll import recoll
 
 import xatag.tag_dict as xtd
 import xatag.attributes as attr
