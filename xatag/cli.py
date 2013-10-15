@@ -6,6 +6,7 @@ from xatag.warn import warn
 from xatag.tag import Tag
 import xatag.operations as op
 from xatag.attributes import read_tags_as_dict
+import xatag.config as config
 
 COMMAND_LIST = [
     "--add",
@@ -117,6 +118,8 @@ def cmd_add(options):
     def per_file(fname):
         op.add_tags(fname, **options)
         op.print_file_tags(fname, **options)
+    if not options['no_warn'] or options['warn_once']:
+        config.warn_new_tags(options['tags'], options['warn_once'])
     apply_to_files(per_file, options)
 
 
@@ -133,6 +136,8 @@ def cmd_set(options):
     def per_file(fname):
         op.set_tags(fname, **options)
         op.print_file_tags(fname, **options)
+    if not options['no_warn'] or options['warn_once']:
+        config.warn_new_tags(options['tags'], options['warn_once'])
     apply_to_files(per_file, options)
 
 
@@ -141,6 +146,8 @@ def cmd_set_all(options):
     def per_file(fname):
         op.set_all_tags(fname, **options)
         op.print_file_tags(fname, **options)
+    if not options['no_warn'] or options['warn_once']:
+        config.warn_new_tags(options['tags'], options['warn_once'])
     apply_to_files(per_file, options)
 
 

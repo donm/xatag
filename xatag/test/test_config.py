@@ -5,14 +5,6 @@ import os
 from xatag.config import *
 import xatag.constants as constants
 
-NON_XATAG_TAGS = {'user.other.tag':  'something'}
-XATAG_TAGS = {
-    'user.org.xatag.tags': 'tag1;tag2;tag3;tag4;tag5',
-    'user.org.xatag.tags.genre': 'indie;pop',
-    'user.org.xatag.tags.artist': 'The XX'
-    }
-
-
 @pytest.fixture
 def tmp_known_tags(tmpdir):
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)

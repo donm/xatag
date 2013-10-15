@@ -5,6 +5,7 @@ import xattr
 
 from xatag.cli import *
 from xatag.tag import Tag
+import xatag.constants as constants
 
 USAGE="""xatag - file tagging using extended attributes (xattr).
 
@@ -58,12 +59,14 @@ Genreal Options:
   -n --complement                    The -n stands for "not".  Can be used on -d, -l, and -c/-C.
   -q --quiet                         Be as quiet as possible.
   -T --terse                         Only print values for tag keys that have been altered.
-     --debugging                     Print debugging messages.
   -F <fsep> --file-separator=<fsep>  [default: :]
   -K <ksep> --key-separator=<ksep>   [default: :]
   -V <vsep> --val-separator=<vsep>   [default:  ] (a space)
   -k --key-val-pairs
   -o --one-line
+  -w --no-warn
+  -W --warn-once
+     --debugging                     Print debugging messages.
   -v --version                       Print version.
   -h --help                          You managed to find this already.
 
@@ -232,6 +235,48 @@ test2.txt: genre: classical
 test2.txt: new key: tag1 tag2
 """
     assert compare_output(stdout, gold)
+
+
+@pytest.fixture
+def tmp_known_tags(tmpdir):
+    os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
+    fname = tmpdir.join('known_tags')
+    with fname.open('a') as f:
+        f.write("tags: tag1; tag2\n")
+        f.write("tag3 ; tag\n")
+        f.write("  key1  : val1   ;  val2  \n")
+    return fname
+
+def test_cmd_add2(tmpfile, tmpfile2, tmp_known_tags, capsys):
+
+    run_cli(USAGE, ['-a', 'tag4', tmpfile])
+    run_cli(USAGE, ['-a', '-w', 'tag4', tmpfile])
+    run_cli(USAGE, ['-a', '-W', 'tag4', tmpfile])
+    run_cli(USAGE, ['-a', 'tag4', tmpfile2])
+
+    stdout, stderr = capsys.readouterr()
+
+    print stdout
+    print stderr
+    # The output is all lumped together because, though more difficult to read,
+    # it's a lot easier to copy and paste.
+    gold="""/tmp/pytest-67/test_cmd_add20/test.txt: tags:     tag1 tag2 tag4 'two words'
+/tmp/pytest-67/test_cmd_add20/test.txt: artist:   'The XX'
+/tmp/pytest-67/test_cmd_add20/test.txt: genre:    indie pop
+/tmp/pytest-67/test_cmd_add20/test.txt: tags:     tag1 tag2 tag4 'two words'
+/tmp/pytest-67/test_cmd_add20/test.txt: artist:   'The XX'
+/tmp/pytest-67/test_cmd_add20/test.txt: genre:    indie pop
+/tmp/pytest-67/test_cmd_add20/test.txt: tags:     tag1 tag2 tag4 'two words'
+/tmp/pytest-67/test_cmd_add20/test.txt: artist:   'The XX'
+/tmp/pytest-67/test_cmd_add20/test.txt: genre:    indie pop
+/tmp/pytest-67/test_cmd_add20/test2.txt: tags:     tag2 tag3 tag4
+/tmp/pytest-67/test_cmd_add20/test2.txt: genre:    classical
+"""
+    golderr="""unknown tags: tags:     tag4
+adding new tags: tags:     tag4
+"""
+    assert compare_output(stdout, gold)
+    assert compare_output(stderr, golderr)
 
 
 def test_cmd_list(tmpfile, tmpfile2, capsys):
