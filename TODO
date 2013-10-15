@@ -2,14 +2,14 @@
 # def cmd_enter(options):
 # def cmd_execute(options):
 
-run pylint
 return proper error codes along with warnings
 add license info
 
-load options
 add to list of used tags
 use recoll to print list of tags
-print warning if the tag is new, in case of misspellings
+load options
+set default CLI arguments based on options
+set up new .xatag directory
 
 tell recoll to index the file when changing tags
 

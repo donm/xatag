@@ -1,2 +1,5 @@
 XATTR_PREFIX = 'org.xatag.tags'
 XATTR_FIELD_SEPARATOR = ';'
+DEFAULT_CONFIG_DIR = "~/.xatag/"
+CONFIG_DIR_VAR='XATAG_DIR'
+KNOWN_TAGS_FILE='known_tags'
