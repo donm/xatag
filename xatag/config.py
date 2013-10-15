@@ -95,7 +95,7 @@ def make_known_tags_string(new_tags):
     return new_tag_string
 
 
-def warn_new_tags(tags, add=False):
+def warn_new_tags(tags, add=False, quiet=False):
     """Warn on stderr about the tags that aren't in the known_tags file.
 
     If add==True, then issue the warning but then add the tag to the
@@ -118,10 +118,11 @@ def warn_new_tags(tags, add=False):
     else:
         prefix_str = 'unknown'
 
-    if new_key_string:
-        sys.stderr.write(prefix_str + " keys: " + new_key_string + "\n")
-    for tag_line in new_tag_string.splitlines():
-        sys.stderr.write(prefix_str + " tags: " + tag_line + "\n")
+    if not quiet:
+        if new_key_string:
+            sys.stderr.write(prefix_str + " keys: " + new_key_string + "\n")
+        for tag_line in new_tag_string.splitlines():
+            sys.stderr.write(prefix_str + " tags: " + tag_line + "\n")
 
     if add:
         add_known_tags(new_tags)
