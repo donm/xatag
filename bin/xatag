@@ -49,7 +49,7 @@ Argument Flags:
 
 General Options:
   -n --complement                    The -n stands for "not".  Can be used on -d, -l, and -c/-C.
-  -q --quiet                         Be as quiet as possible.
+  -q --quiet                         Be as quiet as possible.  Implies -w.
   -T --terse                         Only print values for tag keys that have been altered.
   -F <fsep> --file-separator=<fsep>  [default: :]
   -K <ksep> --key-separator=<ksep>   This only affects printing.  [default: :]

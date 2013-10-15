@@ -138,6 +138,7 @@ def test_extract_options():
         'opt3': 'c',
         '--files': ['f1', 'f2', 'longest'],
         '--destinations': ['f3'],
+        '--quiet': True
         }
     options = extract_options(arguments)
     assert options['opt1'] == 'a'
@@ -145,7 +146,7 @@ def test_extract_options():
     assert options['opt3'] == 'c'
     assert options['files'] == ['f1', 'f2', 'longest']
     assert options['longest_filename'] == 7
-
+    assert options['no_warn']
 
 def test_parse_cli():
     argv=['-a', 'tag', 'f1', 'f2']

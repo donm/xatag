@@ -59,6 +59,10 @@ def extract_options(arguments):
                 newkey = key
             newkey = newkey.replace('-', '_')
             options[newkey] = val
+
+    if options['quiet']:
+        options['no_warn'] = True
+
     files_to_print = options['files'] + options['destinations']
     if files_to_print and not ('longest_filename' in options):
         options['longest_filename'] = max(len(f) for f in files_to_print)
