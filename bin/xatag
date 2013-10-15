@@ -39,7 +39,6 @@ Tag Management Commands:
                     unknown tag.  Known tags are also used for shell
                     completion and interactively choosing tags to apply to a
                     file.
-  -m --manage       Manage.
 
 Argument Flags:
   -t <tag> --tag=<tag>     The following argument is a tag; when used, all
@@ -74,7 +73,6 @@ When reading and writing extended attributes, symlinks are followed by default.
 #  -i --interactive  Add and remove tags for FILE interactively.  This is the
 #                    default command if you provide only one argument.
 #  -L --no-follow-symlinks   Not implemented.
-#     --follow-symlinks      The default.
 # The way to do it, if required, is
 #     xattr.xattr(path, options=xattr.XATTR_NOFOLLOW)
 
