@@ -53,7 +53,7 @@ def load_known_tags():
         return None
     known_tags = {}
     for line in lines:
-        if line[0] == '#' or line.strip() == '':
+        if line.strip()[0] == '#' or line.strip() == '':
             continue
         kv = line.split(':')
         if kv == ['']:

@@ -242,3 +242,9 @@ def cmd_execute(options):
         if len(options['<tag>']) == 1:
             options['<query_string>'] = options['<tag>']
             options['<tag>'] = []
+
+
+def cmd_enter(options):
+    """Add tags to the known_tags file."""
+    # Well, that was easy.
+    config.warn_new_tags(options['tags'], add=True)

@@ -6,6 +6,7 @@ import xattr
 from xatag.cli import *
 from xatag.tag import Tag
 import xatag.constants as constants
+import xatag.config as config
 
 USAGE="""xatag - file tagging using extended attributes (xattr).
 
@@ -487,3 +488,13 @@ def test_cmd_delete(tmpfile, tmpfile2, capsys):
 
     gold="\ntest.txt: \ntest2.txt: \n"
     assert compare_output(stdout, gold)
+
+
+def test_cmd_enter(tmp_known_tags):
+    run_cli(USAGE, ['-e', 'tag4', 'newkey:newval', 'key1:val3'])
+    kt = config.load_known_tags()
+    assert kt == {
+        '': ['tag1', 'tag2', 'tag3', 'tag', 'tag4'],
+        'key1': ['val1', 'val2', 'val3'],
+        'newkey': ['newval']
+        }
