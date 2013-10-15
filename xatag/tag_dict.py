@@ -98,7 +98,7 @@ def merge_tags(tags1, tags2):
 # with this key."
 
 def subtract_tags(minuend, subtrahend):
-    """Remove the tag values in subtrahend from minuend.
+    """Return the tag values in minuend with those in subtrahend removed.
 
     If subtrahend has a key with a value of '' in its list, then that will
     remove all tag values from minuend from the same key.
