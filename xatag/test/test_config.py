@@ -5,6 +5,7 @@ import os
 from xatag.config import *
 import xatag.constants as constants
 
+
 @pytest.fixture
 def tmp_known_tags(tmpdir):
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
@@ -14,6 +15,7 @@ def tmp_known_tags(tmpdir):
         f.write("tag3 ; tag4\n")
         f.write("  key1  : val1   ;  val2  \n")
     return fname
+
 
 def test_create_config_dir(tmpdir, capsys):
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
@@ -28,6 +30,14 @@ def test_create_config_dir(tmpdir, capsys):
     print err
     assert err.startswith('xatag config dir already exists:')
 
+def test_guess_confid_dir(tmpdir):
+    assert guess_config_dir("whatever_is_passed") == "whatever_is_passed"
+    os.environ[constants.CONFIG_DIR_VAR] = '~/.something-else'
+    assert guess_config_dir() == os.path.expanduser("~/.something-else")
+    os.environ[constants.CONFIG_DIR_VAR] = ''
+    assert guess_config_dir() == os.path.expanduser(constants.DEFAULT_CONFIG_DIR)
+
+
 def test_get_config_dir(tmpdir):
     # TODO: mock the other possibilities
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
@@ -36,7 +46,7 @@ def test_get_config_dir(tmpdir):
     assert get_config_dir() == None
 
 
-def test_get_known_tags(tmp_known_tags):
+def test_get_known_tags_file(tmp_known_tags):
     assert tmp_known_tags == get_known_tags_file()
 
 

@@ -27,6 +27,7 @@ def create_config_dir(path=None):
 
 def guess_config_dir(path=None):
     if path:
+        path = os.path.expanduser(path)
         guess = path
     else:
         envvar = os.environ.get(constants.CONFIG_DIR_VAR)
