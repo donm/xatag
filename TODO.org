@@ -2,9 +2,10 @@
 - add license info
 
 ** recoll
-- def cmd_execute(options):
-- use recoll to print list of tags
 - tell recoll to index the file when changing tags
+- use recoll to print list of tags
+- def cmd_execute(options); what benefit would this have that recoll wouldn't
+  have?
 
 ** documentation
 - internal comments
