@@ -35,13 +35,13 @@ def fix_arguments(arguments):
     """Make canonical keys, renaming or combining various keys in the dict."""
     # When the user manually specifies that an argument is a file or tag, that
     # goes to a separate key.  Make a new list with the values in both keys.
-    files = arguments['--file'] + arguments['<file>']
-    tags  = arguments['--tag']  + arguments['<tag>']
+    files = arguments['--file'] + arguments['FILE']
+    tags  = arguments['--tag']  + arguments['TAG']
     arguments['files'] = files
     arguments['tags']  = parse_tags(tags)
-    arguments['source']       = arguments['<src>']
-    arguments['destinations'] = arguments['<dest>']
-    arguments['path'] = arguments['<path>']
+    arguments['source']       = arguments['SRC']
+    arguments['destinations'] = arguments['DEST']
+    arguments['path'] = arguments['PATH']
     arguments['fsep'] = arguments['--file-separator']
     arguments['ksep'] = arguments['--key-separator']
     arguments['vsep'] = arguments['--val-separator']
@@ -84,7 +84,7 @@ def parse_cli(usage, argv=None):
         sys.exit("Multiple commands specified: " +
                  ','.join(commands))
     if len(commands) == 0:
-        command = ('--add' if arguments['<tag>'] else '--list')
+        command = ('--add' if arguments['TAG'] else '--list')
     else:
         command = commands[0]
     # This works because of convention.  '--some-name' is sent to
@@ -240,12 +240,12 @@ def cmd_delete_all(options):
 def cmd_execute(options):
     """Perform the actions corresponding to --execute."""
     # When parsing an '--execute' call, everything is put in the array for
-    # <tag> no matter what.  A single tag is a valid query string, so let's
+    # TAG no matter what.  A single tag is a valid query string, so let's
     # just call any list of arguments with one element a query.
     if options('--execute'):
-        if len(options['<tag>']) == 1:
-            options['<query_string>'] = options['<tag>']
-            options['<tag>'] = []
+        if len(options['TAG']) == 1:
+            options['QUERY_STRING'] = options['TAG']
+            options['TAG'] = []
 
 
 def cmd_enter(options):
