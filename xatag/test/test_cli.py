@@ -19,7 +19,7 @@ Usage:
   xatag [options] -D  <file>...
   xatag [options] -x  <tag>... | <query_string>
   xatag [options] -e  <tag>...
-  xatag [options] -m
+  xatag [options] --new-config [<path>]
   xatag  -h | --help
   xatag  -v | --version
 
@@ -47,7 +47,8 @@ Tag Management Commands:
                     unknown tag.  Known tags are also used for shell
                     completion and interactively choosing tags to apply to a
                     file.
-  -m --manage       Manage.
+     --new-config   Write xatag config directory at ~/.xatag, or at PATH if an
+                    argument is given.
 
 Argument Flags:
   -t <tag> --tag=<tag>     The following argument is a tag; when used, all
@@ -498,3 +499,15 @@ def test_cmd_enter(tmp_known_tags):
         'key1': ['val1', 'val2', 'val3'],
         'newkey': ['newval']
         }
+
+
+def test_cmd_new_config(tmpdir):
+    os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir.join('.xatag'))
+    confdir = str(tmpdir.join('.xatag'))
+    run_cli(USAGE, ['--new-config', confdir])
+    ktfile = str(tmpdir.join('.xatag', constants.KNOWN_TAGS_FILE))
+    assert os.path.isfile(ktfile)
+    os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir.join('.xatag2'))
+    run_cli(USAGE, ['--new-config'])
+    ktfile = str(tmpdir.join('.xatag2', constants.KNOWN_TAGS_FILE))
+    assert os.path.isfile(ktfile)

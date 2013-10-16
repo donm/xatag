@@ -15,6 +15,7 @@ def create_config_dir(path=None):
     else:
         try:
             os.mkdir(confdir)
+            print "config dir created at: " + confdir
         except:
             warn("cannot make xatag config dir: " + confdir)
         known_tags_file = os.path.join(confdir, constants.KNOWN_TAGS_FILE)

@@ -11,34 +11,39 @@ Usage:
   xatag [options] -D  <file>...
   xatag [options] -x  <tag>... | <query_string>
   xatag [options] -e  <tag>...
-  xatag [options] -m
+  xatag [options] --new-config [<path>]
   xatag  -h | --help
   xatag  -v | --version
 
 File Tagging Commands:
   -a --add          Add all of the TAG(s) to the FILE(s).  This is the
                     default command if you provide more than one argument.
-  -l --list         List the tags currently written on FILE(s).
-  -s --set          Set the tags of the given FILE(s) to the TAG(s) given, erasing
-                    any previous xatag data in the extended attributes in the
-                    same fields as new TAG(s).
-  -S --set-all      Set the tags of the given FILE(s) to the TAG(s) given, erasing
-                    any previous xatag data in the extended attributes.
-                    Equivalent to 'xatag -D <file>...; xatag -a <tag> <file>...'
-  -d --delete       Remove all of the given TAG(s) to the given FILE(s).
-  -D --delete-all   Remove all xatag tags from the FILE(s)
   -c --copy         Copy xatag fields from SRC to DEST(s)
   -C --copy-over    Copy xatag fields from SRC to DEST(s), erasing any
                     previous xatag data in the extended attributes of DEST(s).
                     Equivalent to 'xatag -D <file>...; xatag -c <tag> <file>...'
+  -d --delete       Remove all of the given TAG(s) to the given FILE(s).
+  -D --delete-all   Remove all xatag tags from the FILE(s)
+  -l --list         List the tags currently written on FILE(s).
+  -s --set          Set the tags of the given FILE(s) to the TAG(s) given,
+                    erasing any previous xatag data in the extended attributes
+                    in the same fields as new TAG(s).
+  -S --set-all      Set the tags of the given FILE(s) to the TAG(s) given,
+                    erasing any previous xatag data in the extended
+                    attributes.  Equivalent to 'xatag -D <file>...; xatag -a
+                    <tag> <file>...'
   -x --execute      Execute a query.
 
-Tag Management Commands:
-  -e --enter        Enter TAG into the known tag list.  Adding a tag to
-                    the list will prohibit the warning printed when using an
+Management Commands:
+
+  -e --enter        Enter TAG(s) into the known tag list.  Adding a tag to the
+                    list will prohibit the warning printed when using an
                     unknown tag.  Known tags are also used for shell
                     completion and interactively choosing tags to apply to a
                     file.
+
+     --new-config   Write xatag config directory at ~/.xatag, or at PATH if an
+                    argument is given.
 
 Argument Flags:
   -t <tag> --tag=<tag>     The following argument is a tag; when used, all
@@ -51,17 +56,17 @@ General Options:
   -n --complement                    The -n stands for "not".  Can be used on -d, -l, and -c/-C.
   -q --quiet                         Be as quiet as possible.  Implies -w.
   -T --terse                         Only print values for tag keys that have been altered.
-  -F <fsep> --file-separator=<fsep>  [default: :]
-  -K <ksep> --key-separator=<ksep>   This only affects printing.  [default: :]
-  -V <vsep> --val-separator=<vsep>   This only affects printing.  [default:  ] (a space)
-  -k --key-val-pairs
-  -o --one-line
   -w --no-warn
   -W --warn-once
-     --debugging                     Print debugging messages.
   -v --version                       Print version.
   -h --help                          You managed to find this already.
 
+Tag Printing Options:
+  -k --key-val-pairs
+  -o --one-line
+  -F <fsep> --file-separator=<fsep>  [default: :]
+  -K <ksep> --key-separator=<ksep>   This only affects printing.  [default: :]
+  -V <vsep> --val-separator=<vsep>   This only affects printing.  [default:  ] (a space)
 
 When reading and writing extended attributes, symlinks are followed by default.
 """

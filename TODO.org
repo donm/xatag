@@ -1,5 +1,4 @@
 * for 1.0
-- missing some tests for config.py
 - add license info
 
 ** recoll

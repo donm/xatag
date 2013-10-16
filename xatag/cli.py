@@ -21,7 +21,7 @@ COMMAND_LIST = [
     "--copy-over",
     "--execute",
     "--enter",
-    "--manage",
+    "--new-config",
     ]
 
 
@@ -41,6 +41,7 @@ def fix_arguments(arguments):
     arguments['tags']  = parse_tags(tags)
     arguments['source']       = arguments['<src>']
     arguments['destinations'] = arguments['<dest>']
+    arguments['path'] = arguments['<path>']
     arguments['fsep'] = arguments['--file-separator']
     arguments['ksep'] = arguments['--key-separator']
     arguments['vsep'] = arguments['--val-separator']
@@ -251,3 +252,8 @@ def cmd_enter(options):
     """Add tags to the known_tags file."""
     # Well, that was easy.
     config.warn_new_tags(options['tags'], add=True, quiet=options['quiet'])
+
+
+def cmd_new_config(options):
+    """Create a new config directory at path, or a default location."""
+    config.create_config_dir(options['path'])
