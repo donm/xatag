@@ -258,10 +258,10 @@ def cmd_execute(options):
     # When parsing an '--execute' call, everything is put in the array for
     # TAG no matter what.  A single tag is a valid query string, so let's
     # just call any list of arguments with one element a query.
-    if options('--execute'):
-        if len(options['TAG']) == 1:
-            options['QUERY_STRING'] = options['TAG']
-            options['TAG'] = []
+    if len(options['TAG']) == 1:
+        options['QUERY_STRING'] = options['TAG']
+        options['TAG'] = []
+    warn('the execute command is not implemented yet')
 
 
 def cmd_enter(options):
