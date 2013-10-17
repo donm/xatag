@@ -1,5 +1,5 @@
 * for 1.0
-- add license info
+- install script
 
 ** recoll
 - tell recoll to index the file when changing tags
