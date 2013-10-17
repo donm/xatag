@@ -1,5 +1,6 @@
 * for 1.0
 ** recoll
+- update the fields file when adding to known_tags
 - tell recoll to index the file when changing tags
 - use recoll to print list of tags
 - def cmd_execute(options); what benefit would this have that recoll wouldn't
@@ -31,6 +32,7 @@ cat_in_the_hat.pdf: author:   Suess
 - change formatting if stdout is console or a pipe
 
 * maybe?
+- --config-dir command line option
 - use info in other keys, or from a parser, to fill in a tag. Maybe use Recoll
    for this
 - interactively tag a file

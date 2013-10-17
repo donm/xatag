@@ -34,12 +34,29 @@ def create_config_dir(path=None):
             print "config dir created at: " + confdir
         except:
             warn("cannot make xatag config dir: " + confdir)
+
         known_tags_file = os.path.join(confdir, constants.KNOWN_TAGS_FILE)
         try:
             with open(known_tags_file, 'w') as f:
                 f.write(constants.DEFAULT_KNOWN_TAGS_FILE)
         except:
             warn("cannot make known_tags file: " + known_tags_file)
+
+        recoll_dir = os.path.join(confdir, constants.RECOLL_CONFIG_DIR)
+        try:
+            os.mkdir(recoll_dir)
+        except:
+            warn("cannot make xatag recoll config: " + recoll_dir)
+
+        recoll_conf = os.path.join(recoll_dir, 'recoll.conf')
+        recoll_fields = os.path.join(recoll_dir, 'fields')
+        try:
+            with open(recoll_conf, 'w') as f:
+                f.write(constants.DEFAULT_RECOLL_CONF)
+            with open(recoll_fields, 'w') as f:
+                f.write(constants.DEFAULT_RECOLL_FIELDS)
+        except:
+            warn("error writing file in xatag recoll config: " + recoll_dir)
 
 
 def guess_config_dir(path=None):

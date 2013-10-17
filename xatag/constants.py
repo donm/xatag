@@ -19,6 +19,7 @@ XATTR_FIELD_SEPARATOR = ';'
 DEFAULT_CONFIG_DIR = "~/.xatag/"
 CONFIG_DIR_VAR='XATAG_DIR'
 KNOWN_TAGS_FILE='known_tags'
+RECOLL_CONFIG_DIR='recoll'
 
 DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 ##
@@ -46,6 +47,32 @@ DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 # taxes: 2013; 2012; 2011
 # taxes: 2010; 2009; 2008
 # taxes: personal; business
+"""
+
+DEFAULT_RECOLL_CONF="""# recoll config for xatag
+#
+# To tell Recoll to load this file, set one of the environment variable
+# RECOLL_CONFTOP or RECOLL_CONFMID to the parent directory of this file.
+#
+# The values set in this filewill overwrite the global Recoll options if you
+# set RECOLL_CONFMID to look at this directory.  If you set RECOLL_CONFTOP
+# instead, then these options will overwrite the default config profile
+# (typically at ~/.recoll) as well as the global Recoll options.
+#
+# The default line below asks recoll to look for tags on any file that it
+# already indexes.  If you want Recoll to look for xatag tags in only part of
+# your file system, then edit and uncomment the line above it.
+#
+# [~/docs]
+metadatacmds = ; rclmultixatag = xatag --recoll %f
+"""
+
+DEFAULT_RECOLL_FIELDS="""# recoll fields config for xatag
+#
+xa:tags = XYXATAGS
+
+[stored]
+xa:tags=
 """
 
 # This is the string that is actually used, both for parsing the command line
