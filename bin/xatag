@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 """xatag - file tagging using extended attributes (xattr).
 
 Usage:
@@ -68,7 +67,9 @@ Argument Flags:
                        will be considered tags.
 
 General Options:
-  -n --complement  The -n stands for "not".  Can be used on -d, -l, and -c/-C.
+  -n --complement  Perform the specified command on the complement of the set
+                   of TAG(s) that is specified.  The -n stands for "not".  Can
+                   be used on -d, -l, and -c/-C.
   -q --quiet       Avoid writing to stdout.
   -T --terse       Only print values for tag keys that have been altered.
   -w --no-warn     Do not warn when adding or setting tag values that are not
@@ -100,17 +101,18 @@ Tag Printing Options:
 When reading and writing extended attributes, symlinks are followed by default.
 """
 
-# When updating the usage string here, also update it in test_cli.py.
+# When updating the usage string here, also update it in constants.py.
 
 # Not implemented:
 #   xatag [options] [-i] FILE
 #  -i --interactive  Add and remove tags for FILE interactively.  This is the
 #                    default command if you provide only one argument.
-#  -L --no-follow-symlinks   Not implemented.
+#  -L --no-follow-symlinks   Probably not needed.
 # The way to do it, if required, is
 #     xattr.xattr(path, options=xattr.XATTR_NOFOLLOW)
 
-import xatag.cli
+import xatag.cli as cli
+import xatag.constants as constants
 
 if __name__ == '__main__':
-    xatag.cli.run_cli(__doc__)
+    cli.run_cli(constants.XATAG_USAGE)
