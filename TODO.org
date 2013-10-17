@@ -13,6 +13,13 @@
 **** user level documentation
 - setting up recoll
 **** API docs
+*** topics
+> xatag -a "some;other;tags" cat_in_the_hat.pdf
+cat_in_the_hat.pdf: tags:     childrens other some tags
+cat_in_the_hat.pdf: author:   Suess
+> xatag -a two\ words cat_in_the_hat.pdf
+cat_in_the_hat.pdf: tags:     childrens other some tags 'two words'
+cat_in_the_hat.pdf: author:   Suess
 
 * eventually
 - return proper error codes along with warnings

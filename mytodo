@@ -1,9 +1,0 @@
-document this:
-
-site)~/tmp/tagging⮀ ~/src/xatag/bin/xatag -a "some;other;tags" cat_in_the_hat.pdf 
-cat_in_the_hat.pdf: tags:     childrens other some tags
-cat_in_the_hat.pdf: author:   Suess
-(xatag-site)~/tmp/tagging⮀ ~/src/xatag/bin/xatag -a two\ words cat_in_the_hat.pdf               
-cat_in_the_hat.pdf: tags:     childrens other some tags 'two words'
-cat_in_the_hat.pdf: author:   Suess
-
