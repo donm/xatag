@@ -1,1 +1,4 @@
 *.egg-info/
+distribute-0.6.49-py2.7.egg
+build/
+dist
