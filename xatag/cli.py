@@ -57,7 +57,7 @@ def fix_arguments(arguments):
     arguments['tags']  = parse_tags(tags)
     arguments['source']       = arguments['SRC']
     arguments['destinations'] = arguments['DEST']
-    arguments['path'] = arguments['PATH']
+    arguments['config_dir'] = arguments['CONFIG_DIR']
     arguments['fsep'] = arguments['--file-separator']
     arguments['ksep'] = arguments['--key-separator']
     arguments['vsep'] = arguments['--val-separator']
@@ -141,7 +141,7 @@ def cmd_add(options):
         op.print_file_tags(fname, **options)
     if not options['no_warn'] or options['warn_once']:
         config.check_new_tags(options['tags'], options['warn_once'],
-                             quiet=options['quiet'])
+                              quiet=options['quiet'])
     apply_to_files(per_file, options)
 
 
@@ -160,7 +160,7 @@ def cmd_set(options):
         op.print_file_tags(fname, **options)
     if not options['no_warn'] or options['warn_once']:
         config.check_new_tags(options['tags'], options['warn_once'],
-                             quiet=options['quiet'])
+                              quiet=options['quiet'])
     apply_to_files(per_file, options)
 
 
@@ -171,7 +171,7 @@ def cmd_set_all(options):
         op.print_file_tags(fname, **options)
     if not options['no_warn'] or options['warn_once']:
         config.check_new_tags(options['tags'], options['warn_once'],
-                             quiet=options['quiet'])
+                              quiet=options['quiet'])
     apply_to_files(per_file, options)
 
 
@@ -272,4 +272,4 @@ def cmd_enter(options):
 
 def cmd_new_config(options):
     """Create a new config directory at path, or a default location."""
-    config.create_config_dir(options['path'])
+    config.create_config_dir(options['config_dir'])

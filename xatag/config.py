@@ -23,29 +23,30 @@ from xatag.warn import warn
 import xatag.constants as constants
 import xatag.tag_dict as xtd
 
-def create_config_dir(path=None):
-    confdir = guess_config_dir(path=None)
-    # check that the directory doesn't exist or is empty
-    if os.path.isdir(confdir) and os.listdir(confdir):
-        warn("xatag config dir already exists: " + confdir)
-    else:
-        if not os.path.isdir(confdir):
-            try:
-                os.mkdir(confdir)
-                print "config dir created at: " + confdir
-            except:
-                warn("cannot make xatag config dir: " + confdir)
-        else:
-            print "using path as config dir: " + confdir
 
-        known_tags_file = os.path.join(confdir, constants.KNOWN_TAGS_FILE)
+def create_config_dir(config_dir=None):
+    config_dir = guess_config_dir(config_dir=None)
+    # check that the directory doesn't exist or is empty
+    if os.path.isdir(config_dir) and os.listdir(config_dir):
+        warn("xatag config dir already exists: " + config_dir)
+    else:
+        if not os.path.isdir(config_dir):
+            try:
+                os.mkdir(config_dir)
+                print "config dir created at: " + config_dir
+            except:
+                warn("cannot make xatag config dir: " + config_dir)
+        else:
+            print "using path as config dir: " + config_dir
+
+        known_tags_file = os.path.join(config_dir, constants.KNOWN_TAGS_FILE)
         try:
             with open(known_tags_file, 'w') as f:
                 f.write(constants.DEFAULT_KNOWN_TAGS_FILE)
         except:
             warn("cannot make known_tags file: " + known_tags_file)
 
-        recoll_dir = os.path.join(confdir, constants.RECOLL_CONFIG_DIR)
+        recoll_dir = os.path.join(config_dir, constants.RECOLL_CONFIG_DIR)
         try:
             os.mkdir(recoll_dir)
         except:
@@ -63,6 +64,7 @@ def create_config_dir(path=None):
         except:
             warn("error writing file in xatag recoll config: " + recoll_dir)
 
+
 def form_recoll_fields_file(prefixes, stored):
     fields = ''
     fields += constants.RECOLL_FIELDS_HEAD
@@ -73,10 +75,10 @@ def form_recoll_fields_file(prefixes, stored):
     return fields
 
 
-def guess_config_dir(path=None):
-    if path:
-        path = os.path.expanduser(path)
-        guess = path
+def guess_config_dir(config_dir=None):
+    if config_dir:
+        config_dir = os.path.expanduser(config_dir)
+        guess = config_dir
     else:
         envvar = os.environ.get(constants.CONFIG_DIR_VAR)
         if envvar:
@@ -88,8 +90,8 @@ def guess_config_dir(path=None):
     return guess
 
 
-def get_config_dir(path=None):
-    guess = guess_config_dir(path=path)
+def get_config_dir(config_dir=None):
+    guess = guess_config_dir(config_dir=config_dir)
     if os.path.isdir(guess):
         return guess
     else:
@@ -97,8 +99,8 @@ def get_config_dir(path=None):
         return None
 
 
-def get_recoll_fields_file():
-    config_dir = get_config_dir()
+def get_recoll_fields_file(config_dir=None):
+    config_dir = get_config_dir(config_dir=config_dir)
     if not config_dir:
         return None
     fname = os.path.join(config_dir, constants.RECOLL_CONFIG_DIR, 'fields')
@@ -108,8 +110,8 @@ def get_recoll_fields_file():
     return fname
 
 
-def get_known_tags_file():
-    config_dir = get_config_dir()
+def get_known_tags_file(config_dir=None):
+    config_dir = get_config_dir(config_dir=config_dir)
     if not config_dir:
         return None
     fname = os.path.join(config_dir, constants.KNOWN_TAGS_FILE)
@@ -119,8 +121,8 @@ def get_known_tags_file():
     return fname
 
 
-def load_known_tags():
-    fname = get_known_tags_file()
+def load_known_tags(config_dir=None):
+    fname = get_known_tags_file(config_dir)
     if not fname:
         return None
     try:
@@ -160,9 +162,9 @@ def make_known_tags_string(new_tags):
     return new_tag_string
 
 
-def add_known_tags(new_tags):
+def add_known_tags(new_tags, config_dir=None):
     new_tag_string = make_known_tags_string(new_tags)
-    fname = get_known_tags_file()
+    fname = get_known_tags_file(config_dir)
     if not fname:
         return
     try:
@@ -173,7 +175,7 @@ def add_known_tags(new_tags):
         warn("xatag known_tags file cannot be edited: " + fname)
 
 
-def check_new_tags(tags, add=False, quiet=False):
+def check_new_tags(tags, add=False, quiet=False, config_dir=None):
     """Warn on stderr about the tags that aren't in the known_tags file.
 
     If add==True, then issue the warning but then add the tag to the
@@ -189,7 +191,7 @@ def check_new_tags(tags, add=False, quiet=False):
         if vals:
             tags[key] = vals
 
-    known_tags = load_known_tags()
+    known_tags = load_known_tags(config_dir)
     if known_tags is None:
         known_tags = {}
         add = False
@@ -220,9 +222,9 @@ def check_new_tags(tags, add=False, quiet=False):
         update_recoll_fields(known_keys + new_keys)
 
 
-def update_recoll_fields(known_keys):
+def update_recoll_fields(known_keys, config_dir=None):
     """Write a new fields file in the xatag Recoll directory."""
-    recoll_fields_file = get_recoll_fields_file()
+    recoll_fields_file = get_recoll_fields_file(config_dir)
     if not recoll_fields_file:
         return
     try:

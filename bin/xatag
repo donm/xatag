@@ -26,7 +26,7 @@ Usage:
   xatag [options] -D FILE...
   xatag [options] -x TAG... | QUERY
   xatag [options] -e TAG...
-  xatag [options] --new-config [PATH]
+  xatag [options] --new-config [CONFIG_DIR]
   xatag  -h | --help
   xatag  -v | --version
 
@@ -55,8 +55,8 @@ Management Commands:
   -e --enter       Enter TAG(s) into the known tag list.  Adding a tag to the
                    list will prohibit the warning printed when using an
                    unknown tag.  Known tags are also used for shell completion.
-     --new-config  Write xatag config directory at ~/.xatag, or at PATH if an
-                   argument is given.
+     --new-config  Write xatag config directory at ~/.xatag, or at CONFIG_DIR
+                   if an argument is given.
 
 Argument Flags:
   -t TAG --tag=TAG     The following argument is a tag; when this flag is
