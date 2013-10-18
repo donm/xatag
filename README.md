@@ -14,7 +14,7 @@ can be transferred with the file when it is renamed, copied, or moved to
 another system (if it supports xattrs).  Any database of tagged files can be
 recreated using data stored in the files.
 
-## setup ##
+## Setup ##
 
 ### Recoll ###
 
