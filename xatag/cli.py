@@ -134,14 +134,17 @@ def apply_to_files(fun, options, files=False):
             warn("path does not exist: " + fname)
 
 
+def _maybe_check_new_tags(options):
+    if not options['no_warn'] or options['warn_once']:
+        config.check_new_tags(**options)
+
+
 def cmd_add(options):
     """Perform the actions corresponding to --add."""
     def per_file(fname):
         op.add_tags(fname, **options)
         op.print_file_tags(fname, **options)
-    if not options['no_warn'] or options['warn_once']:
-        config.check_new_tags(options['tags'], options['warn_once'],
-                              quiet=options['quiet'])
+    _maybe_check_new_tags(options)
     apply_to_files(per_file, options)
 
 
@@ -158,9 +161,7 @@ def cmd_set(options):
     def per_file(fname):
         op.set_tags(fname, **options)
         op.print_file_tags(fname, **options)
-    if not options['no_warn'] or options['warn_once']:
-        config.check_new_tags(options['tags'], options['warn_once'],
-                              quiet=options['quiet'])
+    _maybe_check_new_tags(options)
     apply_to_files(per_file, options)
 
 
@@ -169,9 +170,7 @@ def cmd_set_all(options):
     def per_file(fname):
         op.set_all_tags(fname, **options)
         op.print_file_tags(fname, **options)
-    if not options['no_warn'] or options['warn_once']:
-        config.check_new_tags(options['tags'], options['warn_once'],
-                              quiet=options['quiet'])
+    _maybe_check_new_tags(options)
     apply_to_files(per_file, options)
 
 
@@ -267,7 +266,7 @@ def cmd_execute(options):
 def cmd_enter(options):
     """Add tags to the known_tags file."""
     # Well, that was easy.
-    config.check_new_tags(options['tags'], add=True, quiet=options['quiet'])
+    config.check_new_tags(add=True, **options)
 
 
 def cmd_new_config(options):

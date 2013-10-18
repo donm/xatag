@@ -175,13 +175,18 @@ def add_known_tags(new_tags, config_dir=None):
         warn("xatag known_tags file cannot be edited: " + fname)
 
 
-def check_new_tags(tags, add=False, quiet=False, config_dir=None):
+def check_new_tags(tags, add=False, quiet=False, config_dir=None,
+                   **other_args):
     """Warn on stderr about the tags that aren't in the known_tags file.
 
     If add==True, then issue the warning but then add the tag to the
     known_tags file as well, to prevent future warnings.  Also update the
     Recoll fields config file.
     """
+
+    if 'warn_once' in other_args and other_args['warn_once']:
+        add=True
+
     alltags = xtd.tag_list_to_dict(tags)
     # no sense in adding key with no values
     tags = {}
@@ -201,8 +206,9 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None):
                 if key is not ''
                 and key is not 'tags'
                 and key not in known_keys]
-    new_key_string = ', '.join(sorted(new_keys))
     new_tags = xtd.subtract_tags(tags, known_tags, empty_means_all=False)
+
+    new_key_string = ', '.join(sorted(new_keys))
     new_tag_string = make_known_tags_string(new_tags)
 
     if not quiet and new_tag_string:
