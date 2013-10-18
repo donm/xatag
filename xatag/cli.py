@@ -147,6 +147,7 @@ def cmd_add(options):
         op.print_file_tags(fname, **options)
     _maybe_check_new_tags(options)
     apply_to_files(per_file, options)
+    op.update_recoll_index(**options)
 
 
 def cmd_list(options):
@@ -164,6 +165,7 @@ def cmd_set(options):
         op.print_file_tags(fname, **options)
     _maybe_check_new_tags(options)
     apply_to_files(per_file, options)
+    op.update_recoll_index(**options)
 
 
 def cmd_set_all(options):
@@ -173,6 +175,7 @@ def cmd_set_all(options):
         op.print_file_tags(fname, **options)
     _maybe_check_new_tags(options)
     apply_to_files(per_file, options)
+    op.update_recoll_index(**options)
 
 
 def validate_source_and_destinations(options):
@@ -219,6 +222,7 @@ def cmd_copy(options):
         # to repeat the subsetting on source_tags
         options['tags'] = []
         apply_to_files(per_file, options, files=destinations)
+    op.update_recoll_index(**options)
 
 
 def cmd_copy_over(options):
@@ -236,6 +240,7 @@ def cmd_copy_over(options):
         # to repeat the subsetting on source_tags
         options['tags'] = []
         apply_to_files(per_file, options, files=destinations)
+    op.update_recoll_index(**options)
 
 
 def cmd_delete(options):
@@ -244,6 +249,7 @@ def cmd_delete(options):
         op.delete_tags(fname, **options)
         op.print_file_tags(fname, **options)
     apply_to_files(per_file, options)
+    op.update_recoll_index(**options)
 
 
 def cmd_delete_all(options):
@@ -251,6 +257,7 @@ def cmd_delete_all(options):
     def per_file(fname):
         op.delete_all_tags(fname)
     apply_to_files(per_file, options)
+    op.update_recoll_index(**options)
 
 
 def cmd_execute(options):
@@ -273,6 +280,7 @@ def cmd_enter(options):
 def cmd_new_config(options):
     """Create a new config directory at path, or a default location."""
     config.create_config_dir(options['config_dir'])
+
 
 def cmd_recoll_tags(options):
     """Create a new config directory at path, or a default location."""

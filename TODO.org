@@ -1,9 +1,9 @@
 * for 1.0
 ** recoll
-- tell recoll to index the file when changing tags
 - use recoll to print list of tags
 - def cmd_execute(options); what benefit would this have that recoll wouldn't
   have?
+- tell recoll to index the file when changing tags
 ** code
 - don't export functions that are only needed internally.
 

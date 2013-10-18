@@ -15,13 +15,16 @@
 
 
 import sys
+import os
 import xattr
+import subprocess
 # from recoll import recoll
 
 import xatag.tag_dict as xtd
 import xatag.attributes as attr
 from xatag.tag import Tag
 from xatag.warn import warn
+import xatag.config as config
 
 # Some functions below have the argument '**unused'.  That's to facilitate
 # passing the options array that is returned from docopt (after some fixing)
@@ -228,3 +231,24 @@ def copy_tags_over(source_tags, destination, tags=False, complement=False,
     """Copy xatag managed xattr fields, removing all other tags."""
     delete_all_tags(destination)
     copy_tags(source_tags, destination, tags, complement)
+
+
+def update_recoll_index(files, **unused):
+    """Try to update the recoll index for files."""
+    # Creating the rclmonixnow file is only necessary if the recollindex call
+    # is blocked, meaning that the the Recoll daemon is running. However,
+    # recollindex takes a perceptible amount of time, so let's just do both so
+    # we can run recollindex in the background and not wait for the exit
+    # status.
+    try:
+        rcl_dir = config.get_recoll_base_config_dir()
+        if rcl_dir:
+            open(os.path.join(rcl_dir, 'rclmonixnow'), 'w').close()
+
+        with open('/dev/null', 'w') as devnull:
+            # Use Popen() instead of call() to run in the background.
+            subprocess.Popen(['recollindex', '-i'] + files,
+                             stdout=devnull, stderr=devnull)
+
+    except:
+        warn("There was a problem updating the Recoll index.")

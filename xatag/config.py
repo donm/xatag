@@ -90,6 +90,26 @@ def guess_config_dir(config_dir=None):
     return guess
 
 
+def guess_recoll_base_config_dir():
+    envvar = os.environ.get(constants.RECOLL_BASE_CONFIG_DIR_VAR)
+    if envvar:
+        envvar = os.path.expanduser(envvar)
+        envvar = os.path.expandvars(envvar)
+        guess = envvar
+    else:
+        guess = os.path.expanduser(constants.DEFAULT_RECOLL_BASE_CONFIG_DIR)
+    return guess
+
+
+def get_recoll_base_config_dir():
+    guess = guess_recoll_base_config_dir()
+    if os.path.isdir(guess):
+        return guess
+    else:
+        warn("recoll base config dir cannot be found: " + guess)
+        return None
+
+
 def get_config_dir(config_dir=None):
     guess = guess_config_dir(config_dir=config_dir)
     if os.path.isdir(guess):

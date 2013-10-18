@@ -21,6 +21,9 @@ CONFIG_DIR_VAR='XATAG_DIR'
 KNOWN_TAGS_FILE='known_tags'
 RECOLL_CONFIG_DIR='recoll'
 
+RECOLL_BASE_CONFIG_DIR_VAR='XATAG_DIR'
+DEFAULT_RECOLL_BASE_CONFIG_DIR='~/.recoll/'
+
 DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 ##
 ## Add tags to this file to prevent seeing warnings when unknown tags are
