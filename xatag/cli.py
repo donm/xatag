@@ -38,6 +38,7 @@ COMMAND_LIST = [
     "--execute",
     "--enter",
     "--new-config",
+    "--recoll-tags",
     ]
 
 
@@ -272,3 +273,7 @@ def cmd_enter(options):
 def cmd_new_config(options):
     """Create a new config directory at path, or a default location."""
     config.create_config_dir(options['config_dir'])
+
+def cmd_recoll_tags(options):
+    """Create a new config directory at path, or a default location."""
+    op.print_file_tags(options['files'][0], for_recoll=True, **options)

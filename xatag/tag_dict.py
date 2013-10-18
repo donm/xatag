@@ -35,14 +35,30 @@ def tag_list_to_dict(tags):
 
 
 def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
-                   one_line=False, key_val_pairs=False, out=None):
-    """Print the tags for a file in a nice way."""
+                   one_line=False, key_val_pairs=False,
+                   tag_prefix=None,
+                   for_recoll=False, out=None):
+    """Print the tags for a file in a nice way.
+
+    If for_recoll is True, then most of the options will be overwritten;
+    tag_prefix can still be altered, though.
+    """
 
     # We need 'out' to be set to the current value of sys.stdout, in case
     # stdout is captured for tests or something.  So we can't say
     # "out=sys.stdout" above.
     if not out:
         out = sys.stdout
+
+    if for_recoll:
+        ksep = "="
+        vsep = '; '
+        one_line = False
+        key_val_pair = False
+        tag_prefix = 'xa:'
+
+    if tag_prefix is None:
+        tag_prefix = ''
 
     def write_tag(key_name, dict_key, last_tag=False):
         """Print a single tag formatted properly."""
@@ -69,7 +85,11 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
                 out.write('"' + vsep.join(formatted_vals) + '" ')
             else:
                 out.write(prefix + key_name + ksep + (" " * padding))
+                # if for_recoll:
+                #     out.write('"')
                 out.write(vsep.join(formatted_vals))
+                # if for_recoll:
+                #     out.write('"')
                 out.write("\n")
 
     # TODO: compute this using the known tag list, or the tags passed on the
@@ -85,9 +105,9 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
     for ind, k in enumerate(keys):
         last_tag = (ind == len(keys) - 1)
         if k == '':
-            write_tag('tags', '', last_tag=last_tag)
+            write_tag(tag_prefix + 'tags', '', last_tag=last_tag)
         else:
-            write_tag(k, k, last_tag=last_tag)
+            write_tag(tag_prefix + k, k, last_tag=last_tag)
 
     if one_line and tag_dict and prefix:
         out.write("\n")

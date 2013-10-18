@@ -57,7 +57,7 @@ DEFAULT_RECOLL_CONF="""# xatag-specific recoll config
 # To tell Recoll to load this file, set one of the environment variables
 # RECOLL_CONFTOP or RECOLL_CONFMID to the parent directory of this file.
 #
-# The values set in this filewill overwrite the global Recoll options if you
+# The values set in this file will overwrite the global Recoll options if you
 # set RECOLL_CONFMID to look at this directory.  If you set RECOLL_CONFTOP
 # instead, then these options will overwrite the default config profile
 # (typically at ~/.recoll) as well as the global Recoll options.
@@ -67,7 +67,7 @@ DEFAULT_RECOLL_CONF="""# xatag-specific recoll config
 # your file system, then edit and uncomment the line above it.
 #
 # [~/docs]
-metadatacmds = ; rclmultixatag = xatag --recoll %f
+metadatacmds = ; rclmultixatag = xatag --recoll-tags %f
 """
 
 RECOLL_FIELDS_UPDATE_RE = ".*XATAG WILL REGENERATE THIS FILE"
@@ -121,6 +121,7 @@ Usage:
   xatag [options] -x TAG... | QUERY
   xatag [options] -e TAG...
   xatag [options] --new-config [CONFIG_DIR]
+  xatag [options] --recoll-tags FILE
   xatag  -h | --help
   xatag  -v | --version
 
@@ -151,6 +152,8 @@ Management Commands:
                    unknown tag.  Known tags are also used for shell completion.
      --new-config  Write xatag config directory at ~/.xatag, or at CONFIG_DIR
                    if an argument is given.
+     --recoll-tags  List the tags of FILE in a format appropriate for Recoll's
+                    metadatacmds field.
 
 Argument Flags:
   -t TAG --tag=TAG     The following argument is a tag; when this flag is

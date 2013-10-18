@@ -297,6 +297,16 @@ test2.txt: tags:tag2,tags:tag3,genre:classical
     assert compare_output(stdout, gold)
 
 
+def test_cmd_recoll_tags(tmpfile, capsys):
+    run_cli(USAGE, ['--recoll-tags', tmpfile])
+    stdout = get_stdout(capsys)
+
+    gold = """xa:tags= tag1; tag2; two words
+xa:artist= The XX
+xa:genre= indie; pop
+"""
+    assert compare_output(stdout, gold)
+
 def test_cmd_set(tmpfile, tmpfile2, capsys):
     run_cli(USAGE, ['-s', 'tag', 'genre:awesome', '-f', tmpfile,
                     '-f', tmpfile2])

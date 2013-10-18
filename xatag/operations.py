@@ -166,6 +166,8 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
                     terse=False, quiet=False,
                     longest_filename=0, fsep=":", ksep=':', vsep=' ',
                     one_line=False, key_val_pairs=False,
+                    for_recoll=False, print_filename=True,
+                    tag_prefix=None,
                     out=None, **unused):
     # We need 'out' to be set to the current value of sys.stdout, in case
     # stdout is captured for tests or something.  So we can't say
@@ -177,8 +179,13 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
     # future quiet will do something else.
     if quiet:
         return
-    padding = max(1, longest_filename - len(fname) + 1)
-    prefix = fname + fsep + (" " * padding)
+
+    if for_recoll or not print_filename:
+        prefix = ''
+    else:
+        padding = max(1, longest_filename - len(fname) + 1)
+        prefix = fname + fsep + (" " * padding)
+
     tag_dict = attr.read_tags_as_dict(fname)
     if subset:
         tag_dict = subsetted_tags(tag_dict, tags, complement=complement)
@@ -191,10 +198,12 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
             just_tag_keys_dict = {key: '' for key in tags}
         tag_dict = subsetted_tags(tag_dict, just_tag_keys_dict,
                                   complement=complement)
+
     xtd.print_tag_dict(tag_dict, prefix=prefix, ksep=ksep,
                        vsep=vsep, one_line=one_line,
-                       key_val_pairs=key_val_pairs, out=out)
-
+                       key_val_pairs=key_val_pairs,
+                       for_recoll=for_recoll, tag_prefix=tag_prefix,
+                       out=out)
 
 def subsetted_tags(source_tags, tags=False, complement=False, **unused):
     if tags:

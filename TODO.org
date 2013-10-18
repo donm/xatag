@@ -1,6 +1,5 @@
 * for 1.0
 ** recoll
-- output for recoll metadatacmds
 - tell recoll to index the file when changing tags
 - use recoll to print list of tags
 - def cmd_execute(options); what benefit would this have that recoll wouldn't
