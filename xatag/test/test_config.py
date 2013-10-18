@@ -121,6 +121,10 @@ adding new tags: key9:     newval
     out, err = capsys.readouterr()
     assert err==''
 
+    check_new_tags(tags, config_dir=str(confdir.join('this_doesnt-exist')))
+    out, err = capsys.readouterr()
+    assert err.startswith('xatag config dir cannot be found')
+
 
 def test_update_recoll_fields(confdir, capsys):
     keys = ['newkey', 'newkey:with:punct']

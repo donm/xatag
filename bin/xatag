@@ -67,6 +67,9 @@ Argument Flags:
                        will be considered tags.
 
 General Options:
+     --config-dir=CONFIG-DIR  Use CONFIG-DIR as the xatag configuration,
+                              instead of checking in the default path or
+                              environment variable.
   -n --complement  Perform the specified command on the complement of the set
                    of TAG(s) that is specified.  The -n stands for "not".  Can
                    be used on -d, -l, and -c/-C.

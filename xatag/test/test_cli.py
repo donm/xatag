@@ -174,17 +174,28 @@ test2.txt: new key: tag1 tag2
 
 
 @pytest.fixture
-def tmp_known_tags(tmpdir):
-    os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
-    fname = tmpdir.join('known_tags')
-    with fname.open('a') as f:
+def tmp_config1(tmpdir):
+    confdir = str(tmpdir.join('conf1'))
+    os.mkdir(confdir)
+    os.environ[constants.CONFIG_DIR_VAR] = confdir
+    fname = os.path.join(confdir, 'known_tags')
+    with open(fname, 'w') as f:
         f.write("tags: tag1; tag2\n")
         f.write("tag3 ; tag\n")
         f.write("  key1  : val1   ;  val2  \n")
-    return fname
+    return confdir
 
-def test_cmd_add2(tmpfile, tmpfile2, tmp_known_tags, capsys):
+@pytest.fixture
+def tmp_config2(tmpdir):
+    confdir = str(tmpdir.join('conf2'))
+    os.mkdir(confdir)
+    fname = os.path.join(confdir, 'known_tags')
+    with open(fname, 'w') as f:
+        f.write("tags: tag1; tag2\n")
+    return confdir
 
+
+def test_cmd_add2(tmpfile, tmpfile2, tmp_config1, capsys):
     run_cli(USAGE, ['-a', 'tag4', tmpfile])
     run_cli(USAGE, ['-a', '-w', 'tag4', tmpfile])
     run_cli(USAGE, ['-a', '-W', 'tag4', tmpfile])
@@ -426,13 +437,20 @@ def test_cmd_delete(tmpfile, tmpfile2, capsys):
     assert compare_output(stdout, gold)
 
 
-def test_cmd_enter(tmp_known_tags):
+def test_cmd_enter(tmp_config1, tmp_config2):
     run_cli(USAGE, ['-e', 'tag4', 'newkey:newval', 'key1:val3'])
     kt = config.load_known_tags()
     assert kt == {
         '': ['tag1', 'tag2', 'tag3', 'tag', 'tag4'],
         'key1': ['val1', 'val2', 'val3'],
         'newkey': ['newval']
+        }
+
+    print tmp_config2
+    run_cli(USAGE, ['-e', 'tag4', '--config-dir', tmp_config2])
+    kt = config.load_known_tags(config_dir=tmp_config2)
+    assert kt == {
+        '': ['tag1', 'tag2'],
         }
 
 
