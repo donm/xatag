@@ -17,11 +17,11 @@
 import os
 import StringIO
 import sys
+import re
 
 from xatag.warn import warn
 import xatag.constants as constants
 import xatag.tag_dict as xtd
-
 
 def create_config_dir(path=None):
     confdir = guess_config_dir(path=None)
@@ -29,11 +29,14 @@ def create_config_dir(path=None):
     if os.path.isdir(confdir) and os.listdir(confdir):
         warn("xatag config dir already exists: " + confdir)
     else:
-        try:
-            os.mkdir(confdir)
-            print "config dir created at: " + confdir
-        except:
-            warn("cannot make xatag config dir: " + confdir)
+        if not os.path.isdir(confdir):
+            try:
+                os.mkdir(confdir)
+                print "config dir created at: " + confdir
+            except:
+                warn("cannot make xatag config dir: " + confdir)
+        else:
+            print "using path as config dir: " + confdir
 
         known_tags_file = os.path.join(confdir, constants.KNOWN_TAGS_FILE)
         try:
@@ -54,13 +57,20 @@ def create_config_dir(path=None):
             with open(recoll_conf, 'w') as f:
                 f.write(constants.DEFAULT_RECOLL_CONF)
             with open(recoll_fields, 'w') as f:
-                f.write(constants.RECOLL_FIELDS_HEAD)
-                f.write(constants.RECOLL_FIELDS_PREFIXES)
-                f.write("xa:tags = XYXATAGS\n")
-                f.write(constants.RECOLL_FIELDS_STORED)
-                f.write("xa:tags=\n")
+                f.write(form_recoll_fields_file(
+                        "xa:tags = XYXATAGS",
+                        "xa:tags="))
         except:
             warn("error writing file in xatag recoll config: " + recoll_dir)
+
+def form_recoll_fields_file(prefixes, stored):
+    fields = ''
+    fields += constants.RECOLL_FIELDS_HEAD
+    fields += constants.RECOLL_FIELDS_PREFIXES
+    fields += prefixes + '\n'
+    fields += constants.RECOLL_FIELDS_STORED
+    fields += stored + '\n'
+    return fields
 
 
 def guess_config_dir(path=None):
@@ -83,7 +93,7 @@ def get_config_dir(path=None):
     if os.path.isdir(guess):
         return guess
     else:
-        warn("xatag config dir is missing or cannot be read: " + guess)
+        warn("xatag config dir cannot be found: " + guess)
         return None
 
 
@@ -93,7 +103,7 @@ def get_recoll_fields_file():
         return None
     fname = os.path.join(config_dir, constants.RECOLL_CONFIG_DIR, 'fields')
     if not os.path.isfile(fname):
-        warn("xatag-specific recoll fields file is missing:" + fname)
+        warn("xatag-specific recoll fields file cannot be found: " + fname)
         return None
     return fname
 
@@ -104,7 +114,7 @@ def get_known_tags_file():
         return None
     fname = os.path.join(config_dir, constants.KNOWN_TAGS_FILE)
     if not os.path.isfile(fname):
-        warn("xatag known_tags file is missing:" + fname)
+        warn("xatag known_tags file cannot be found: " + fname)
         return None
     return fname
 
@@ -117,7 +127,7 @@ def load_known_tags():
         with open(fname) as f:
             lines = f.readlines()
     except:
-        warn("xatag known_tags file cannot be read.")
+        warn("xatag known_tags file cannot be read: " + fname)
         return None
     known_tags = {}
     for line in lines:
@@ -142,6 +152,14 @@ def load_known_tags():
     return known_tags
 
 
+def make_known_tags_string(new_tags):
+    new_tag_string = StringIO.StringIO()
+    xtd.print_tag_dict(new_tags, vsep='; ',
+                       out=new_tag_string)
+    new_tag_string = new_tag_string.getvalue()
+    return new_tag_string
+
+
 def add_known_tags(new_tags):
     new_tag_string = make_known_tags_string(new_tags)
     fname = get_known_tags_file()
@@ -155,30 +173,34 @@ def add_known_tags(new_tags):
         warn("xatag known_tags file cannot be edited: " + fname)
 
 
-def make_known_tags_string(new_tags):
-    new_tag_string = StringIO.StringIO()
-    xtd.print_tag_dict(new_tags, vsep='; ',
-                       out=new_tag_string)
-    new_tag_string = new_tag_string.getvalue()
-    return new_tag_string
-
-
-def warn_new_tags(tags, add=False, quiet=False):
+def check_new_tags(tags, add=False, quiet=False):
     """Warn on stderr about the tags that aren't in the known_tags file.
 
     If add==True, then issue the warning but then add the tag to the
-    known_tags file as well, to prevent future warnings.
+    known_tags file as well, to prevent future warnings.  Also update the
+    Recoll fields config file.
     """
-    tags = xtd.tag_list_to_dict(tags)
+    alltags = xtd.tag_list_to_dict(tags)
+    # no sense in adding key with no values
+    tags = {}
+    for key in alltags:
+        vals = [val for val in alltags[key]
+                if val is not '']
+        if vals:
+            tags[key] = vals
+
     known_tags = load_known_tags()
     if known_tags is None:
         known_tags = {}
         add = False
     known_keys = known_tags.keys() + ['']
+
     new_keys = [key for key in tags.keys()
-                if key is not '' and key not in known_keys]
-    new_tags = xtd.subtract_tags(tags, known_tags)
+                if key is not ''
+                and key is not 'tags'
+                and key not in known_keys]
     new_key_string = ', '.join(sorted(new_keys))
+    new_tags = xtd.subtract_tags(tags, known_tags, empty_means_all=False)
     new_tag_string = make_known_tags_string(new_tags)
 
     if not quiet and new_tag_string:
@@ -186,7 +208,6 @@ def warn_new_tags(tags, add=False, quiet=False):
             prefix_str = 'adding new'
         else:
             prefix_str = 'unknown'
-
         if new_key_string:
             sys.stderr.write(prefix_str + " keys: " + new_key_string + "\n")
         for tag_line in new_tag_string.splitlines():
@@ -194,3 +215,39 @@ def warn_new_tags(tags, add=False, quiet=False):
 
     if add and new_tags:
         add_known_tags(new_tags)
+
+    if add and new_keys:
+        update_recoll_fields(known_keys + new_keys)
+
+
+def update_recoll_fields(known_keys):
+    """Write a new fields file in the xatag Recoll directory."""
+    recoll_fields_file = get_recoll_fields_file()
+    if not recoll_fields_file:
+        return
+    try:
+        with open(recoll_fields_file, 'r') as f:
+            i = 0
+            for line in f:
+                i += 1
+                if re.match(constants.RECOLL_FIELDS_UPDATE_RE, line):
+                    break
+                if i >= 5:
+                    return False
+    except:
+        warn("cannot read the recoll fields file: " + recoll_fields_file)
+
+    prefixes_str = ''
+    stored_str = ''
+    for key in ['tags'] + sorted(known_keys):
+        if key == '':
+            continue
+        prefixes_str += 'xa:' + key + ' = '
+        prefixes_str += 'XYXA' + key.upper().replace(':', '') + '\n'
+        stored_str += 'xa:' + key + '=\n'
+
+    try:
+        with open(recoll_fields_file, 'w') as f:
+            f.write(form_recoll_fields_file(prefixes_str, stored_str))
+    except:
+        warn("cannot edit the recoll fields file: " + recoll_fields_file)

@@ -36,6 +36,9 @@ DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 ##
 ## Lines beginning with # are comments.
 ##
+## Removing all instances of a tag key from this file will cause the key to be
+## dropped from the Recoll fields file the next time it is generated.  Adding
+## a new key will cause the key to be added to the fields file.
 ###########################################
 ## The next three lines are all equivalent.
 # favorite; TODO; organize; summer vacation;
@@ -67,13 +70,15 @@ DEFAULT_RECOLL_CONF="""# xatag-specific recoll config
 metadatacmds = ; rclmultixatag = xatag --recoll %f
 """
 
+RECOLL_FIELDS_UPDATE_RE = ".*XATAG WILL REGENERATE THIS FILE"
+
 RECOLL_FIELDS_HEAD="""# xatag-specific Recoll fields config
 #
 # XATAG WILL REGENERATE THIS FILE
 #
 # As long as one of the first 5 lines of this file contains the string
 #
-#     XATAG WILL REGENERATE THIS FILE
+#     "XATAG WILL REGENERATE THIS FILE"
 #
 # then this file will be overwritten every time a new tag key is added to the
 # known_tags file.  This way Recoll will index the key in its database.
@@ -86,14 +91,14 @@ RECOLL_FIELDS_HEAD="""# xatag-specific Recoll fields config
 """
 
 RECOLL_FIELDS_PREFIXES="""
-# Tags in the [prefixes] section should have "xa:" prepended to the name,
-# and the part after the equals sign (the key name for Xapian) should be in all
-# caps.  Xatag adds new entries in the form
+# By convention, xatag keys in the [prefixes] section have "xa:" prepended to
+# the name, and the part after the equals sign (the key name for Xapian)
+# should be in all caps.  Xatag adds new entries in the form
+#
 #     xa:tagkeyname = XYXATAGKEYNAME
 #
 [prefixes]
 """
-# xa:tags = XYXATAGS
 
 RECOLL_FIELDS_STORED="""
 # In the [stored] section, add the same tag prefixes as before followed by an
@@ -101,7 +106,6 @@ RECOLL_FIELDS_STORED="""
 #
 [stored]
 """
-#xa:tags=
 
 # This is the string that is actually used, both for parsing the command line
 # and for testing.

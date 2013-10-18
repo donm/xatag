@@ -7,14 +7,15 @@ import xatag.constants as constants
 
 
 @pytest.fixture
-def tmp_known_tags(tmpdir):
+def confdir(tmpdir):
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
+    create_config_dir()
     fname = tmpdir.join('known_tags')
     with fname.open('a') as f:
         f.write("tags: tag1; tag2\n")
         f.write("tag3 ; tag4\n")
         f.write("  key1  : val1   ;  val2  \n")
-    return fname
+    return tmpdir
 
 
 def test_create_config_dir(tmpdir, capsys):
@@ -46,8 +47,9 @@ def test_get_config_dir(tmpdir):
     assert get_config_dir() == None
 
 
-def test_get_known_tags_file(tmp_known_tags):
-    assert tmp_known_tags == get_known_tags_file()
+def test_get_known_tags_file(confdir):
+    fname = confdir.join('known_tags')
+    assert fname == get_known_tags_file()
 
 
 def test_get_recoll_fields_file(tmpdir):
@@ -57,7 +59,7 @@ def test_get_recoll_fields_file(tmpdir):
         constants.RECOLL_CONFIG_DIR, 'fields')
 
 
-def test_load_known_tags(tmp_known_tags):
+def test_load_known_tags(confdir):
     kt = load_known_tags()
     print kt
     assert kt == {
@@ -66,7 +68,7 @@ def test_load_known_tags(tmp_known_tags):
         }
 
 
-def test_add_known_tags(tmp_known_tags):
+def test_add_known_tags(confdir):
     new_tags = {'': ['tag5'], 'key1': ['val3'], 'key2': ['newval']}
     add_known_tags(new_tags)
     kt = load_known_tags()
@@ -86,17 +88,27 @@ key2:     newval
 """
 
 
-def test_warn_new_tags(capsys):
-    tags = {'': ['tag1', 'tag8', 'tag9'], 'key1': ['val9'], 'key9': ['newval']}
-    warn_new_tags(tags)
+def test_check_new_tags(capsys, confdir):
+    tags = {'': [''], 'key': ['']}
+    check_new_tags(tags)
     out, err = capsys.readouterr()
+    print err
+    assert err==''
+
+    tags = {'': ['tag1', 'tag8', '', 'tag9'],
+            'key1': ['val9', ''],
+            'key9': ['newval']}
+    check_new_tags(tags)
+    out, err = capsys.readouterr()
+    print out
+    print err
     assert err=="""unknown keys: key9
 unknown tags: tags:     tag8; tag9
 unknown tags: key1:     val9
 unknown tags: key9:     newval
 """
 
-    warn_new_tags(tags, add=True)
+    check_new_tags(tags, add=True)
     out, err = capsys.readouterr()
     # kt = load_known_tags()
     print err
@@ -105,6 +117,43 @@ adding new tags: tags:     tag8; tag9
 adding new tags: key1:     val9
 adding new tags: key9:     newval
 """
-    warn_new_tags(tags)
+    check_new_tags(tags)
     out, err = capsys.readouterr()
     assert err==''
+
+
+def test_update_recoll_fields(confdir, capsys):
+    keys = ['newkey', 'newkey:with:punct']
+    update_recoll_fields(keys)
+    updated_file = (constants.RECOLL_FIELDS_HEAD +
+                    constants.RECOLL_FIELDS_PREFIXES +
+                    "xa:tags = XYXATAGS\n" +
+                    "xa:newkey = XYXANEWKEY\n" +
+                    "xa:newkey:with:punct = XYXANEWKEYWITHPUNCT\n\n" +
+                    constants.RECOLL_FIELDS_STORED +
+                    "xa:tags=\n" +
+                    "xa:newkey=\n" +
+                    "xa:newkey:with:punct=\n\n")
+
+    with open(get_recoll_fields_file(), 'r') as f:
+        assert f.read() == updated_file
+
+    updated_file = (#constants.RECOLL_FIELDS_HEAD +
+                    constants.RECOLL_FIELDS_PREFIXES +
+                    "xa:tags = XYXATAGS\n" +
+                    "xa:newkey = XYXANEWKEY\n" +
+                    "xa:newkey:with:punct = XYXANEWKEYWITHPUNCT\n\n" +
+                    constants.RECOLL_FIELDS_STORED +
+                    "xa:tags=\n" +
+                    "xa:newkey=\n" +
+                    "xa:newkey:with:punct=\n\n")
+
+    # remove the line that allows the file to be regenerated
+    with open(get_recoll_fields_file(), 'w') as f:
+        f.write(updated_file)
+
+    keys = ['lots', 'of', 'new', 'stuff']
+    update_recoll_fields(keys)
+
+    with open(get_recoll_fields_file(), 'r') as f:
+        assert f.read() == updated_file

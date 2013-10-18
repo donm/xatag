@@ -140,7 +140,7 @@ def cmd_add(options):
         op.add_tags(fname, **options)
         op.print_file_tags(fname, **options)
     if not options['no_warn'] or options['warn_once']:
-        config.warn_new_tags(options['tags'], options['warn_once'],
+        config.check_new_tags(options['tags'], options['warn_once'],
                              quiet=options['quiet'])
     apply_to_files(per_file, options)
 
@@ -159,7 +159,7 @@ def cmd_set(options):
         op.set_tags(fname, **options)
         op.print_file_tags(fname, **options)
     if not options['no_warn'] or options['warn_once']:
-        config.warn_new_tags(options['tags'], options['warn_once'],
+        config.check_new_tags(options['tags'], options['warn_once'],
                              quiet=options['quiet'])
     apply_to_files(per_file, options)
 
@@ -170,7 +170,7 @@ def cmd_set_all(options):
         op.set_all_tags(fname, **options)
         op.print_file_tags(fname, **options)
     if not options['no_warn'] or options['warn_once']:
-        config.warn_new_tags(options['tags'], options['warn_once'],
+        config.check_new_tags(options['tags'], options['warn_once'],
                              quiet=options['quiet'])
     apply_to_files(per_file, options)
 
@@ -267,7 +267,7 @@ def cmd_execute(options):
 def cmd_enter(options):
     """Add tags to the known_tags file."""
     # Well, that was easy.
-    config.warn_new_tags(options['tags'], add=True, quiet=options['quiet'])
+    config.check_new_tags(options['tags'], add=True, quiet=options['quiet'])
 
 
 def cmd_new_config(options):

@@ -1,10 +1,12 @@
 * for 1.0
 ** recoll
-- update the fields file when adding to known_tags
+- output for recoll metadatacmds
 - tell recoll to index the file when changing tags
 - use recoll to print list of tags
 - def cmd_execute(options); what benefit would this have that recoll wouldn't
   have?
+** code
+- don't export functions that are only needed internally.
 
 ** documentation
 - internal comments
