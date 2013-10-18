@@ -49,9 +49,9 @@ DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 # taxes: personal; business
 """
 
-DEFAULT_RECOLL_CONF="""# recoll config for xatag
+DEFAULT_RECOLL_CONF="""# xatag-specific recoll config
 #
-# To tell Recoll to load this file, set one of the environment variable
+# To tell Recoll to load this file, set one of the environment variables
 # RECOLL_CONFTOP or RECOLL_CONFMID to the parent directory of this file.
 #
 # The values set in this filewill overwrite the global Recoll options if you
@@ -67,13 +67,41 @@ DEFAULT_RECOLL_CONF="""# recoll config for xatag
 metadatacmds = ; rclmultixatag = xatag --recoll %f
 """
 
-DEFAULT_RECOLL_FIELDS="""# recoll fields config for xatag
+RECOLL_FIELDS_HEAD="""# xatag-specific Recoll fields config
 #
-xa:tags = XYXATAGS
-
-[stored]
-xa:tags=
+# XATAG WILL REGENERATE THIS FILE
+#
+# As long as one of the first 5 lines of this file contains the string
+#
+#     XATAG WILL REGENERATE THIS FILE
+#
+# then this file will be overwritten every time a new tag key is added to the
+# known_tags file.  This way Recoll will index the key in its database.
+#
+# If you want to keep this file up to date manually, delete the aforementioned
+# line or move it below the fifth line of this file.  You might want to do
+# this if, for instance, you plan on using a fairly stable set of tag keys
+# that you want Recoll to index, and also use some other set of tag keys that
+# you don't want indexed.
 """
+
+RECOLL_FIELDS_PREFIXES="""
+# Tags in the [prefixes] section should have "xa:" prepended to the name,
+# and the part after the equals sign (the key name for Xapian) should be in all
+# caps.  Xatag adds new entries in the form
+#     xa:tagkeyname = XYXATAGKEYNAME
+#
+[prefixes]
+"""
+# xa:tags = XYXATAGS
+
+RECOLL_FIELDS_STORED="""
+# In the [stored] section, add the same tag prefixes as before followed by an
+# equals sign, unless you have specific requirements,
+#
+[stored]
+"""
+#xa:tags=
 
 # This is the string that is actually used, both for parsing the command line
 # and for testing.

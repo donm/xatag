@@ -50,6 +50,13 @@ def test_get_known_tags_file(tmp_known_tags):
     assert tmp_known_tags == get_known_tags_file()
 
 
+def test_get_recoll_fields_file(tmpdir):
+    os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
+    create_config_dir()
+    assert get_recoll_fields_file() == tmpdir.join(
+        constants.RECOLL_CONFIG_DIR, 'fields')
+
+
 def test_load_known_tags(tmp_known_tags):
     kt = load_known_tags()
     print kt
@@ -57,6 +64,7 @@ def test_load_known_tags(tmp_known_tags):
         '': ['tag1', 'tag2', 'tag3', 'tag4'],
         'key1': ['val1', 'val2']
         }
+
 
 def test_add_known_tags(tmp_known_tags):
     new_tags = {'': ['tag5'], 'key1': ['val3'], 'key2': ['newval']}
@@ -68,6 +76,7 @@ def test_add_known_tags(tmp_known_tags):
         'key2': ['newval']
         }
 
+
 def test_make_known_tags_string():
     new_tags = {'': ['tag5'], 'key1': ['val3'], 'key2': ['newval']}
     tagstr = make_known_tags_string(new_tags)
@@ -75,6 +84,7 @@ def test_make_known_tags_string():
 key1:     val3
 key2:     newval
 """
+
 
 def test_warn_new_tags(capsys):
     tags = {'': ['tag1', 'tag8', 'tag9'], 'key1': ['val9'], 'key9': ['newval']}

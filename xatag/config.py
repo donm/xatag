@@ -54,7 +54,11 @@ def create_config_dir(path=None):
             with open(recoll_conf, 'w') as f:
                 f.write(constants.DEFAULT_RECOLL_CONF)
             with open(recoll_fields, 'w') as f:
-                f.write(constants.DEFAULT_RECOLL_FIELDS)
+                f.write(constants.RECOLL_FIELDS_HEAD)
+                f.write(constants.RECOLL_FIELDS_PREFIXES)
+                f.write("xa:tags = XYXATAGS\n")
+                f.write(constants.RECOLL_FIELDS_STORED)
+                f.write("xa:tags=\n")
         except:
             warn("error writing file in xatag recoll config: " + recoll_dir)
 
@@ -83,13 +87,24 @@ def get_config_dir(path=None):
         return None
 
 
+def get_recoll_fields_file():
+    config_dir = get_config_dir()
+    if not config_dir:
+        return None
+    fname = os.path.join(config_dir, constants.RECOLL_CONFIG_DIR, 'fields')
+    if not os.path.isfile(fname):
+        warn("xatag-specific recoll fields file is missing:" + fname)
+        return None
+    return fname
+
+
 def get_known_tags_file():
     config_dir = get_config_dir()
     if not config_dir:
         return None
     fname = os.path.join(config_dir, constants.KNOWN_TAGS_FILE)
     if not os.path.isfile(fname):
-        warn("xatag known_tags file is missing.")
+        warn("xatag known_tags file is missing:" + fname)
         return None
     return fname
 
@@ -137,7 +152,7 @@ def add_known_tags(new_tags):
             for tag_line in new_tag_string.splitlines():
                 f.write(tag_line + "\n")
     except:
-        warn("xatag known_tags file cannot be read.")
+        warn("xatag known_tags file cannot be edited: " + fname)
 
 
 def make_known_tags_string(new_tags):
@@ -166,16 +181,16 @@ def warn_new_tags(tags, add=False, quiet=False):
     new_key_string = ', '.join(sorted(new_keys))
     new_tag_string = make_known_tags_string(new_tags)
 
-    if add:
-        prefix_str = 'adding new'
-    else:
-        prefix_str = 'unknown'
+    if not quiet and new_tag_string:
+        if add:
+            prefix_str = 'adding new'
+        else:
+            prefix_str = 'unknown'
 
-    if not quiet:
         if new_key_string:
             sys.stderr.write(prefix_str + " keys: " + new_key_string + "\n")
         for tag_line in new_tag_string.splitlines():
             sys.stderr.write(prefix_str + " tags: " + tag_line + "\n")
 
-    if add:
+    if add and new_tags:
         add_known_tags(new_tags)
