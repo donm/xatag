@@ -113,7 +113,7 @@ def merge_tags(tags1, tags2):
 # file, but it can also have tags with empty values, which means "all tags
 # with this key."
 
-def subtract_tags(minuend, subtrahend):
+def subtract_tags(minuend, subtrahend, empty_means_all=True):
     """Return the tag values in minuend with those in subtrahend removed.
 
     If subtrahend has a key with a value of '' in its list, then that will
@@ -122,7 +122,7 @@ def subtract_tags(minuend, subtrahend):
     difference = {}
     for k, vlist in minuend.items():
         if k in subtrahend.keys():
-            if '' in subtrahend[k]:
+            if '' in subtrahend[k] and empty_means_all:
                 pass
             else:
                 new_vlist = [v for v in vlist
