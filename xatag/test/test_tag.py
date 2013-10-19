@@ -7,21 +7,21 @@ class TestTag():
         assert t.key == 'genre'
         assert t.value == 'classical'
         t = Tag('', 'favorite')
-        assert t.key == ''
+        assert t.key == 'tags'
         t = Tag('tags', 'favorite')
-        assert t.key == ''
+        assert t.key == 'tags'
 
     def test_from_string(self):
         t = Tag.from_string('simple-tag')[0]
-        assert t.key == ''
+        assert t.key == 'tags'
         assert t.value == 'simple-tag'
         t = Tag.from_string('tags:simple-tag')[0]
-        assert t.key == ''
+        assert t.key == 'tags'
         t = Tag.from_string('genre:classical')[0]
         assert t.key == 'genre'
         assert t.value == 'classical'
         # Nigel Kennedy?
-        ts = Tag.from_string('genre:classical;   rock;\n bluegrass\tstuff') 
+        ts = Tag.from_string('genre:classical;   rock;\n bluegrass\tstuff')
         assert len(ts) == 3
         assert ts[0].key == 'genre'
         assert ts[0].value == 'classical'
@@ -32,7 +32,7 @@ class TestTag():
         t = Tag.from_string('multi:part:key')[0]
         assert t.key == 'multi:part'
         assert t.value == 'key'
-        
+
     def test_to_string(self):
         t = Tag('', 'simple-tag')
         assert t.to_string() == 'simple-tag'

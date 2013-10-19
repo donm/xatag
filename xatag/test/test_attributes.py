@@ -6,7 +6,7 @@ from xatag.attributes import *
 
 NON_XATAG_TAGS = {'user.other.tag':  'something'}
 XATAG_TAGS = {
-    'user.org.xatag.tags': 'tag1;tag2;tag3;tag4;tag5',
+    'user.org.xatag.tags.tags': 'tag1;tag2;tag3;tag4;tag5',
     'user.org.xatag.tags.genre': 'indie;pop',
     'user.org.xatag.tags.artist': 'The XX'
     }
@@ -27,28 +27,28 @@ def file_with_tags(tmpdir):
 
 def test_read_tag_keys(file_with_tags):
     keys = read_tag_keys(file_with_tags)
-    assert set(keys) == set(['', 'genre', 'artist'])
+    assert set(keys) == set(['tags', 'genre', 'artist'])
 
 
 def test_read_tags_as_dict(file_with_tags):
     tags = read_tags_as_dict(file_with_tags)
-    assert tags == {'': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
+    assert tags == {'tags': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
                     'genre': ['indie', 'pop'],
                     'artist': ['The XX']
                     }
 
 
 def test_is_xatag_xattr_key():
-    assert is_xatag_xattr_key('user.org.xatag.tags')
+    assert is_xatag_xattr_key('user.org.xatag.tags.tags')
     assert is_xatag_xattr_key('user.org.xatag.tags.whatever')
-    assert is_xatag_xattr_key('org.xatag.tags')
+    assert is_xatag_xattr_key('org.xatag.tags.tags')
     assert is_xatag_xattr_key('org.xatag.tags.whatever')
     assert not is_xatag_xattr_key('anything else')
 
 
 def test_xatag_to_xattr_key():
-    assert xatag_to_xattr_key('') == 'user.org.xatag.tags'
-    assert xatag_to_xattr_key('tags') == 'user.org.xatag.tags'
+    assert xatag_to_xattr_key('') == 'user.org.xatag.tags.tags'
+    assert xatag_to_xattr_key('tags') == 'user.org.xatag.tags.tags'
     assert xatag_to_xattr_key('other') == 'user.org.xatag.tags.other'
     tag = Tag('genre', 'classical')
     assert xatag_to_xattr_key(tag) == 'user.org.xatag.tags.genre'

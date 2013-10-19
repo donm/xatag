@@ -13,7 +13,7 @@ import xatag.config as config
 def tmpfile(tmpdir):
     other_xattrs = {'user.other.tag':  'something'}
     tags = {
-        'user.org.xatag.tags': 'tag1;tag2;two words',
+        'user.org.xatag.tags.tags': 'tag1;tag2;two words',
         'user.org.xatag.tags.genre': 'indie;pop',
         'user.org.xatag.tags.artist': 'The XX'
     }
@@ -32,7 +32,7 @@ def tmpfile(tmpdir):
 @pytest.fixture
 def tmpfile2(tmpdir):
     tags = {
-        'user.org.xatag.tags': 'tag2;tag3',
+        'user.org.xatag.tags.tags': 'tag2;tag3',
         'user.org.xatag.tags.genre': 'classical',
     }
 
@@ -48,9 +48,9 @@ def tmpfile2(tmpdir):
 def test_parse_tags():
     cli_tags = ["tag", "two words", "key:value", "key2:value1;value2"]
     tags = parse_tags(cli_tags)
-    assert tags[0].key == ''
+    assert tags[0].key == 'tags'
     assert tags[0].value == 'tag'
-    assert tags[1].key == ''
+    assert tags[1].key == 'tags'
     assert tags[1].value == 'two words'
     assert tags[2].key == 'key'
     assert tags[2].value == 'value'
@@ -456,7 +456,7 @@ def test_cmd_enter(tmp_config1, tmp_config2):
     run_cli(USAGE, ['-e', 'tag4', 'newkey:newval', 'key1:val3'])
     kt = config.load_known_tags()
     assert kt == {
-        '': ['tag1', 'tag2', 'tag3', 'tag', 'tag4'],
+        'tags': ['tag1', 'tag2', 'tag3', 'tag', 'tag4'],
         'key1': ['val1', 'val2', 'val3'],
         'newkey': ['newval']
         }
@@ -465,7 +465,7 @@ def test_cmd_enter(tmp_config1, tmp_config2):
     run_cli(USAGE, ['-e', 'tag4', '--config-dir', tmp_config2])
     kt = config.load_known_tags(config_dir=tmp_config2)
     assert kt == {
-        '': ['tag1', 'tag2'],
+        'tags': ['tag1', 'tag2'],
         }
 
 

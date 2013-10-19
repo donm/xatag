@@ -36,8 +36,8 @@ def read_tags_as_dict(fname):
 
 def is_xatag_xattr_key(name):
     """Check if name starts with XATTR_PREFIX."""
-    return (name.startswith('user.' + XATTR_PREFIX) or
-            name.startswith(XATTR_PREFIX))
+    return (name.startswith('user.' + XATTR_PREFIX + '.') or
+            name.startswith(XATTR_PREFIX + '.'))
 
 
 def xatag_to_xattr_key(tag_or_key):
@@ -47,8 +47,8 @@ def xatag_to_xattr_key(tag_or_key):
     except AttributeError:
         key = tag_or_key
     key = tag.format_tag_key(key)
-    if key == '' or key == 'tags':
-        return 'user.' + XATTR_PREFIX
+    if key == '':
+        return 'user.' + XATTR_PREFIX + '.tags'
     else:
         return 'user.' + XATTR_PREFIX + '.' + key
 
@@ -56,10 +56,8 @@ def xatag_to_xattr_key(tag_or_key):
 def xattr_to_xatag_key(key):
     """Remove XATTR_PREFIX from the given string."""
     key = tag.format_tag_key(key)
-    key = key.replace('user.' + XATTR_PREFIX, '')
-    key = key.replace(XATTR_PREFIX, '')
-    if key != '' and key[0] == '.':
-        key = key[1:]
+    key = key.replace('user.' + XATTR_PREFIX + '.', '')
+    key = key.replace(XATTR_PREFIX + '.', '')
     return key
 
 

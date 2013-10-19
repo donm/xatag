@@ -63,24 +63,24 @@ def test_load_known_tags(confdir):
     kt = load_known_tags()
     print kt
     assert kt == {
-        '': ['tag1', 'tag2', 'tag3', 'tag4'],
+        'tags': ['tag1', 'tag2', 'tag3', 'tag4'],
         'key1': ['val1', 'val2']
         }
 
 
 def test_add_known_tags(confdir):
-    new_tags = {'': ['tag5'], 'key1': ['val3'], 'key2': ['newval']}
+    new_tags = {'tags': ['tag5'], 'key1': ['val3'], 'key2': ['newval']}
     add_known_tags(new_tags)
     kt = load_known_tags()
     assert kt == {
-        '': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
+        'tags': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
         'key1': ['val1', 'val2', 'val3'],
         'key2': ['newval']
         }
 
 
 def test_make_known_tags_string():
-    new_tags = {'': ['tag5'], 'key1': ['val3'], 'key2': ['newval']}
+    new_tags = {'tags': ['tag5'], 'key1': ['val3'], 'key2': ['newval']}
     tagstr = make_known_tags_string(new_tags)
     assert    tagstr == """tags:     tag5
 key1:     val3
@@ -89,14 +89,14 @@ key2:     newval
 
 
 def test_check_new_tags(capsys, confdir):
-    tags = {'': [''], 'tags':[''], 'key': ['']}
+    tags = {'tags': [''], 'tags':[''], 'key': ['']}
     check_new_tags(tags)
     out, err = capsys.readouterr()
     print err
     assert err=="""unknown keys: key
 unknown tags: key:      \n"""
 
-    tags = {'': ['tag1', 'tag8', '', 'tag9'],
+    tags = {'tags': ['tag1', 'tag8', '', 'tag9'],
             'key1': ['val9', ''],
             'key9': ['newval']}
     check_new_tags(tags)

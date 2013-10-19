@@ -20,8 +20,8 @@ import xatag.constants as constants
 class Tag:
     """Simple container for tag key/value pairs."""
     def __init__(self, key, value=''):
-        if key == 'tags':
-            key = ''
+        if key == '':
+            key = 'tags'
         self.key = format_tag_key(key)
         self.value = format_tag_value(value)
 
@@ -31,12 +31,12 @@ class Tag:
 
         Where (k,v) denotes Tag(k,v):
             'multi:part:key:value' -> [('multi:part:key', 'value')]
-            'simple-tag' -> [('', 'simple-tag')]
+            'simple-tag' -> [('tags', 'simple-tag')]
             'key:val1;val2;...' -> [('key', 'val1'), ('key', 'val2'), ...]
         """
         parts = tag_str.split(':')
         if len(parts) == 1:
-            key = ''
+            key = 'tags'
             values = tag_str
         else:
             key = ':'.join(parts[0:-1])
@@ -46,7 +46,7 @@ class Tag:
 
     def to_string(self):
         """Create a 'key:value' formatted string from a Tag object."""
-        if self.key == '' or self.key == 'tags':
+        if self.key == 'tags':
             return self.value
         else:
             return self.key + ":" + self.value

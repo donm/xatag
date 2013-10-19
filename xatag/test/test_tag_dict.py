@@ -27,7 +27,7 @@ def file_with_tags(tmpdir):
 
 @pytest.fixture
 def tag_dict1():
-    return {'': ['some', 'simple', 'tags'],
+    return {'tags': ['some', 'simple', 'tags'],
             'scope': ['home', 'work'],
             'first': ['one', 'tag'],
             'third': ['a', 'b']
@@ -36,7 +36,7 @@ def tag_dict1():
 
 @pytest.fixture
 def tag_dict2():
-    return {'': ['some', 'other', 'tags'],
+    return {'tags': ['some', 'other', 'tags'],
             'scope': ['hacking', 'programming'],
             'second': ['another', 'tag']
             }
@@ -44,7 +44,7 @@ def tag_dict2():
 
 @pytest.fixture
 def tag_dict_with_empty_vals():
-    return {'': ['some', 'simple', 'other'],
+    return {'tags': ['some', 'simple', 'other'],
             'scope': [''],
             'second': ['another'],
             'third': ['a', 'b']
@@ -62,7 +62,7 @@ def test_print_file_tags(file_with_tags):
 
 def test_merge_tags(tag_dict1, tag_dict2):
     m = merge_tags(tag_dict1, tag_dict2)
-    assert set(m['']) == set(['some', 'other', 'simple', 'tags'])
+    assert set(m['tags']) == set(['some', 'other', 'simple', 'tags'])
     assert set(m['scope']) == set(['home', 'work', 'hacking', 'programming'])
     assert set(m['first']) == set(['one', 'tag'])
     assert set(m['second']) == set(['another', 'tag'])
@@ -70,7 +70,7 @@ def test_merge_tags(tag_dict1, tag_dict2):
 
 def test_subtract_tags(tag_dict1, tag_dict_with_empty_vals):
     s = subtract_tags(tag_dict1, tag_dict_with_empty_vals)
-    assert set(s['']) == set(['tags'])
+    assert set(s['tags']) == set(['tags'])
     assert 'scope' not in s.keys()
     assert s['first'] == tag_dict1['first']
     assert 'second' not in s.keys()
@@ -79,7 +79,7 @@ def test_subtract_tags(tag_dict1, tag_dict_with_empty_vals):
 
 def test_select_tags(tag_dict1, tag_dict_with_empty_vals):
     s = select_tags(tag_dict1, tag_dict_with_empty_vals)
-    assert set(s['']) == set(['some', 'simple'])
+    assert set(s['tags']) == set(['some', 'simple'])
     assert set(s['scope']) == set(tag_dict1['scope'])
     assert 'first' not in s.keys()
     assert 'second' not in s.keys()

@@ -99,15 +99,12 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
     if one_line and tag_dict and prefix:
         out.write(prefix)
     keys = [k for k in sorted(tag_dict.keys())
-            if k != '']
-    if '' in tag_dict:
-        keys = [''] + keys
+            if k != 'tags']
+    if 'tags' in tag_dict:
+        keys = ['tags'] + keys
     for ind, k in enumerate(keys):
         last_tag = (ind == len(keys) - 1)
-        if k == '':
-            write_tag(tag_prefix + 'tags', '', last_tag=last_tag)
-        else:
-            write_tag(tag_prefix + k, k, last_tag=last_tag)
+        write_tag(tag_prefix + k, k, last_tag=last_tag)
 
     if one_line and tag_dict and prefix:
         out.write("\n")

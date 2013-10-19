@@ -166,13 +166,11 @@ def load_known_tags(config_dir=None):
         if kv == ['']:
             continue
         elif len(kv) == 1:
-            key = ''
+            key = 'tags'
             vals = kv[0].split(';')
         else:
             key = (':').join(kv[0:-1]).strip()
             vals = kv[-1].split(';')
-            if key == 'tags':
-                key = ''
         for val in vals:
             if key in known_tags:
                 known_tags[key].append(val.strip())
@@ -265,27 +263,25 @@ def update_recoll_fields(known_keys, config_dir=None):
     recoll_fields_file = get_recoll_fields_file(config_dir)
     if not recoll_fields_file:
         recoll_fields_file = guess_recoll_fields_file()
-        warn("cannot find recoll fields file; writing " +
-             recoll_fields_file)
-    try:
-        with open(recoll_fields_file, 'r') as f:
-            i = 0
-            for line in f:
-                i += 1
-                if re.match(constants.RECOLL_FIELDS_UPDATE_RE, line):
-                    break
-                if i >= 5:
-                    return False
-    except:
-        warn("cannot read the recoll fields file: " + recoll_fields_file)
-        return
+        warn("writing " + recoll_fields_file)
+    else:
+        try:
+            with open(recoll_fields_file, 'r') as f:
+                i = 0
+                for line in f:
+                    i += 1
+                    if re.match(constants.RECOLL_FIELDS_UPDATE_RE, line):
+                        break
+                    if i >= 5:
+                        return False
+        except:
+            warn("cannot read the recoll fields file: " + recoll_fields_file)
+            return
 
     prefixes_str = ''
     stored_str = ''
     table = string.maketrans('', '')
     for key in ['tags'] + sorted(known_keys):
-        if key == '':
-            continue
         prefixes_str += 'xa:' + key + ' = '
 
         prefixes_str += ('XYXA' +
