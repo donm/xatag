@@ -247,10 +247,9 @@ def update_recoll_index(files, **other_args):
     # we can run recollindex in the background and not wait for the exit
     # status.
     try:
-        rcl_dir = config.get_recoll_base_config_dir()
+        rcl_dir = config.find_recoll_base_config_dir()
         if rcl_dir:
             open(os.path.join(rcl_dir, 'rclmonixnow'), 'w').close()
-
         # cwd = os.environ.get('PWD')
         # if cwd:
             # files = [os.path.join(cwd, fname) for fname in files]
@@ -258,6 +257,5 @@ def update_recoll_index(files, **other_args):
             # Use Popen() instead of call() to run in the background.
             subprocess.Popen(['recollindex', '-i'] + files,
                              stdout=devnull, stderr=devnull)
-
     except:
         warn("There was a problem updating the Recoll index.")

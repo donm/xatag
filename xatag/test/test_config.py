@@ -39,23 +39,23 @@ def test_guess_confid_dir(tmpdir):
     assert guess_config_dir() == os.path.expanduser(constants.DEFAULT_CONFIG_DIR)
 
 
-def test_get_config_dir(tmpdir):
+def test_find_config_dir(tmpdir):
     # TODO: mock the other possibilities
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
-    assert get_config_dir() == tmpdir
+    assert find_config_dir() == tmpdir
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir) + 'this-does-not-exist'
-    assert get_config_dir() == None
+    assert find_config_dir() == None
 
 
-def test_get_known_tags_file(confdir):
+def test_find_known_tags_file(confdir):
     fname = confdir.join('known_tags')
-    assert fname == get_known_tags_file()
+    assert fname == find_known_tags_file()
 
 
-def test_get_recoll_fields_file(tmpdir):
+def test_find_recoll_fields_file(tmpdir):
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
     create_config_dir()
-    assert get_recoll_fields_file() == tmpdir.join(
+    assert find_recoll_fields_file() == tmpdir.join(
         constants.RECOLL_CONFIG_DIR, 'fields')
 
 
@@ -140,7 +140,7 @@ def test_update_recoll_fields(confdir, capsys):
                     "xa:newkey=\n" +
                     "xa:newkey:with:punct=\n\n")
 
-    with open(get_recoll_fields_file(), 'r') as f:
+    with open(find_recoll_fields_file(), 'r') as f:
         assert f.read() == updated_file
 
     updated_file = (#constants.RECOLL_FIELDS_HEAD +
@@ -154,11 +154,11 @@ def test_update_recoll_fields(confdir, capsys):
                     "xa:newkey:with:punct=\n\n")
 
     # remove the line that allows the file to be regenerated
-    with open(get_recoll_fields_file(), 'w') as f:
+    with open(find_recoll_fields_file(), 'w') as f:
         f.write(updated_file)
 
     keys = ['lots', 'of', 'new', 'stuff']
     update_recoll_fields(keys)
 
-    with open(get_recoll_fields_file(), 'r') as f:
+    with open(find_recoll_fields_file(), 'r') as f:
         assert f.read() == updated_file

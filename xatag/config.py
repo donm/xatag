@@ -102,7 +102,7 @@ def guess_recoll_base_config_dir():
     return guess
 
 
-def get_recoll_base_config_dir():
+def find_recoll_base_config_dir():
     guess = guess_recoll_base_config_dir()
     if os.path.isdir(guess):
         return guess
@@ -111,7 +111,7 @@ def get_recoll_base_config_dir():
         return None
 
 
-def get_config_dir(config_dir=None):
+def find_config_dir(config_dir=None):
     guess = guess_config_dir(config_dir=config_dir)
     if os.path.isdir(guess):
         return guess
@@ -123,13 +123,13 @@ def get_config_dir(config_dir=None):
 
 
 def guess_recoll_fields_file(config_dir=None):
-    config_dir = get_config_dir(config_dir=config_dir)
+    config_dir = find_config_dir(config_dir=config_dir)
     if not config_dir:
         return None
     return os.path.join(config_dir, constants.RECOLL_CONFIG_DIR, 'fields')
 
 
-def get_recoll_fields_file(config_dir=None):
+def find_recoll_fields_file(config_dir=None):
     fname = guess_recoll_fields_file()
     if not os.path.isfile(fname):
         warn("xatag-specific recoll fields file cannot be found: " + fname)
@@ -137,8 +137,8 @@ def get_recoll_fields_file(config_dir=None):
     return fname
 
 
-def get_known_tags_file(config_dir=None):
-    config_dir = get_config_dir(config_dir=config_dir)
+def find_known_tags_file(config_dir=None):
+    config_dir = find_config_dir(config_dir=config_dir)
     if not config_dir:
         return None
     fname = os.path.join(config_dir, constants.KNOWN_TAGS_FILE)
@@ -149,7 +149,7 @@ def get_known_tags_file(config_dir=None):
 
 
 def load_known_tags(config_dir=None):
-    fname = get_known_tags_file(config_dir)
+    fname = find_known_tags_file(config_dir)
     if not fname:
         return None
     try:
@@ -189,7 +189,7 @@ def make_known_tags_string(new_tags):
 
 def add_known_tags(new_tags, config_dir=None):
     new_tag_string = make_known_tags_string(new_tags)
-    fname = get_known_tags_file(config_dir)
+    fname = find_known_tags_file(config_dir)
     if not fname:
         return
     try:
@@ -260,7 +260,7 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
 
 def update_recoll_fields(known_keys, config_dir=None):
     """Write a new fields file in the xatag Recoll directory."""
-    recoll_fields_file = get_recoll_fields_file(config_dir)
+    recoll_fields_file = find_recoll_fields_file(config_dir)
     if not recoll_fields_file:
         recoll_fields_file = guess_recoll_fields_file()
         warn("writing " + recoll_fields_file)
