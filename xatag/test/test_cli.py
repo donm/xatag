@@ -90,7 +90,12 @@ def test_parse_cli():
     assert options['files'] == ['f1', 'f2']
     argv=['tag', 'f1', 'f2']
     command, options = parse_cli(USAGE, argv)
-    assert command == cmd_add
+    assert command == cmd_list
+    assert options['tags'] == []
+    assert options['files'] == ['tag', 'f1', 'f2']
+    argv=['-t', 'tag', 'f1', 'f2']
+    command, options = parse_cli(USAGE, argv)
+    assert command == cmd_list
     assert options['tags'] == [Tag('', 'tag')]
     assert options['files'] == ['f1', 'f2']
     argv=['f1']

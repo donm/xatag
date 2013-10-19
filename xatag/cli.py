@@ -101,7 +101,12 @@ def parse_cli(usage, argv=None):
         sys.exit("Multiple commands specified: " +
                  ','.join(commands))
     if len(commands) == 0:
-        command = ('--add' if arguments['TAG'] else '--list')
+        ## No:
+        # command = ('--add' if arguments['TAG'] else '--list')
+        ## The default should be non-destructive, in case you pass a glob.
+        ## Unless the user intentionally selects something, you want
+        ## everything in a glob to be interpreted similarly.
+        command = ('--list')
     else:
         command = commands[0]
     # This works because of convention.  '--some-name' is sent to
