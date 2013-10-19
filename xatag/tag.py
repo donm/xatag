@@ -21,7 +21,7 @@ class Tag:
     """Simple container for tag key/value pairs."""
     def __init__(self, key, value=''):
         if key == '':
-            key = 'tags'
+            key = constants.DEFAULT_TAG_KEY
         self.key = format_tag_key(key)
         self.value = format_tag_value(value)
 
@@ -36,7 +36,7 @@ class Tag:
         """
         parts = tag_str.split(':')
         if len(parts) == 1:
-            key = 'tags'
+            key = constants.DEFAULT_TAG_KEY
             values = tag_str
         else:
             key = ':'.join(parts[0:-1])
@@ -46,7 +46,7 @@ class Tag:
 
     def to_string(self):
         """Create a 'key:value' formatted string from a Tag object."""
-        if self.key == 'tags':
+        if self.key == constants.DEFAULT_TAG_KEY:
             return self.value
         else:
             return self.key + ":" + self.value

@@ -158,7 +158,7 @@ def load_known_tags(config_dir=None):
     except:
         warn("xatag known_tags file cannot be read: " + fname)
         return None
-    known_tags = {'tags':[]}
+    known_tags = {constants.DEFAULT_TAG_KEY:[]}
     for line in lines:
         if line.strip()[0] == '#' or line.strip() == '':
             continue
@@ -166,7 +166,7 @@ def load_known_tags(config_dir=None):
         if kv == ['']:
             continue
         elif len(kv) == 1:
-            key = 'tags'
+            key = constants.DEFAULT_TAG_KEY
             vals = kv[0].split(';')
         else:
             key = (':').join(kv[0:-1]).strip()
@@ -219,7 +219,7 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
     for key in alltags:
         vals = [val for val in alltags[key]
                 if val is not ''
-                or key is not 'tags']
+                or key is not constants.DEFAULT_TAG_KEY]
         while '' in vals and len(vals) > 1:
             vals.remove('')
         if vals:
@@ -232,7 +232,7 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
     known_keys = known_tags.keys()
 
     new_keys = [key for key in tags.keys()
-                if key is not 'tags'
+                if key is not constants.DEFAULT_TAG_KEY
                 and key not in known_keys]
     new_tags = xtd.subtract_tags(tags, known_tags, empty_means_all=False)
 
@@ -291,7 +291,7 @@ def update_recoll_fields(known_keys, config_dir=None):
     stored_str = ''
 
     known_keys = set(known_keys)
-    known_keys.add('tags')
+    known_keys.add(constants.DEFAULT_TAG_KEY)
     for key in sorted(known_keys):
         prefixes_str += tag_key_to_recoll_prefix(key) + ' = '
         prefixes_str += tag_key_to_xapian_key(key) + '\n'

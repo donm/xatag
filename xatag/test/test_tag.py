@@ -1,5 +1,6 @@
 #pylint: disable-all
 from xatag.tag import *
+from xatag.constants import DEFAULT_TAG_KEY
 
 class TestTag():
     def test___init__(self):
@@ -7,16 +8,16 @@ class TestTag():
         assert t.key == 'genre'
         assert t.value == 'classical'
         t = Tag('', 'favorite')
-        assert t.key == 'tags'
-        t = Tag('tags', 'favorite')
-        assert t.key == 'tags'
+        assert t.key == DEFAULT_TAG_KEY
+        t = Tag(DEFAULT_TAG_KEY, 'favorite')
+        assert t.key == DEFAULT_TAG_KEY
 
     def test_from_string(self):
         t = Tag.from_string('simple-tag')[0]
-        assert t.key == 'tags'
+        assert t.key == DEFAULT_TAG_KEY
         assert t.value == 'simple-tag'
-        t = Tag.from_string('tags:simple-tag')[0]
-        assert t.key == 'tags'
+        t = Tag.from_string(DEFAULT_TAG_KEY + ':simple-tag')[0]
+        assert t.key == DEFAULT_TAG_KEY
         t = Tag.from_string('genre:classical')[0]
         assert t.key == 'genre'
         assert t.value == 'classical'

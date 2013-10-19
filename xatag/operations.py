@@ -121,10 +121,12 @@ def delete_these_tags(fname, tags, quiet=False, **unused):
                     current_field, vlist)
                 # This is important when the user says 'key' but means 'key:'
                 if current_field == new_field and not quiet:
-                    warn(fname + ": tag key unchanged: " + (k or 'tags'))
+                    warn(fname + ": tag key unchanged: " +
+                         (k or constants.DEFAULT_TAG_KEY))
                 if new_field == '':
                     if not quiet:
-                        warn(fname + ": removing empty tag key: " + (k or 'tags'))
+                        warn(fname + ": removing empty tag key: " +
+                             (k or constants.DEFAULT_TAG_KEY))
                     attributes.remove(xattr_key)
                 else:
                     attributes[xattr_key] = new_field
@@ -154,7 +156,8 @@ def delete_other_tags(fname, tags, quiet=False, out=sys.stdout, **unused):
                 current_field, vlist, complement=True)
             if new_field == '':
                 if not quiet:
-                    warn("removing empty tag key:" + (k or 'tags'))
+                    warn("removing empty tag key:" +
+                         (k or constants.DEFAULT_TAG_KEY))
                 attributes.remove(xattr_key)
             else:
                 attributes[xattr_key] = new_field

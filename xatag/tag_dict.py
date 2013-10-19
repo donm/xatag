@@ -19,6 +19,7 @@ from collections import defaultdict
 
 from xatag.helpers import listify
 from xatag.tag import format_tag_value
+import xatag.constants as constants
 
 
 def tag_list_to_dict(tags):
@@ -98,10 +99,11 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
 
     if one_line and tag_dict and prefix:
         out.write(prefix)
-    keys = [k for k in sorted(tag_dict.keys())
-            if k != 'tags']
-    if 'tags' in tag_dict:
-        keys = ['tags'] + keys
+    keys = sorted(tag_dict.keys())
+    default = constants.DEFAULT_TAG_KEY
+    if default in keys:
+        keys.remove(default)
+        keys = [default] + keys
     for ind, k in enumerate(keys):
         last_tag = (ind == len(keys) - 1)
         write_tag(tag_prefix + k, k, last_tag=last_tag)

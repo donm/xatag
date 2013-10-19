@@ -15,6 +15,7 @@
 
 
 XATTR_PREFIX = 'org.xatag.tags'
+DEFAULT_TAG_KEY = 'tag'
 XATTR_FIELD_SEPARATOR = ';'
 DEFAULT_CONFIG_DIR = "~/.xatag/"
 CONFIG_DIR_VAR='XATAG_DIR'
