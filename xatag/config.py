@@ -122,11 +122,15 @@ def get_config_dir(config_dir=None):
         return None
 
 
-def get_recoll_fields_file(config_dir=None):
+def guess_recoll_fields_file(config_dir=None):
     config_dir = get_config_dir(config_dir=config_dir)
     if not config_dir:
         return None
-    fname = os.path.join(config_dir, constants.RECOLL_CONFIG_DIR, 'fields')
+    return os.path.join(config_dir, constants.RECOLL_CONFIG_DIR, 'fields')
+
+
+def get_recoll_fields_file(config_dir=None):
+    fname = guess_recoll_fields_file()
     if not os.path.isfile(fname):
         warn("xatag-specific recoll fields file cannot be found: " + fname)
         return None
@@ -260,7 +264,9 @@ def update_recoll_fields(known_keys, config_dir=None):
     """Write a new fields file in the xatag Recoll directory."""
     recoll_fields_file = get_recoll_fields_file(config_dir)
     if not recoll_fields_file:
-        return
+        recoll_fields_file = guess_recoll_fields_file()
+        warn("cannot find recoll fields file; writing " +
+             recoll_fields_file)
     try:
         with open(recoll_fields_file, 'r') as f:
             i = 0
@@ -272,6 +278,7 @@ def update_recoll_fields(known_keys, config_dir=None):
                     return False
     except:
         warn("cannot read the recoll fields file: " + recoll_fields_file)
+        return
 
     prefixes_str = ''
     stored_str = ''
