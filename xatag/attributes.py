@@ -100,7 +100,7 @@ def remove_tag_values_from_xattr_value(xattr_value, tag_values,
 
 
 def add_tag_values_to_xattr_value(xattr_value, values_to_add):
-    """Add the values in values_to_remove from the xattr formatted value."""
+    """Add the values in values_to_add from the xattr formatted value."""
     values_to_add = listify(values_to_add)
     current_values = xattr_value_to_list(xattr_value)
     values = current_values + [value for value in values_to_add
