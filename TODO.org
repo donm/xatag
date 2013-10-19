@@ -23,6 +23,9 @@ cat_in_the_hat.pdf: author:   Suess
 cat_in_the_hat.pdf: tags:     childrens other some tags 'two words'
 cat_in_the_hat.pdf: author:   Suess
 
+tag keys shouldn't have punctuation other than colons, if you're going to use
+Recoll.
+
 * eventually
 - return proper error codes along with warnings
 - command line completion

@@ -233,8 +233,11 @@ def copy_tags_over(source_tags, destination, tags=False, complement=False,
     copy_tags(source_tags, destination, tags, complement)
 
 
-def update_recoll_index(files, **unused):
+def update_recoll_index(files, **other_args):
     """Try to update the recoll index for files."""
+    if 'destinations' in other_args:
+        files += other_args['destinations']
+
     # Creating the rclmonixnow file is only necessary if the recollindex call
     # is blocked, meaning that the the Recoll daemon is running. However,
     # recollindex takes a perceptible amount of time, so let's just do both so
@@ -245,6 +248,9 @@ def update_recoll_index(files, **unused):
         if rcl_dir:
             open(os.path.join(rcl_dir, 'rclmonixnow'), 'w').close()
 
+        # cwd = os.environ.get('PWD')
+        # if cwd:
+            # files = [os.path.join(cwd, fname) for fname in files]
         with open('/dev/null', 'w') as devnull:
             # Use Popen() instead of call() to run in the background.
             subprocess.Popen(['recollindex', '-i'] + files,
