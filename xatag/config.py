@@ -116,6 +116,8 @@ def get_config_dir(config_dir=None):
         return guess
     else:
         warn("xatag config dir cannot be found: " + guess)
+        warn("run 'xatag --new-config [PATH]' to create it.")
+        warn("")
         return None
 
 
