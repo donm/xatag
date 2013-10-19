@@ -211,11 +211,16 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
         add=True
 
     alltags = xtd.tag_list_to_dict(tags)
-    # no sense in adding key with no values
+    # There's no reason to add 'tags' with no values.  Also no reason to add
+    # any other key with blank value, if it has another value.
     tags = {}
     for key in alltags:
         vals = [val for val in alltags[key]
-                if val is not '']
+                if val is not ''
+                or (key is not ''
+                    and key is not 'tags')]
+        while '' in vals and len(vals) > 1:
+            vals.remove('')
         if vals:
             tags[key] = vals
 

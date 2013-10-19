@@ -89,11 +89,12 @@ key2:     newval
 
 
 def test_check_new_tags(capsys, confdir):
-    tags = {'': [''], 'key': ['']}
+    tags = {'': [''], 'tags':[''], 'key': ['']}
     check_new_tags(tags)
     out, err = capsys.readouterr()
     print err
-    assert err==''
+    assert err=="""unknown keys: key
+unknown tags: key:      \n"""
 
     tags = {'': ['tag1', 'tag8', '', 'tag9'],
             'key1': ['val9', ''],
