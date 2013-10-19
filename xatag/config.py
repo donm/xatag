@@ -158,7 +158,7 @@ def load_known_tags(config_dir=None):
     except:
         warn("xatag known_tags file cannot be read: " + fname)
         return None
-    known_tags = {}
+    known_tags = {'tags':[]}
     for line in lines:
         if line.strip()[0] == '#' or line.strip() == '':
             continue
@@ -219,8 +219,7 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
     for key in alltags:
         vals = [val for val in alltags[key]
                 if val is not ''
-                or (key is not ''
-                    and key is not 'tags')]
+                or key is not 'tags']
         while '' in vals and len(vals) > 1:
             vals.remove('')
         if vals:
@@ -230,11 +229,10 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
     if known_tags is None:
         known_tags = {}
         add = False
-    known_keys = known_tags.keys() + ['']
+    known_keys = known_tags.keys()
 
     new_keys = [key for key in tags.keys()
-                if key is not ''
-                and key is not 'tags'
+                if key is not 'tags'
                 and key not in known_keys]
     new_tags = xtd.subtract_tags(tags, known_tags, empty_means_all=False)
 
@@ -256,6 +254,17 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
 
     if add and new_keys:
         update_recoll_fields(known_keys + new_keys)
+
+
+def tag_key_to_recoll_prefix(key):
+    table = string.maketrans(string.punctuation, ':' * len(string.punctuation))
+    return constants.RECOLL_TAG_PREFIX + key.translate(table)
+
+
+def tag_key_to_xapian_key(key):
+    table = string.maketrans('', '')
+    return (constants.RECOLL_XAPIAN_PREFIX +
+            key.upper().translate(table, string.punctuation))
 
 
 def update_recoll_fields(known_keys, config_dir=None):
@@ -280,14 +289,13 @@ def update_recoll_fields(known_keys, config_dir=None):
 
     prefixes_str = ''
     stored_str = ''
-    table = string.maketrans('', '')
-    for key in ['tags'] + sorted(known_keys):
-        prefixes_str += 'xa:' + key + ' = '
 
-        prefixes_str += ('XYXA' +
-                         key.upper().translate(table, string.punctuation) +
-                         '\n')
-        stored_str += 'xa:' + key + '=\n'
+    known_keys = set(known_keys)
+    known_keys.add('tags')
+    for key in sorted(known_keys):
+        prefixes_str += tag_key_to_recoll_prefix(key) + ' = '
+        prefixes_str += tag_key_to_xapian_key(key) + '\n'
+        stored_str += tag_key_to_recoll_prefix(key) + '=\n'
 
     try:
         with open(recoll_fields_file, 'w') as f:

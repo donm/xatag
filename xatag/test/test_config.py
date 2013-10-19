@@ -128,30 +128,32 @@ adding new tags: key9:     newval
 
 
 def test_update_recoll_fields(confdir, capsys):
-    keys = ['newkey', 'newkey:with:punct']
+    keys = ['newkey', 'new,key:with.punct']
     update_recoll_fields(keys)
     updated_file = (constants.RECOLL_FIELDS_HEAD +
                     constants.RECOLL_FIELDS_PREFIXES +
-                    "xa:tags = XYXATAGS\n" +
+                    "xa:new:key:with:punct = XYXANEWKEYWITHPUNCT\n" +
                     "xa:newkey = XYXANEWKEY\n" +
-                    "xa:newkey:with:punct = XYXANEWKEYWITHPUNCT\n\n" +
+                    "xa:tags = XYXATAGS\n\n" +
                     constants.RECOLL_FIELDS_STORED +
-                    "xa:tags=\n" +
+                    "xa:new:key:with:punct=\n" +
                     "xa:newkey=\n" +
-                    "xa:newkey:with:punct=\n\n")
+                    "xa:tags=\n\n")
 
     with open(find_recoll_fields_file(), 'r') as f:
         assert f.read() == updated_file
 
+    # Test that the file won't be overwritten without the HEAD
     updated_file = (#constants.RECOLL_FIELDS_HEAD +
                     constants.RECOLL_FIELDS_PREFIXES +
-                    "xa:tags = XYXATAGS\n" +
                     "xa:newkey = XYXANEWKEY\n" +
-                    "xa:newkey:with:punct = XYXANEWKEYWITHPUNCT\n\n" +
+                    "xa:new:key:with:punct = XYXANEWKEYWITHPUNCT\n" +
+                    "xa:tags = XYXATAGS\n\n" +
                     constants.RECOLL_FIELDS_STORED +
-                    "xa:tags=\n" +
                     "xa:newkey=\n" +
-                    "xa:newkey:with:punct=\n\n")
+                    "xa:new:key:with:punct=\n" +
+                    "xa:tags=\n\n")
+
 
     # remove the line that allows the file to be regenerated
     with open(find_recoll_fields_file(), 'w') as f:

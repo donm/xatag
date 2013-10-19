@@ -110,6 +110,9 @@ RECOLL_FIELDS_STORED="""
 [stored]
 """
 
+RECOLL_TAG_PREFIX='xa:'
+RECOLL_XAPIAN_PREFIX='XYXA'
+
 # This is the string that is actually used, both for parsing the command line
 # and for testing.
 XATAG_USAGE="""xatag - file tagging using extended attributes (xattr).
