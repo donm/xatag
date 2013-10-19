@@ -76,11 +76,6 @@ def list_to_xattr_value(tag_list):
                                              for x in tag_list))
 
 
-# TODO: optionally print when the tag wasn't there to begin with.  it's
-# especially important if you mean
-#    -d genre:
-# but type
-#    -d genre
 def remove_tag_values_from_xattr_value(xattr_value, tag_values,
                                        complement=False):
     """Remove the values in tag_values from the xattr formatted value."""

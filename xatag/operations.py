@@ -119,9 +119,12 @@ def delete_these_tags(fname, tags, quiet=False, **unused):
                 current_field = attributes[xattr_key]
                 new_field = attr.remove_tag_values_from_xattr_value(
                     current_field, vlist)
+                # This is important when the user says 'key' but means 'key:'
+                if current_field == new_field and not quiet:
+                    warn(fname + ": tag key unchanged: " + (k or 'tags'))
                 if new_field == '':
                     if not quiet:
-                        warn(fname + ": removing empty tag key: " + k)
+                        warn(fname + ": removing empty tag key: " + (k or 'tags'))
                     attributes.remove(xattr_key)
                 else:
                     attributes[xattr_key] = new_field
@@ -151,7 +154,7 @@ def delete_other_tags(fname, tags, quiet=False, out=sys.stdout, **unused):
                 current_field, vlist, complement=True)
             if new_field == '':
                 if not quiet:
-                    out.write("removing empty tag key:" + k + "\n")
+                    warn("removing empty tag key:" + (k or 'tags'))
                 attributes.remove(xattr_key)
             else:
                 attributes[xattr_key] = new_field
