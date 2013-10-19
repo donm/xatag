@@ -18,6 +18,7 @@ import os
 import StringIO
 import sys
 import re
+import string
 
 from xatag.warn import warn
 import xatag.constants as constants
@@ -269,11 +270,15 @@ def update_recoll_fields(known_keys, config_dir=None):
 
     prefixes_str = ''
     stored_str = ''
+    table = string.maketrans('', '')
     for key in ['tags'] + sorted(known_keys):
         if key == '':
             continue
         prefixes_str += 'xa:' + key + ' = '
-        prefixes_str += 'XYXA' + key.upper().replace(':', '') + '\n'
+
+        prefixes_str += ('XYXA' +
+                         key.upper().translate(table, string.punctuation) +
+                         '\n')
         stored_str += 'xa:' + key + '=\n'
 
     try:
