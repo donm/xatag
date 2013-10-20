@@ -36,12 +36,18 @@ DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 ##
 ## Lines beginning with # are comments.
 ##
+## You might want to call 'xatag --regenerate' after editing this file.
+##
 ## Tags are specified by starting the line with the tag key, followed by a
 ## colon.  You can add as many tags as you want on every line, separated by
 ## semicolons.
 ##
 ## If a line doesn't have a colon, then every thing on that line is given the
 ## default prefix "tag:".
+##
+## You can add lines that only consist of tag keys ("author:") with no values
+## after the colon, for the purpose of adding the keys to the recoll/fields
+## file when it is regenerated.
 ##
 ## For sorting purposes, you might consider prefixing lines with "tag:" even
 ## though you don't have to.  Then you can sort the file using something like:

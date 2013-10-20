@@ -1,6 +1,7 @@
 * for 1.0
 - Way to gather used tags from new copied files that have tags.  Need to
-  easily recreate or at least guess known_tags file.
+  easily recreate, or at least guess, the known_tags file.  At the very least,
+  need to find the known keys.
 ** recoll
 - def cmd_execute(options); what benefit would this have that recoll wouldn't
   have?
@@ -30,7 +31,8 @@ cat_in_the_hat.pdf: author:   Suess
 Tag keys shouldn't have punctuation other than colons, if you're going to use
 Recoll.
 
-All punctuation is translated to colons for recoll prefixes, stripped for xapian.
+All punctuation and spaces is translated to colons for recoll prefixes,
+stripped for xapian.
 
 * eventually
 - Return proper error codes along with warnings
