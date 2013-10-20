@@ -69,8 +69,7 @@ def create_config_dir(config_dir=None):
                         ' = ' +
                         lrcl.tag_key_to_xapian_key(key),
                         lrcl.tag_key_to_recoll_prefix(key)))
-        except Exception,e:
-            print str(e)
+        except:
             warn("error writing file in xatag recoll config dir: " + recoll_dir)
 
 

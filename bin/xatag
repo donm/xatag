@@ -64,7 +64,7 @@ Management Commands:
   -u --use          Enter TAG(s) into the known tag list.  Adding a tag to the
                     list will prohibit the warning printed when using an
                     unknown tag.  Known tags are also used for shell completion.
-  -U --used-tags    Print list of known tags and ignored keys.
+  -U --used-tags    Print list of known tags.
 
 Argument Flags:
   -t TAG --tag=TAG     The following argument is a tag; when this flag is

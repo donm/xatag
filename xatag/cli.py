@@ -285,7 +285,7 @@ def cmd_use(options):
 
 
 def cmd_used_tags(options):
-    """Print tags in the known_tags file and ignored keys file."""
+    """Print tags in the known_tags file."""
     op.print_known_tags(**options)
 
 
