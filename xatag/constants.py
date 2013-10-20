@@ -30,20 +30,25 @@ DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 ## Add tags to this file to prevent seeing warnings when unknown tags are
 ## added to a file with 'xatag -a' or 'xatag -s'.
 ##
+## Lines beginning with # are comments.
+##
 ## Tags are specified by starting the line with the tag key, followed by a
 ## colon.  You can add as many tags as you want on every line, separated by
 ## semicolons.
 ##
 ## If a line doesn't have a colon, then every thing on that line is given the
-## default prexif "tags:".  For sorting purposes, you might consider prefixing
-## lines with "tags:" even though you don't have to.
+## default prefix "tag:".
 ##
-## Lines beginning with # are comments.
+## For sorting purposes, you might consider prefixing lines with "tag:" even
+## though you don't have to.  Then you can sort the file using something like:
+##      > grep '^#' known_tags ; grep -v '^#' known_tags | sort ; } > kt
+##      > cat kt   # check that the output is what you want
+##      > mv kt known_tags
 ##
 ## Removing all instances of a tag key from this file will cause the key to be
 ## dropped from the Recoll fields file the next time it is generated.  Adding
 ## a new key will cause the key to be added to the fields file.
-###########################################
+#################################################################
 ## The next three lines are all equivalent.
 # favorite; TODO; organize; summer vacation;
 # : favorite; TODO; organize; summer vacation

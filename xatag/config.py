@@ -172,16 +172,17 @@ def load_known_tags(config_dir=None):
     return known_tags
 
 
-def make_known_tags_string(new_tags):
+def make_known_tags_string(new_tags, key_val_pairs=False):
     new_tag_string = StringIO.StringIO()
     xtd.print_tag_dict(new_tags, vsep='; ',
+                       key_val_pairs=key_val_pairs,
                        out=new_tag_string)
     new_tag_string = new_tag_string.getvalue()
     return new_tag_string
 
 
 def add_known_tags(new_tags, config_dir=None):
-    new_tag_string = make_known_tags_string(new_tags)
+    new_tag_string = make_known_tags_string(new_tags, key_val_pairs=True)
     fname = find_known_tags_file(config_dir)
     if not fname:
         return
