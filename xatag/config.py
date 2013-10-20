@@ -265,7 +265,6 @@ def update_recoll_fields(known_keys=False, ignored_keys=False, config_dir=None):
 
     if ignored_keys is False:
         ignored_keys = load_ignored_keys() or []
-    print ignored_keys
     prefixes_str = ''
     stored_str = ''
 
