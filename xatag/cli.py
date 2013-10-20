@@ -40,6 +40,7 @@ COMMAND_LIST = [
     "--used-tags",
     "--new-config",
     "--recoll-tags",
+    "--regenerate",
     ]
 
 
@@ -291,6 +292,12 @@ def cmd_used_tags(options):
 def cmd_new_config(options):
     """Create a new config directory at path, or a default location."""
     config.create_config_dir(options['config_dir'])
+
+
+def cmd_regenerate(options):
+    """Recreate files that are updated by xatag."""
+    config.update_recoll_fields(config.load_known_tags(),
+                                config_dir=options['config_dir'])
 
 
 def cmd_recoll_tags(options):

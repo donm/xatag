@@ -5,7 +5,6 @@
 - Ignored_keys file that won't be added to fields file
 - Expand warning when new key is used but not added
 - Option to skip recoll index update, and skip regenerating fields file
-- Command to update the fields file after editing the known_tags file
 - def cmd_execute(options); what benefit would this have that recoll wouldn't
   have?
 ** FUSE
