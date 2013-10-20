@@ -143,7 +143,7 @@ def apply_to_files(fun, options, files=False):
 
 def _maybe_check_new_tags(options):
     if not options['no_warn'] or options['warn_once']:
-        config.check_new_tags(**options)
+        op.check_new_tags(**options)
 
 
 def cmd_add(options):
@@ -280,7 +280,7 @@ def cmd_execute(options):
 def cmd_use(options):
     """Add tags to the known_tags file."""
     # Well, that was easy.
-    config.check_new_tags(add=True, **options)
+    op.check_new_tags(add=True, **options)
 
 
 def cmd_used_tags(options):

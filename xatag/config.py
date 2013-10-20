@@ -194,62 +194,6 @@ def add_known_tags(new_tags, config_dir=None):
         warn("xatag known_tags file cannot be edited: " + fname)
 
 
-def check_new_tags(tags, add=False, quiet=False, config_dir=None,
-                   **other_args):
-    """Warn on stderr about the tags that aren't in the known_tags file.
-
-    If add==True, then issue the warning but then add the tag to the
-    known_tags file as well, to prevent future warnings.  Also update the
-    Recoll fields config file.
-    """
-
-    if 'warn_once' in other_args and other_args['warn_once']:
-        add=True
-
-    alltags = xtd.tag_list_to_dict(tags)
-    # There's no reason to add 'tags' with no values.  Also no reason to add
-    # any other key with blank value, if it has another value.
-    tags = {}
-    for key in alltags:
-        vals = [val for val in alltags[key]
-                if val is not ''
-                or key is not constants.DEFAULT_TAG_KEY]
-        while '' in vals and len(vals) > 1:
-            vals.remove('')
-        if vals:
-            tags[key] = vals
-
-    known_tags = load_known_tags(config_dir)
-    if known_tags is None:
-        known_tags = {}
-        add = False
-    known_keys = known_tags.keys()
-
-    new_keys = [key for key in tags.keys()
-                if key is not constants.DEFAULT_TAG_KEY
-                and key not in known_keys]
-    new_tags = xtd.subtract_tags(tags, known_tags, empty_means_all=False)
-
-    new_key_string = ', '.join(sorted(new_keys))
-    new_tag_string = make_known_tags_string(new_tags)
-
-    if not quiet and new_tag_string:
-        if add:
-            prefix_str = 'adding new'
-        else:
-            prefix_str = 'unknown'
-        if new_key_string:
-            sys.stderr.write(prefix_str + " keys: " + new_key_string + "\n")
-        for tag_line in new_tag_string.splitlines():
-            sys.stderr.write(prefix_str + " tags: " + tag_line + "\n")
-
-    if add and new_tags:
-        add_known_tags(new_tags)
-
-    if add and new_keys:
-        update_recoll_fields(known_keys + new_keys)
-
-
 def form_recoll_fields_file(prefixes, stored):
     fields = ''
     fields += constants.RECOLL_FIELDS_HEAD
