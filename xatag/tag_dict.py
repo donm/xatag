@@ -37,8 +37,8 @@ def tag_list_to_dict(tags):
 
 def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
                    one_line=False, key_val_pairs=False,
-                   tag_prefix=None,
-                   for_recoll=False, out=None):
+                   tag_prefix=None, for_recoll=False,
+                   terse=False, out=None):
     """Print the tags for a file in a nice way.
 
     If for_recoll is True, then most of the options will be overwritten;
@@ -114,7 +114,8 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
 
     if one_line and tag_dict and prefix:
         out.write("\n")
-    if (not tag_dict) and prefix:
+    # Show that the file doesn't have the requested tags.
+    if (not tag_dict) and prefix and not terse:
         out.write(prefix + "\n")
 
 

@@ -78,6 +78,8 @@ General Options:
                    be used on -d, -l, and -c/-C.
   -q --quiet       Avoid writing to stdout.
   -T --terse       Only print values for tag keys that have been altered.
+                   Also, don't print the names of files unless tags will be
+                   printed as well.
   -w --no-warn     Do not warn when adding or setting tag values that are not
                    in the known_tags config file.
   -W --warn-once   Print a warning when adding or setting tag values that are

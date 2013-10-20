@@ -212,6 +212,7 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
                        vsep=vsep, one_line=one_line,
                        key_val_pairs=key_val_pairs,
                        for_recoll=for_recoll, tag_prefix=tag_prefix,
+                       terse=terse,
                        out=out)
 
 def subsetted_tags(source_tags, tags=False, complement=False, **unused):
