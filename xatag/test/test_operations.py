@@ -254,7 +254,7 @@ unknown tags: key: \n"""
     print out
     print err
     assert err=="""unknown keys: key9
-unknown tags: tag:  tag8; tag9
+unknown tags: tag: tag8; tag9
 unknown tags: key1: val9
 unknown tags: key9: newval
 """
@@ -264,7 +264,7 @@ unknown tags: key9: newval
     # kt = load_known_tags()
     print err
     assert err=="""adding new keys: key9
-adding new tags: tag:  tag8; tag9
+adding new tags: tag: tag8; tag9
 adding new tags: key1: val9
 adding new tags: key9: newval
 """

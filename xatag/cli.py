@@ -65,6 +65,20 @@ def fix_arguments(arguments):
     arguments['ksep'] = arguments['--key-separator']
     arguments['vsep'] = arguments['--val-separator']
 
+    # convert padding args to ints
+    arguments['--max-padding'] = arg_to_int(arguments['--max-padding'])
+    arguments['--min-padding'] = arg_to_int(arguments['--min-padding'])
+
+
+# silently ignore non-int arguments?
+def arg_to_int(arg):
+    if arg is None:
+        return arg
+    if arg.isdigit():
+        return int(arg)
+    else:
+        return None
+
 
 def extract_options(arguments):
     """Make an options dict for passing to the cmd functions."""

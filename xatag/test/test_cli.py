@@ -307,9 +307,9 @@ def test_cmd_recoll_tags(tmpfile, capsys):
     run_cli(USAGE, ['--recoll-tags', tmpfile])
     stdout = get_stdout(capsys)
 
-    gold = """xa:tag= tag1; tag2; two words
-xa:artist= The XX
-xa:genre= indie; pop
+    gold = """xa:tag=tag1; tag2; two words
+xa:artist=The XX
+xa:genre=indie; pop
 """
     assert compare_output(stdout, gold)
 

@@ -176,7 +176,8 @@ def print_file_tags(fname, tags=None, subset=False, complement=False,
                     terse=False, quiet=False,
                     longest_filename=0, fsep=":", ksep=':', vsep=' ',
                     one_line=False, key_val_pairs=False,
-                    for_recoll=False, print_filename=True,
+                    for_recoll=False, no_print_filename=False,
+                    min_padding=None, max_padding=None,
                     tag_prefix=None,
                     out=None, **unused):
     # We need 'out' to be set to the current value of sys.stdout, in case
@@ -190,10 +191,12 @@ def print_file_tags(fname, tags=None, subset=False, complement=False,
     if quiet:
         return
 
-    if for_recoll or not print_filename:
+    if for_recoll or no_print_filename:
         prefix = ''
     else:
         padding = max(1, longest_filename - len(fname) + 1)
+        if max_padding is not None:
+            padding = min(padding, max_padding)
         prefix = fname + fsep + (" " * padding)
 
     tag_dict = attr.read_tags_as_dict(fname)
@@ -213,6 +216,7 @@ def print_file_tags(fname, tags=None, subset=False, complement=False,
                        vsep=vsep, one_line=one_line,
                        key_val_pairs=key_val_pairs,
                        for_recoll=for_recoll, tag_prefix=tag_prefix,
+                       min_padding=min_padding, max_padding=max_padding,
                        terse=terse,
                        out=out)
 

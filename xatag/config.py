@@ -208,7 +208,8 @@ def make_known_tags_string(new_tags, key_val_pairs=False):
     new_tag_string = StringIO.StringIO()
     xtd.print_tag_dict(new_tags, vsep='; ',
                        key_val_pairs=key_val_pairs,
-                       out=new_tag_string)
+                       out=new_tag_string,
+                       max_padding=1, min_padding=1)
     new_tag_string = new_tag_string.getvalue()
     return new_tag_string
 

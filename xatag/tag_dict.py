@@ -38,8 +38,8 @@ def tag_list_to_dict(tags):
 def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
                    one_line=False, key_val_pairs=False,
                    tag_prefix=None, for_recoll=False,
-                   max_tag_padding=None,
-                   min_tag_padding=None,
+                   max_padding=None,
+                   min_padding=None,
                    terse=False, out=None):
     """Print the tags for a file in a nice way.
 
@@ -59,13 +59,17 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
         one_line = False
         key_val_pair = False
         tag_prefix = None
+        max_padding = 0
 
     if tag_prefix is None:
         tag_prefix = ''
 
-    def write_tag(key_name, dict_key, last_tag=False):
+    def write_key(key_name, dict_key, padding, last_tag=False):
         """Print a single tag formatted properly."""
-        padding = max(1, max_tag_length - len(key_name) + 1)
+        if max_padding==0:
+            padding = 0
+        else:
+            padding = max(1, padding - len(key_name) + 1)
         sorted_vals = sorted(tag_dict[dict_key])
         do_quote_vals = (vsep == ' ')
         formatted_vals = [format_tag_value(x, do_quote_vals)
@@ -95,14 +99,14 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
                 #     out.write('"')
                 out.write("\n")
 
-    max_tag_length = 0
+    padding = 0
     tag_lengths = [len(k) for k in tag_dict.keys()]
     if tag_lengths:
-        max_tag_length = max(tag_lengths)
-    if max_tag_padding:
-        max_tag_length = min(max_tag_length, max_tag_padding)
-    if min_tag_padding:
-        max_tag_length = max(max_tag_length, min_tag_padding)
+        padding = max(tag_lengths)
+    if max_padding is not None:
+        padding = min(padding, max_padding)
+    if min_padding:
+        padding = max(padding, min_padding)
 
     if one_line and tag_dict and prefix:
         out.write(prefix)
@@ -117,7 +121,7 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
             keyname = lrcl.tag_key_to_recoll_prefix(k)
         else:
             keyname = tag_prefix + k
-        write_tag(keyname, k, last_tag=last_tag)
+        write_key(keyname, k, padding, last_tag=last_tag)
 
     if one_line and tag_dict and prefix:
         out.write("\n")
