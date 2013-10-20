@@ -20,10 +20,13 @@ XATTR_FIELD_SEPARATOR = ';'
 DEFAULT_CONFIG_DIR = "~/.xatag/"
 CONFIG_DIR_VAR='XATAG_DIR'
 KNOWN_TAGS_FILE='known_tags'
-RECOLL_CONFIG_DIR='recoll'
+RECOLL_CONFIG_DIR='recoll' # relative to xatag config dir
 
 RECOLL_BASE_CONFIG_DIR_VAR='XATAG_DIR'
 DEFAULT_RECOLL_BASE_CONFIG_DIR='~/.recoll/'
+
+RECOLL_TAG_PREFIX='xa:'
+RECOLL_XAPIAN_PREFIX='XYXA'
 
 DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 ##
@@ -115,9 +118,6 @@ RECOLL_FIELDS_STORED="""
 #
 [stored]
 """
-
-RECOLL_TAG_PREFIX='xa:'
-RECOLL_XAPIAN_PREFIX='XYXA'
 
 # This is the string that is actually used, both for parsing the command line
 # and for testing.
