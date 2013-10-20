@@ -25,6 +25,11 @@ def confdir(tmpdir):
         f.write(DEFAULT_TAG_KEY + ": tag1; tag2\n")
         f.write("tag4 ; tag3\n")
         f.write("  key1  : val1   ;  val2  \n")
+
+    fname = tmpdir.join('ignored_keys')
+    with fname.open('w') as f:
+        f.write("whatever")
+
     return tmpdir
 
 

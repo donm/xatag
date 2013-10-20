@@ -20,6 +20,7 @@ XATTR_FIELD_SEPARATOR = ';'
 DEFAULT_CONFIG_DIR = "~/.xatag/"
 CONFIG_DIR_VAR='XATAG_DIR'
 KNOWN_TAGS_FILE='known_tags'
+IGNORED_KEYS_FILE='ignored_keys'
 RECOLL_CONFIG_DIR='recoll' # relative to xatag config dir
 
 RECOLL_BASE_CONFIG_DIR_VAR='XATAG_DIR'
@@ -55,13 +56,30 @@ DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 ## The next three lines are all equivalent.
 # favorite; TODO; organize; summer vacation;
 # : favorite; TODO; organize; summer vacation
-# tags: favorite; TODO; organize; summer vacation
+# tag: favorite; TODO; organize; summer vacation
 #
 ## You can specify tag values for a particular key on different lines, if you
 ## want:
 # taxes: 2013; 2012; 2011
 # taxes: 2010; 2009; 2008
 # taxes: personal; business
+"""
+
+DEFAULT_IGNORED_KEYS_FILE="""## xatag ignored_keys file
+##
+## Add tag keys to this file to prevent them from being automatically added to
+## the recoll/fields file, so they won't be indexed by Recoll.
+##
+## Lines beginning with # are comments.
+##
+## Write one key per line in this file, without a trailing colon (unless for
+## some reason the trailing colon is actually part of the tag key).
+##
+#################################################################
+## You probably don't want to do this:
+# tag
+## You might want something like this:
+# publication-date
 """
 
 DEFAULT_RECOLL_CONF="""# xatag-specific recoll config
@@ -95,11 +113,18 @@ RECOLL_FIELDS_HEAD="""# xatag-specific Recoll fields config
 # then this file will be overwritten every time a new tag key is added to the
 # known_tags file.  This way Recoll will index the key in its database.
 #
+# When xatag regenerates this file, it includes all keys found in the
+# known_tags file except for those found in the ignored_tags file.
+#
 # If you want to keep this file up to date manually, delete the aforementioned
 # line or move it below the fifth line of this file.  You might want to do
 # this if, for instance, you plan on using a fairly stable set of tag keys
 # that you want Recoll to index, and also use some other set of tag keys that
 # you don't want indexed.
+#
+# However, if you have a relatively stable set of keys that you don't want
+# indexed, then add them to the 'ignored_keys' file, and let this file be
+# automatically updated.
 """
 
 RECOLL_FIELDS_PREFIXES="""

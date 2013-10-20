@@ -11,10 +11,15 @@ def confdir(tmpdir):
     os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
     create_config_dir()
     fname = tmpdir.join('known_tags')
-    with fname.open('a') as f:
+    with fname.open('w') as f:
         f.write(DEFAULT_TAG_KEY + ": tag1; tag2\n")
         f.write("tag3 ; tag4\n")
         f.write("  key1  : val1   ;  val2  \n")
+        f.write("whatever:something  \n")
+
+    fname = tmpdir.join('ignored_keys')
+    with fname.open('w') as f:
+        f.write("whatever")
     return tmpdir
 
 
@@ -64,7 +69,8 @@ def test_load_known_tags(confdir):
     print kt
     assert kt == {
         DEFAULT_TAG_KEY: ['tag1', 'tag2', 'tag3', 'tag4'],
-        'key1': ['val1', 'val2']
+        'key1': ['val1', 'val2'],
+        'whatever':['something']
         }
 
 
@@ -75,7 +81,8 @@ def test_add_known_tags(confdir):
     assert kt == {
         DEFAULT_TAG_KEY: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
         'key1': ['val1', 'val2', 'val3'],
-        'key2': ['newval']
+        'key2': ['newval'],
+        'whatever':['something']
         }
 
 
@@ -89,6 +96,19 @@ key2: newval
 
 
 def test_update_recoll_fields(confdir, capsys):
+    update_recoll_fields()
+
+    updated_file = (constants.RECOLL_FIELDS_HEAD +
+                    constants.RECOLL_FIELDS_PREFIXES +
+                    "xa:key1 = XYXAKEY1\n" +
+                    "xa:tag = XYXATAG\n\n" +
+                    constants.RECOLL_FIELDS_STORED +
+                    "xa:key1=\n" +
+                    "xa:tag=\n\n")
+
+    with open(find_recoll_fields_file(), 'r') as f:
+        assert f.read() == updated_file
+
     keys = ['newkey', 'new,key:with.punct']
     update_recoll_fields(keys)
     updated_file = (constants.RECOLL_FIELDS_HEAD +

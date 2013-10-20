@@ -296,8 +296,7 @@ def cmd_new_config(options):
 
 def cmd_regenerate(options):
     """Recreate files that are updated by xatag."""
-    config.update_recoll_fields(config.load_known_tags(),
-                                config_dir=options['config_dir'])
+    config.update_recoll_fields(config_dir=options['config_dir'])
 
 
 def cmd_recoll_tags(options):

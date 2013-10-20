@@ -42,11 +42,14 @@ def create_config_dir(config_dir=None):
             print "using path as config dir: " + config_dir
 
         known_tags_file = os.path.join(config_dir, constants.KNOWN_TAGS_FILE)
+        ignored_keys_file = os.path.join(config_dir, constants.IGNORED_KEYS_FILE)
         try:
             with open(known_tags_file, 'w') as f:
                 f.write(constants.DEFAULT_KNOWN_TAGS_FILE)
+            with open(ignored_keys_file, 'w') as f:
+                f.write(constants.DEFAULT_IGNORED_KEYS_FILE)
         except:
-            warn("cannot make known_tags file: " + known_tags_file)
+            warn("error writing file in xatag config dir: " + config_dir)
 
         recoll_dir = os.path.join(config_dir, constants.RECOLL_CONFIG_DIR)
         try:
@@ -60,13 +63,15 @@ def create_config_dir(config_dir=None):
             with open(recoll_conf, 'w') as f:
                 f.write(constants.DEFAULT_RECOLL_CONF)
             with open(recoll_fields, 'w') as f:
+                key = constants.DEFAULT_TAG_KEY
                 f.write(form_recoll_fields_file(
                         lrcl.tag_key_to_recoll_prefix(key) +
                         ' = ' +
                         lrcl.tag_key_to_xapian_key(key),
                         lrcl.tag_key_to_recoll_prefix(key)))
-        except:
-            warn("error writing file in xatag recoll config: " + recoll_dir)
+        except Exception,e:
+            print str(e)
+            warn("error writing file in xatag recoll config dir: " + recoll_dir)
 
 
 def guess_config_dir(config_dir=None):
@@ -130,15 +135,23 @@ def find_recoll_fields_file(config_dir=None):
     return fname
 
 
-def find_known_tags_file(config_dir=None):
+def find_config_file(fname, config_dir=None):
     config_dir = find_config_dir(config_dir=config_dir)
     if not config_dir:
         return None
-    fname = os.path.join(config_dir, constants.KNOWN_TAGS_FILE)
-    if not os.path.isfile(fname):
-        warn("xatag known_tags file cannot be found: " + fname)
+    fpath = os.path.join(config_dir, fname)
+    if not os.path.isfile(fpath):
+        warn("xatag " + fname + " file cannot be found: " + fpath)
         return None
-    return fname
+    return fpath
+
+
+def find_known_tags_file(config_dir=None):
+    return find_config_file(constants.KNOWN_TAGS_FILE, config_dir=config_dir)
+
+
+def find_ignored_keys_file(config_dir=None):
+    return find_config_file(constants.IGNORED_KEYS_FILE, config_dir=config_dir)
 
 
 def load_known_tags(config_dir=None):
@@ -153,7 +166,8 @@ def load_known_tags(config_dir=None):
         return None
     known_tags = {constants.DEFAULT_TAG_KEY:[]}
     for line in lines:
-        if line.strip()[0] == '#' or line.strip() == '':
+        line = line.strip()
+        if line[0] == '#' or line == '':
             continue
         kv = line.split(':')
         if kv == ['']:
@@ -170,6 +184,25 @@ def load_known_tags(config_dir=None):
             else:
                 known_tags[key] = [val.strip()]
     return known_tags
+
+
+def load_ignored_keys(config_dir=None):
+    fname = find_ignored_keys_file(config_dir)
+    if not fname:
+        return None
+    try:
+        with open(fname) as f:
+            lines = f.readlines()
+    except:
+        warn("xatag ignored_keys file cannot be read: " + fname)
+        return None
+    ignored_keys = set([])
+    for line in lines:
+        line = line.strip()
+        if line[0] == '#' or line == '':
+            continue
+        ignored_keys.add(line)
+    return ignored_keys
 
 
 def make_known_tags_string(new_tags, key_val_pairs=False):
@@ -204,8 +237,12 @@ def form_recoll_fields_file(prefixes, stored):
     return fields
 
 
-def update_recoll_fields(known_keys, config_dir=None):
-    """Write a new fields file in the xatag Recoll directory."""
+def update_recoll_fields(known_keys=False, ignored_keys=False, config_dir=None):
+    """Write a new fields file in the xatag Recoll directory.
+
+    known_keys and ignored_keys must be iterable, but can be a tag dict.
+    """
+
     recoll_fields_file = find_recoll_fields_file(config_dir)
     if not recoll_fields_file:
         recoll_fields_file = guess_recoll_fields_file()
@@ -224,12 +261,19 @@ def update_recoll_fields(known_keys, config_dir=None):
             warn("cannot read the recoll fields file: " + recoll_fields_file)
             return
 
+    if known_keys is False:
+        known_keys = load_known_tags() or []
+
+    if ignored_keys is False:
+        ignored_keys = load_ignored_keys() or []
+    print ignored_keys
     prefixes_str = ''
     stored_str = ''
 
-    known_keys = set(known_keys)
-    known_keys.add(constants.DEFAULT_TAG_KEY)
-    for key in sorted(known_keys):
+    keys = set(known_keys)
+    keys = {x for x in keys if x not in ignored_keys}
+    keys.add(constants.DEFAULT_TAG_KEY)
+    for key in sorted(keys):
         prefixes_str += lrcl.tag_key_to_recoll_prefix(key) + ' = '
         prefixes_str += lrcl.tag_key_to_xapian_key(key) + '\n'
         stored_str += lrcl.tag_key_to_recoll_prefix(key) + '=\n'
