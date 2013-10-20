@@ -304,8 +304,13 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
             prefix_str = 'unknown'
         if new_key_string:
             sys.stderr.write(prefix_str + " keys: " + new_key_string + "\n")
+            warn("If the Recoll daemon is running, new keys will not be indexed")
+            warn("  until after the daemon is restarted, after the recoll/fields file")
+            warn("  is updated.  You might want to call 'recollindex -i <file>...' on")
+            warn("  files with new keys after you stop the daemon.")
         for tag_line in new_tag_string.splitlines():
             sys.stderr.write(prefix_str + " tags: " + tag_line + "\n")
+        warn("")
 
     if add and new_tags:
         config.add_known_tags(new_tags)
