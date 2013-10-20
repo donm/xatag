@@ -107,7 +107,7 @@ RECOLL_FIELDS_PREFIXES="""
 # the name, and the part after the equals sign (the key name for Xapian)
 # should be in all caps.  Xatag adds new entries in the form
 #
-#     xa:tagkeyname = XYXATAGKEYNAME
+#     xa:keyname = XYXAKEYNAME
 #
 [prefixes]
 """
