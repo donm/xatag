@@ -20,7 +20,7 @@ from collections import defaultdict
 from xatag.helpers import listify
 from xatag.tag import format_tag_value
 import xatag.constants as constants
-
+import xatag.localrecoll as lrcl
 
 def tag_list_to_dict(tags):
     """Convert a list of Tags to a dict, where values are lists of strings."""
@@ -56,7 +56,7 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
         vsep = '; '
         one_line = False
         key_val_pair = False
-        tag_prefix = 'xa:'
+        tag_prefix = None
 
     if tag_prefix is None:
         tag_prefix = ''
@@ -106,7 +106,11 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
         keys = [default] + keys
     for ind, k in enumerate(keys):
         last_tag = (ind == len(keys) - 1)
-        write_tag(tag_prefix + k, k, last_tag=last_tag)
+        if for_recoll:
+            keyname = lrcl.tag_key_to_recoll_prefix(k)
+        else:
+            keyname = tag_prefix + k
+        write_tag(keyname, k, last_tag=last_tag)
 
     if one_line and tag_dict and prefix:
         out.write("\n")

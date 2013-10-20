@@ -23,6 +23,7 @@ import string
 from xatag.warn import warn
 import xatag.constants as constants
 import xatag.tag_dict as xtd
+import xatag.localrecoll as lrcl
 
 
 def create_config_dir(config_dir=None):
@@ -60,20 +61,12 @@ def create_config_dir(config_dir=None):
                 f.write(constants.DEFAULT_RECOLL_CONF)
             with open(recoll_fields, 'w') as f:
                 f.write(form_recoll_fields_file(
-                        "xa:tags = XYXATAGS",
-                        "xa:tags="))
+                        lrcl.tag_key_to_recoll_prefix(key) +
+                        ' = ' +
+                        lrcl.tag_key_to_xapian_key(key),
+                        lrcl.tag_key_to_recoll_prefix(key)))
         except:
             warn("error writing file in xatag recoll config: " + recoll_dir)
-
-
-def form_recoll_fields_file(prefixes, stored):
-    fields = ''
-    fields += constants.RECOLL_FIELDS_HEAD
-    fields += constants.RECOLL_FIELDS_PREFIXES
-    fields += prefixes + '\n'
-    fields += constants.RECOLL_FIELDS_STORED
-    fields += stored + '\n'
-    return fields
 
 
 def guess_config_dir(config_dir=None):
@@ -256,15 +249,14 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
         update_recoll_fields(known_keys + new_keys)
 
 
-def tag_key_to_recoll_prefix(key):
-    table = string.maketrans(string.punctuation, ':' * len(string.punctuation))
-    return constants.RECOLL_TAG_PREFIX + key.translate(table)
-
-
-def tag_key_to_xapian_key(key):
-    table = string.maketrans('', '')
-    return (constants.RECOLL_XAPIAN_PREFIX +
-            key.upper().translate(table, string.punctuation))
+def form_recoll_fields_file(prefixes, stored):
+    fields = ''
+    fields += constants.RECOLL_FIELDS_HEAD
+    fields += constants.RECOLL_FIELDS_PREFIXES
+    fields += prefixes + '\n'
+    fields += constants.RECOLL_FIELDS_STORED
+    fields += stored + '\n'
+    return fields
 
 
 def update_recoll_fields(known_keys, config_dir=None):
@@ -293,9 +285,9 @@ def update_recoll_fields(known_keys, config_dir=None):
     known_keys = set(known_keys)
     known_keys.add(constants.DEFAULT_TAG_KEY)
     for key in sorted(known_keys):
-        prefixes_str += tag_key_to_recoll_prefix(key) + ' = '
-        prefixes_str += tag_key_to_xapian_key(key) + '\n'
-        stored_str += tag_key_to_recoll_prefix(key) + '=\n'
+        prefixes_str += lrcl.tag_key_to_recoll_prefix(key) + ' = '
+        prefixes_str += lrcl.tag_key_to_xapian_key(key) + '\n'
+        stored_str += lrcl.tag_key_to_recoll_prefix(key) + '=\n'
 
     try:
         with open(recoll_fields_file, 'w') as f:
