@@ -82,9 +82,9 @@ def test_add_known_tags(confdir):
 def test_make_known_tags_string():
     new_tags = {DEFAULT_TAG_KEY: ['tag5'], 'key1': ['val3'], 'key2': ['newval']}
     tagstr = make_known_tags_string(new_tags)
-    assert    tagstr == DEFAULT_TAG_KEY+""":      tag5
-key1:     val3
-key2:     newval
+    assert    tagstr == DEFAULT_TAG_KEY+""":  tag5
+key1: val3
+key2: newval
 """
 
 

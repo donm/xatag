@@ -229,8 +229,8 @@ def test_print_known_tags(confdir, capsys):
     print_known_tags()
     out, err = capsys.readouterr()
     print out
-    assert out == """tag:      tag1 tag2 tag3 tag4
-key1:     val1 val2
+    assert out == """tag:  tag1 tag2 tag3 tag4
+key1: val1 val2
 """
 
 def test_check_new_tags(capsys, confdir):
@@ -239,7 +239,7 @@ def test_check_new_tags(capsys, confdir):
     out, err = capsys.readouterr()
     print err
     assert err=="""unknown keys: key
-unknown tags: key:      \n"""
+unknown tags: key: \n"""
 
     tags = {DEFAULT_TAG_KEY: ['tag1', 'tag8', '', 'tag9'],
             'key1': ['val9', ''],
@@ -249,9 +249,9 @@ unknown tags: key:      \n"""
     print out
     print err
     assert err=="""unknown keys: key9
-unknown tags: tag:      tag8; tag9
-unknown tags: key1:     val9
-unknown tags: key9:     newval
+unknown tags: tag:  tag8; tag9
+unknown tags: key1: val9
+unknown tags: key9: newval
 """
 
     check_new_tags(tags, add=True)
@@ -259,9 +259,9 @@ unknown tags: key9:     newval
     # kt = load_known_tags()
     print err
     assert err=="""adding new keys: key9
-adding new tags: tag:      tag8; tag9
-adding new tags: key1:     val9
-adding new tags: key9:     newval
+adding new tags: tag:  tag8; tag9
+adding new tags: key1: val9
+adding new tags: key9: newval
 """
     check_new_tags(tags)
     out, err = capsys.readouterr()

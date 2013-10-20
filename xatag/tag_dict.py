@@ -38,6 +38,8 @@ def tag_list_to_dict(tags):
 def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
                    one_line=False, key_val_pairs=False,
                    tag_prefix=None, for_recoll=False,
+                   max_tag_padding=None,
+                   min_tag_padding=None,
                    terse=False, out=None):
     """Print the tags for a file in a nice way.
 
@@ -63,7 +65,7 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
 
     def write_tag(key_name, dict_key, last_tag=False):
         """Print a single tag formatted properly."""
-        padding = max(1, longest_tag - len(key_name) + 1)
+        padding = max(1, max_tag_length - len(key_name) + 1)
         sorted_vals = sorted(tag_dict[dict_key])
         do_quote_vals = (vsep == ' ')
         formatted_vals = [format_tag_value(x, do_quote_vals)
@@ -93,9 +95,14 @@ def print_tag_dict(tag_dict, prefix='', ksep=':', vsep=' ',
                 #     out.write('"')
                 out.write("\n")
 
-    # TODO: compute this using the known tag list, or the tags passed on the
-    # command line
-    longest_tag = 8
+    max_tag_length = 0
+    tag_lengths = [len(k) for k in tag_dict.keys()]
+    if tag_lengths:
+        max_tag_length = max(tag_lengths)
+    if max_tag_padding:
+        max_tag_length = min(max_tag_length, max_tag_padding)
+    if min_tag_padding:
+        max_tag_length = max(max_tag_length, min_tag_padding)
 
     if one_line and tag_dict and prefix:
         out.write(prefix)
