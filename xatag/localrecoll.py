@@ -20,11 +20,13 @@ import xatag.constants as constants
 
 def tag_key_to_recoll_prefix(key):
     key = str(key)
-    table = string.maketrans(string.punctuation, ':' * len(string.punctuation))
+    to_sub = string.punctuation + string.whitespace
+    table = string.maketrans(to_sub, ':' * len(to_sub))
     return (constants.RECOLL_TAG_PREFIX + key.translate(table))
 
 
 def tag_key_to_xapian_key(key):
     table = string.maketrans('', '')
     return (constants.RECOLL_XAPIAN_PREFIX +
-            key.upper().translate(table, string.punctuation))
+            key.upper().translate(table,
+                                  string.punctuation + string.whitespace))

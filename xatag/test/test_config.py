@@ -109,7 +109,7 @@ def test_update_recoll_fields(confdir, capsys):
     with open(find_recoll_fields_file(), 'r') as f:
         assert f.read() == updated_file
 
-    keys = ['newkey', 'new,key:with.punct']
+    keys = ['newkey', 'new,key:with punct']
     update_recoll_fields(keys)
     updated_file = (constants.RECOLL_FIELDS_HEAD +
                     constants.RECOLL_FIELDS_PREFIXES +
