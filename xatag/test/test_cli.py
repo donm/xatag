@@ -455,7 +455,7 @@ def test_cmd_delete(tmpfile, tmpfile2, capsys):
 
 
 def test_cmd_enter(tmp_config1, tmp_config2):
-    run_cli(USAGE, ['-e', 'tag4', 'newkey:newval', 'key1:val3'])
+    run_cli(USAGE, ['-u', 'tag4', 'newkey:newval', 'key1:val3'])
     kt = config.load_known_tags()
     assert kt == {
         DEFAULT_TAG_KEY: ['tag1', 'tag2', 'tag3', 'tag', 'tag4'],
@@ -464,7 +464,7 @@ def test_cmd_enter(tmp_config1, tmp_config2):
         }
 
     print tmp_config2
-    run_cli(USAGE, ['-e', 'tag4', '--config-dir', tmp_config2])
+    run_cli(USAGE, ['-u', 'tag4', '--config-dir', tmp_config2])
     kt = config.load_known_tags(config_dir=tmp_config2)
     assert kt == {
         DEFAULT_TAG_KEY: ['tag1', 'tag2'],

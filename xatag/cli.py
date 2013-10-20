@@ -36,7 +36,8 @@ COMMAND_LIST = [
     "--copy",
     "--copy-over",
     "--execute",
-    "--enter",
+    "--use",
+    "--used-tags",
     "--new-config",
     "--recoll-tags",
     ]
@@ -276,7 +277,7 @@ def cmd_execute(options):
     warn('the execute command is not implemented yet')
 
 
-def cmd_enter(options):
+def cmd_use(options):
     """Add tags to the known_tags file."""
     # Well, that was easy.
     config.check_new_tags(add=True, **options)

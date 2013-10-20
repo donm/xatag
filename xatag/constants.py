@@ -131,9 +131,10 @@ Usage:
   xatag [options] (-c | -C) SRC DEST... [-t TAG]...
   xatag [options] -D FILE...
   xatag [options] -x TAG... | QUERY
-  xatag [options] -e TAG...
+  xatag [options] -u TAG...
   xatag [options] --new-config [CONFIG_DIR]
   xatag [options] --recoll-tags FILE
+  xatag [options] -U
   xatag  -h | --help
   xatag  -v | --version
 
@@ -159,9 +160,10 @@ File Tagging Commands:
   -x --execute     Execute a query.
 
 Management Commands:
-  -e --enter       Enter TAG(s) into the known tag list.  Adding a tag to the
+  -u --use         Enter TAG(s) into the known tag list.  Adding a tag to the
                    list will prohibit the warning printed when using an
                    unknown tag.  Known tags are also used for shell completion.
+  -U --used-tags   Print list of known tags and ignored keys.
      --new-config  Write xatag config directory at ~/.xatag, or at CONFIG_DIR
                    if an argument is given.
      --recoll-tags  List the tags of FILE in a format appropriate for Recoll's
