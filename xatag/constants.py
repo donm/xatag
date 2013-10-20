@@ -213,6 +213,7 @@ General Options:
   -n --complement  Perform the specified command on the complement of the set
                    of TAG(s) that is specified.  The -n stands for "not".  Can
                    be used on -d, -l, and -c/-C.
+     --no-index    Do not attempt to update the Recoll index for altered files.
   -q --quiet       Avoid writing to stdout.
   -T --terse       Only print values for tag keys that have been altered.
                    Also, don't print the names of files unless tags will be

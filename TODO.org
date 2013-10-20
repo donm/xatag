@@ -2,7 +2,6 @@
 - Way to gather used tags from new copied files that have tags.  Need to
   easily recreate or at least guess known_tags file.
 ** recoll
-- Option to skip recoll index update, and skip regenerating fields file
 - def cmd_execute(options); what benefit would this have that recoll wouldn't
   have?
 ** FUSE

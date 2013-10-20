@@ -319,8 +319,12 @@ def check_new_tags(tags, add=False, quiet=False, config_dir=None,
         config.update_recoll_fields(known_keys + new_keys)
 
 
-def update_recoll_index(files, **other_args):
+def update_recoll_index(files, no_index=False, **other_args):
     """Try to update the recoll index for files."""
+
+    if no_index:
+        return
+
     if 'destinations' in other_args:
         files += other_args['destinations']
 
