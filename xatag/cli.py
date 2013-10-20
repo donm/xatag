@@ -283,6 +283,11 @@ def cmd_use(options):
     config.check_new_tags(add=True, **options)
 
 
+def cmd_used_tags(options):
+    """Print tags in the known_tags file and ignored keys file."""
+    op.print_known_tags(**options)
+
+
 def cmd_new_config(options):
     """Create a new config directory at path, or a default location."""
     config.create_config_dir(options['config_dir'])

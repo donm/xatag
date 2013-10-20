@@ -5,6 +5,8 @@ import xattr
 import xatag.attributes as attr
 from xatag.operations import *
 from xatag.constants import DEFAULT_TAG_KEY
+import xatag.constants as constants
+import xatag.config as config
 
 NON_XATAG_TAGS = {'user.other.tag':  'something'}
 XATAG_TAGS = {
@@ -12,6 +14,18 @@ XATAG_TAGS = {
     'user.org.xatag.tags.genre': 'indie;pop',
     'user.org.xatag.tags.artist': 'The XX'
     }
+
+
+@pytest.fixture
+def confdir(tmpdir):
+    os.environ[constants.CONFIG_DIR_VAR] = str(tmpdir)
+    config.create_config_dir()
+    fname = tmpdir.join('known_tags')
+    with fname.open('a') as f:
+        f.write(DEFAULT_TAG_KEY + ": tag1; tag2\n")
+        f.write("tag4 ; tag3\n")
+        f.write("  key1  : val1   ;  val2  \n")
+    return tmpdir
 
 
 @pytest.fixture
@@ -209,3 +223,12 @@ def test_copy_tags_over3(file_with_tags, file_with_tags2):
     assert 'genre' not in d2.keys()
     assert set(d2['artist']) == set(['The XX'])
     assert 'other' not in d2.keys()
+
+
+def test_print_known_tags(confdir, capsys):
+    print_known_tags()
+    out, err = capsys.readouterr()
+    print out
+    assert out == """tag:      tag1 tag2 tag3 tag4
+key1:     val1 val2
+"""

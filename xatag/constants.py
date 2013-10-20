@@ -134,7 +134,7 @@ Usage:
   xatag [options] -u TAG...
   xatag [options] --new-config [CONFIG_DIR]
   xatag [options] --recoll-tags FILE
-  xatag [options] -U
+  xatag [options] -U [TAG]...
   xatag  -h | --help
   xatag  -v | --version
 

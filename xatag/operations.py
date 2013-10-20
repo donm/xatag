@@ -171,7 +171,7 @@ def delete_all_tags(fname, **unused):
             attributes.remove(key)
 
 
-def print_file_tags(fname, tags=False, subset=False, complement=False,
+def print_file_tags(fname, tags=None, subset=False, complement=False,
                     terse=False, quiet=False,
                     longest_filename=0, fsep=":", ksep=':', vsep=' ',
                     one_line=False, key_val_pairs=False,
@@ -214,6 +214,23 @@ def print_file_tags(fname, tags=False, subset=False, complement=False,
                        for_recoll=for_recoll, tag_prefix=tag_prefix,
                        terse=terse,
                        out=out)
+
+
+def print_known_tags(tags=None, complement=False,
+                     ksep=':', vsep=' ',
+                     one_line=False, key_val_pairs=False,
+                     out=None, **unused):
+    if not out:
+        out = sys.stdout
+    known_tags = config.load_known_tags()
+    if tags:
+        known_tags = subsetted_tags(known_tags, tags, complement=complement)
+    if known_tags:
+        xtd.print_tag_dict(known_tags, ksep=ksep, vsep=vsep, one_line=one_line,
+                           key_val_pairs=key_val_pairs,
+                           out=out)
+    if one_line:
+        out.write('\n')
 
 def subsetted_tags(source_tags, tags=False, complement=False, **unused):
     if tags:
