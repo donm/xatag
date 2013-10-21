@@ -56,6 +56,9 @@ class Tag:
             return self.__dict__ == other.__dict__
         return False
 
+    def __hash__(self):
+        return hash((self.key, self.value))
+
 
 def format_tag_key(string):
     """Format tag key string when reading or writing to extended attributes."""

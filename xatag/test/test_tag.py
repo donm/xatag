@@ -48,3 +48,7 @@ class TestTag():
         assert t1 == t2
         assert t3 == t4
         assert t2 != t3
+
+    def test___hash__(self):
+        t1 = Tag('somekey', 'someval')
+        assert hash(t1) == hash(('somekey', 'someval'))
