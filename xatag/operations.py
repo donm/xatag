@@ -199,7 +199,7 @@ def print_file_tags(fname, tags=None, subset=False, complement=False,
             padding = min(padding, max_padding)
         prefix = fname + fsep + (" " * padding)
 
-    tag_dict = attr.read_tags_as_dict(fname)
+    tag_dict = attr.read_tag_dict(fname)
     if subset:
         tag_dict = subsetted_tags(tag_dict, tags, complement=complement)
     elif terse:
@@ -251,7 +251,7 @@ def copy_tags(source_tags, destination, tags=False, complement=False,
               **unused):
     """Copy tags in dict souce_tags to each file in destinations."""
     source_tags = subsetted_tags(source_tags, tags, complement=complement)
-    new_tags = xtd.merge_tags(source_tags, attr.read_tags_as_dict(destination))
+    new_tags = xtd.merge_tags(source_tags, attr.read_tag_dict(destination))
     set_tags(destination, new_tags)
 
 

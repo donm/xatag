@@ -26,7 +26,7 @@ def read_tag_keys(fname):
     return [xattr_to_xatag_key(k) for k in attributes if is_xatag_xattr_key(k)]
 
 
-def read_tags_as_dict(fname):
+def read_tag_dict(fname):
     """Return a dict of the xattr fields in fname in the xatag namespace."""
     attributes = xattr.xattr(fname)
     # no sense in reading the value if the key isn't going to be chosen

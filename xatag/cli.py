@@ -21,7 +21,7 @@ import sys
 from xatag.warn import warn
 from xatag.tag import Tag
 import xatag.operations as op
-from xatag.attributes import read_tags_as_dict
+from xatag.attributes import read_tag_dict
 import xatag.config as config
 
 COMMAND_LIST = [
@@ -219,10 +219,10 @@ def validate_source_and_destinations(options):
     options['destinations'] = destinations
 
 
-def try_read_tags_as_dict(source):
-    """Call read_tags_as_dict, exiting on an exception."""
+def try_read_tag_dict(source):
+    """Call read_tag_dict, exiting on an exception."""
     try:
-        source_tags = read_tags_as_dict(source)
+        source_tags = read_tag_dict(source)
     except:
         sys.exit("could not read extended attributes: " + source)
     return source_tags
@@ -237,7 +237,7 @@ def cmd_copy(options):
     source = options['source']
     destinations = options['destinations']
     if source:
-        source_tags = try_read_tags_as_dict(source)
+        source_tags = try_read_tag_dict(source)
         source_tags = op.subsetted_tags(source_tags, **options)
         # remove 'tag' from the options dict so that copy_tags() doesn't try
         # to repeat the subsetting on source_tags
@@ -255,7 +255,7 @@ def cmd_copy_over(options):
     source = options['source']
     destinations = options['destinations']
     if source:
-        source_tags = try_read_tags_as_dict(source)
+        source_tags = try_read_tag_dict(source)
         source_tags = op.subsetted_tags(source_tags, **options)
         # remove 'tag' from the options dict so that copy_tags() doesn't try
         # to repeat the subsetting on source_tags

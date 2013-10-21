@@ -30,8 +30,8 @@ def test_read_tag_keys(file_with_tags):
     assert set(keys) == set(['tags', 'genre', 'artist'])
 
 
-def test_read_tags_as_dict(file_with_tags):
-    tags = read_tags_as_dict(file_with_tags)
+def test_read_tag_dict(file_with_tags):
+    tags = read_tag_dict(file_with_tags)
     assert tags == {'tags': ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'],
                     'genre': ['indie', 'pop'],
                     'artist': ['The XX']

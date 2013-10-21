@@ -71,7 +71,7 @@ def test_add_tags(file_with_tags):
     assert x['user.org.xatag.tags.genre'] == 'awesome;indie;pop'
     add_tags(file_with_tags, [Tag('unused', '')])
     assert 'user.org.xatag.tags.unused' not in x.keys()
-    assert 'unused' not in attr.read_tags_as_dict(file_with_tags)
+    assert 'unused' not in attr.read_tag_dict(file_with_tags)
 
 
 def test_set_tags(file_with_tags):
@@ -152,11 +152,11 @@ def test_delete_all_tags(file_with_tags):
 
 
 def test_copy_tags(file_with_tags, file_with_tags2):
-    d1a = attr.read_tags_as_dict(file_with_tags)
-    source_tags = attr.read_tags_as_dict(file_with_tags)
+    d1a = attr.read_tag_dict(file_with_tags)
+    source_tags = attr.read_tag_dict(file_with_tags)
     copy_tags(source_tags, file_with_tags2)
-    d1b = attr.read_tags_as_dict(file_with_tags)
-    d2 = attr.read_tags_as_dict(file_with_tags2)
+    d1b = attr.read_tag_dict(file_with_tags)
+    d2 = attr.read_tag_dict(file_with_tags2)
     assert d1a == d1b
     assert set(d2[DEFAULT_TAG_KEY]) == set(['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6'])
     assert set(d2['genre']) == set(['indie', 'pop', 'good'])
@@ -166,11 +166,11 @@ def test_copy_tags(file_with_tags, file_with_tags2):
 
 def test_copy_tags2(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
-    d1a = attr.read_tags_as_dict(file_with_tags)
-    source_tags = attr.read_tags_as_dict(file_with_tags)
+    d1a = attr.read_tag_dict(file_with_tags)
+    source_tags = attr.read_tag_dict(file_with_tags)
     copy_tags(source_tags, file_with_tags2, tags=tags)
-    d1b = attr.read_tags_as_dict(file_with_tags)
-    d2 = attr.read_tags_as_dict(file_with_tags2)
+    d1b = attr.read_tag_dict(file_with_tags)
+    d2 = attr.read_tag_dict(file_with_tags2)
     assert d1a == d1b
     assert set(d2[DEFAULT_TAG_KEY]) == set(['tag1', 'tag2', 'tag6'])
     assert set(d2['genre']) == set(['indie', 'pop', 'good'])
@@ -180,11 +180,11 @@ def test_copy_tags2(file_with_tags, file_with_tags2):
 
 def test_copy_tags3(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
-    d1a = attr.read_tags_as_dict(file_with_tags)
-    source_tags = attr.read_tags_as_dict(file_with_tags)
+    d1a = attr.read_tag_dict(file_with_tags)
+    source_tags = attr.read_tag_dict(file_with_tags)
     copy_tags(source_tags, file_with_tags2, tags=tags, complement=True)
-    d1b = attr.read_tags_as_dict(file_with_tags)
-    d2 = attr.read_tags_as_dict(file_with_tags2)
+    d1b = attr.read_tag_dict(file_with_tags)
+    d2 = attr.read_tag_dict(file_with_tags2)
     assert d1a == d1b
     assert set(d2[DEFAULT_TAG_KEY]) == set(['tag1', 'tag3', 'tag4', 'tag5', 'tag6'])
     assert set(d2['genre']) == set(['good'])
@@ -193,22 +193,22 @@ def test_copy_tags3(file_with_tags, file_with_tags2):
 
 
 def test_copy_tags_over(file_with_tags, file_with_tags2):
-    d1a = attr.read_tags_as_dict(file_with_tags)
-    source_tags = attr.read_tags_as_dict(file_with_tags)
+    d1a = attr.read_tag_dict(file_with_tags)
+    source_tags = attr.read_tag_dict(file_with_tags)
     copy_tags_over(source_tags, file_with_tags2)
-    d1b = attr.read_tags_as_dict(file_with_tags)
-    d2 = attr.read_tags_as_dict(file_with_tags2)
+    d1b = attr.read_tag_dict(file_with_tags)
+    d2 = attr.read_tag_dict(file_with_tags2)
     assert d1a == d1b
     assert d1a == d2
 
 
 def test_copy_tags_over2(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
-    d1a = attr.read_tags_as_dict(file_with_tags)
-    source_tags = attr.read_tags_as_dict(file_with_tags)
+    d1a = attr.read_tag_dict(file_with_tags)
+    source_tags = attr.read_tag_dict(file_with_tags)
     copy_tags_over(source_tags, file_with_tags2, tags=tags)
-    d1b = attr.read_tags_as_dict(file_with_tags)
-    d2 = attr.read_tags_as_dict(file_with_tags2)
+    d1b = attr.read_tag_dict(file_with_tags)
+    d2 = attr.read_tag_dict(file_with_tags2)
     assert d1a == d1b
     assert set(d2[DEFAULT_TAG_KEY]) == set(['tag2'])
     assert set(d2['genre']) == set(['indie', 'pop'])
@@ -218,11 +218,11 @@ def test_copy_tags_over2(file_with_tags, file_with_tags2):
 
 def test_copy_tags_over3(file_with_tags, file_with_tags2):
     tags = [Tag('', 'tag2'), Tag('genre', '')]
-    d1a = attr.read_tags_as_dict(file_with_tags)
-    source_tags = attr.read_tags_as_dict(file_with_tags)
+    d1a = attr.read_tag_dict(file_with_tags)
+    source_tags = attr.read_tag_dict(file_with_tags)
     copy_tags_over(source_tags, file_with_tags2, tags=tags, complement=True)
-    d1b = attr.read_tags_as_dict(file_with_tags)
-    d2 = attr.read_tags_as_dict(file_with_tags2)
+    d1b = attr.read_tag_dict(file_with_tags)
+    d2 = attr.read_tag_dict(file_with_tags2)
     assert d1a == d1b
     assert set(d2[DEFAULT_TAG_KEY]) == set(['tag1', 'tag3', 'tag4', 'tag5'])
     assert 'genre' not in d2.keys()
