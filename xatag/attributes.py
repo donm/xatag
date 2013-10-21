@@ -34,6 +34,15 @@ def read_tag_dict(fname):
             for k in attributes if is_xatag_xattr_key(k)}
 
 
+def read_tags(fname):
+    """Return a list of Tags of the xatag xattr fields in fname."""
+    attributes = xattr.xattr(fname)
+    # no sense in reading the value if the key isn't going to be chosen
+    return [tag.Tag(xattr_to_xatag_key(k), val)
+            for k in attributes if is_xatag_xattr_key(k)
+            for val in xattr_value_to_list(attributes[k])]
+
+
 def is_xatag_xattr_key(name):
     """Check if name starts with XATTR_PREFIX."""
     return (name.startswith('user.' + XATTR_PREFIX + '.') or

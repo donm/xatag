@@ -38,6 +38,18 @@ def test_read_tag_dict(file_with_tags):
                     }
 
 
+def test_read_tags(file_with_tags):
+    tags = read_tags(file_with_tags)
+    assert set(tags) == set([Tag('genre', 'indie'),
+                             Tag('genre', 'pop'),
+                             Tag('tags', 'tag1'),
+                             Tag('tags', 'tag2'),
+                             Tag('tags', 'tag3'),
+                             Tag('tags', 'tag4'),
+                             Tag('tags', 'tag5'),
+                             Tag('artist', 'The XX'),
+                             ])
+
 def test_is_xatag_xattr_key():
     assert is_xatag_xattr_key('user.org.xatag.tags.tags')
     assert is_xatag_xattr_key('user.org.xatag.tags.whatever')
