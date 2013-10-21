@@ -36,7 +36,9 @@ class TestTag():
 
     def test_to_string(self):
         t = Tag('', 'simple-tag')
-        assert t.to_string() == 'simple-tag'
+        assert t.to_string() == 'tag:simple-tag'
+        t = Tag('', 'simple-tag')
+        assert t.to_string(True) == 'simple-tag'
         t = Tag('genre', 'classical')
         assert t.to_string() == 'genre:classical'
 

@@ -44,9 +44,9 @@ class Tag:
         return [cls(key, v)
                 for v in values.split(constants.XATTR_FIELD_SEPARATOR)]
 
-    def to_string(self):
+    def to_string(self, shorten=False):
         """Create a 'key:value' formatted string from a Tag object."""
-        if self.key == constants.DEFAULT_TAG_KEY:
+        if shorten and self.key == constants.DEFAULT_TAG_KEY:
             return self.value
         else:
             return self.key + ":" + self.value
