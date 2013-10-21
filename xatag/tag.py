@@ -51,6 +51,9 @@ class Tag:
         else:
             return self.key + ":" + self.value
 
+    def __repr__(self):
+        return "Tag('%s','%s')" % (self.key, self.value)
+
     def __eq__(self, other):
         if type(other) is type(self):
             return self.__dict__ == other.__dict__
