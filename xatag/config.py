@@ -43,11 +43,14 @@ def create_config_dir(config_dir=None):
 
         known_tags_file = os.path.join(config_dir, constants.KNOWN_TAGS_FILE)
         ignored_keys_file = os.path.join(config_dir, constants.IGNORED_KEYS_FILE)
+        fuse_conf_file = os.path.join(config_dir, constants.FUSE_CONF_FILE)
         try:
             with open(known_tags_file, 'w') as f:
                 f.write(constants.DEFAULT_KNOWN_TAGS_FILE)
             with open(ignored_keys_file, 'w') as f:
                 f.write(constants.DEFAULT_IGNORED_KEYS_FILE)
+            with open(fuse_conf_file, 'w') as f:
+                f.write(constants.DEFAULT_FUSE_CONF_FILE)
         except:
             warn("error writing file in xatag config dir: " + config_dir)
 

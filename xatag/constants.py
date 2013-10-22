@@ -21,6 +21,7 @@ DEFAULT_CONFIG_DIR = "~/.xatag/"
 CONFIG_DIR_VAR='XATAG_DIR'
 KNOWN_TAGS_FILE='known_tags'
 IGNORED_KEYS_FILE='ignored_keys'
+FUSE_CONF_FILE='fuse_conf.yaml'
 RECOLL_CONFIG_DIR='recoll' # relative to xatag config dir
 
 RECOLL_BASE_CONFIG_DIR_VAR='XATAG_DIR'
@@ -74,7 +75,8 @@ DEFAULT_KNOWN_TAGS_FILE="""## xatag known_tags file
 DEFAULT_IGNORED_KEYS_FILE="""## xatag ignored_keys file
 ##
 ## Add tag keys to this file to prevent them from being automatically added to
-## the recoll/fields file, so they won't be indexed by Recoll.
+## the recoll/fields file, so they won't be indexed by Recoll.  Also, these
+## keys are ignored in the FUSE filesystem.
 ##
 ## Lines beginning with # are comments.
 ##
@@ -149,6 +151,38 @@ RECOLL_FIELDS_STORED="""
 #
 [stored]
 """
+
+
+DEFAULT_FUSE_CONF_FILE=""" # xatag FUSE configuration
+tagged_dirs:
+  - ~/tagged
+  - ~/docs
+execute_dirs:
+  - '$'
+  - .x
+boolean_or_dirs:
+  - '+'
+  - .or
+  - .OR
+boolean_and_dirs:
+  - '!'
+  - .not
+  - .NOT
+tag_key_options:
+  -
+    not_keys: [tag]
+    prefix: '_'
+    action: shrink
+  -
+    keys: [tag]
+    action: explode
+  -
+    keys: yes
+    prefix: '.'
+    suffix: ':'
+    action: list
+"""
+
 
 # This is the string that is actually used, both for parsing the command line
 # and for testing.
