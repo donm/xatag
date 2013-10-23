@@ -153,34 +153,37 @@ RECOLL_FIELDS_STORED="""
 """
 
 
-DEFAULT_FUSE_CONF_FILE=""" # xatag FUSE configuration
-tagged_dirs:
-  - ~/tagged
+DEFAULT_FUSE_CONF_FILE="""# xatag FUSE configuration
+#
+mount_dirs:
+  - ~/tagging
   - ~/docs
-execute_dirs:
+terminate_dirs:
   - '$'
   - .x
 boolean_or_dirs:
   - '+'
   - .or
   - .OR
-boolean_and_dirs:
+boolean_not_dirs:
   - '!'
   - .not
   - .NOT
-tag_key_options:
+all_values_dirs:
+  - 'ALL'
+tag_dirs:
   -
     not_keys: [tag]
+    list: keys
     prefix: '_'
-    action: shrink
   -
     keys: [tag]
-    action: explode
+    list: values
   -
     keys: yes
+    list: tags
     prefix: '.'
-    suffix: ':'
-    action: list
+    separator: ':'
 """
 
 

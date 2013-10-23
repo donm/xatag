@@ -105,7 +105,7 @@ def extract_options(arguments):
 
 def parse_cli(usage, argv=None):
     """Parse ARGV using the usage docstring."""
-    arguments = docopt(usage, argv=argv, version='xatag version 0.0.0')
+    arguments = docopt(usage, argv=argv, version='xatag version 0.1.0-dev')
     fix_arguments(arguments)
     # The command to run is the key in arguments dict with a true value, where
     # that key is also in COMMAND_LIST.
